@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`CodeDiff.tsx test 1`] = `"<div class=\\" hljs bk-code-diff\\"></div>"`;
