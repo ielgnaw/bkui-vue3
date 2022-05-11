@@ -1,7 +1,8 @@
 {
-  "name": "bkui-vue",
+  "name": "@ielgnaw/monorepo",
   "private": true,
-  "version": "0.0.1-beta.65",
+  "packageManager": "pnpm@7.0.0",
+  "version": "0.0.1-beta.1",
   "workspaces": {
     "packages": [
       "packages/!(**.bak)*",
