@@ -24,35 +24,21 @@
 * IN THE SOFTWARE.
 */
 
-import { h } from 'vue';
+export const EMPTY_OBJ = Object.create({});
 
-import { mount } from '@vue/test-utils';
+export const isEmptyObj: (target: object) => boolean = target => Object.keys(target).length < 1;
 
-import BkButton, { BkButtonGroup } from '../';
-describe('BkButtonGroup.tsx', () => {
-  it('renders slot default when passed', async () => {
-    const wrapper = await mount(BkButtonGroup, {
-      slots: {
-        default: [
-          h(BkButton),
-          h(BkButton),
-        ],
-
-      },
-    });
-    expect(wrapper.findAllComponents(BkButton).length).toEqual(2);
-  });
-
-  it('renders without slot', async () => {
-    const wrapper = await mount(BkButtonGroup, {
-    });
-    expect(wrapper.html()).toMatch('');
-  });
-
-  it('it accepts valid size props', () => {
-    const validTypes = ['small', 'large'];
-    const { validator } = BkButtonGroup.props.size;
-    validTypes.forEach(valid => expect(validator(valid)).toBe(true));
-    expect(validator('batman')).toBe(false);
-  });
-});
+/**
+ * 过滤（去除）对象中的某个属性
+ * @param data 需要处理的对象
+ * @param filter 过滤关键字
+ * @returns object 去除属性之后的对象
+ */
+export function filterProperty(data: object, filter: string[]) {
+  return JSON.parse(JSON.stringify(data, (key: string, value: any) => {
+    if (filter.includes(key)) {
+      return undefined;
+    }
+    return value;
+  }));
+};

@@ -1,5 +1,5 @@
 {
-  "name": "ielgnaw",
+  "name": "@ielgnaw/site",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -8,11 +8,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@ielgnaw/utils": "workspace:~"
-  },
-  "peerDependencies": {
-    "vue": "^3.2.0"
-  }
+  "license": "ISC"
 }

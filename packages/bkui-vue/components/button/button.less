@@ -34,7 +34,7 @@
   box-sizing: border-box;
   transition: background-color ease .3s;
   appearance: none;
-  
+
   each(@themeSelectors, {
     @color: '@{value}-color';
     @hoverColor: 'button-@{value}-hover-color';
@@ -92,7 +92,7 @@
     }
   })
 
-  
+
     each(@sizeSelectors, {
     @sizeBtnMinWidth: '@{value}BtnMinWidth';
     @sizeBtnHeight: '@{value}BtnHeight';
@@ -174,10 +174,10 @@
       background-color: @white-color;
       border-color: @light-gray;
     }
-    
+
     &:first-child {
       border-radius: @btnBorderRadius 0 0 @btnBorderRadius;
-        
+
     }
 
     &:last-child {

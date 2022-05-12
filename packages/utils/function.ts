@@ -24,35 +24,4 @@
 * IN THE SOFTWARE.
 */
 
-import { h } from 'vue';
-
-import { mount } from '@vue/test-utils';
-
-import BkButton, { BkButtonGroup } from '../';
-describe('BkButtonGroup.tsx', () => {
-  it('renders slot default when passed', async () => {
-    const wrapper = await mount(BkButtonGroup, {
-      slots: {
-        default: [
-          h(BkButton),
-          h(BkButton),
-        ],
-
-      },
-    });
-    expect(wrapper.findAllComponents(BkButton).length).toEqual(2);
-  });
-
-  it('renders without slot', async () => {
-    const wrapper = await mount(BkButtonGroup, {
-    });
-    expect(wrapper.html()).toMatch('');
-  });
-
-  it('it accepts valid size props', () => {
-    const validTypes = ['small', 'large'];
-    const { validator } = BkButtonGroup.props.size;
-    validTypes.forEach(valid => expect(validator(valid)).toBe(true));
-    expect(validator('batman')).toBe(false);
-  });
-});
+export const noop = () => {};

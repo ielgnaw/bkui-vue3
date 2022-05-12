@@ -24,35 +24,29 @@
 * IN THE SOFTWARE.
 */
 
-import { h } from 'vue';
+let scrollBarWidth: number;
 
-import { mount } from '@vue/test-utils';
+export function scrollbarWidth(): number {
+  if (scrollBarWidth !== undefined) return scrollBarWidth;
 
-import BkButton, { BkButtonGroup } from '../';
-describe('BkButtonGroup.tsx', () => {
-  it('renders slot default when passed', async () => {
-    const wrapper = await mount(BkButtonGroup, {
-      slots: {
-        default: [
-          h(BkButton),
-          h(BkButton),
-        ],
+  const outer = document.createElement('div');
+  outer.className = 'bk-scrollbar-wrap';
+  outer.style.visibility = 'hidden';
+  outer.style.width = '100px';
+  outer.style.position = 'absolute';
+  outer.style.top = '-9999px';
+  document.body.appendChild(outer);
 
-      },
-    });
-    expect(wrapper.findAllComponents(BkButton).length).toEqual(2);
-  });
+  const widthNoScroll = outer.offsetWidth;
+  outer.style.overflow = 'scroll';
 
-  it('renders without slot', async () => {
-    const wrapper = await mount(BkButtonGroup, {
-    });
-    expect(wrapper.html()).toMatch('');
-  });
+  const inner = document.createElement('div');
+  inner.style.width = '100%';
+  outer.appendChild(inner);
 
-  it('it accepts valid size props', () => {
-    const validTypes = ['small', 'large'];
-    const { validator } = BkButtonGroup.props.size;
-    validTypes.forEach(valid => expect(validator(valid)).toBe(true));
-    expect(validator('batman')).toBe(false);
-  });
-});
+  const widthWithScroll = inner.offsetWidth;
+  outer.parentNode.removeChild(outer);
+  scrollBarWidth = widthNoScroll - widthWithScroll;
+
+  return scrollBarWidth;
+}

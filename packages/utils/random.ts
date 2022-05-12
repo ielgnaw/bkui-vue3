@@ -24,35 +24,17 @@
 * IN THE SOFTWARE.
 */
 
-import { h } from 'vue';
+const lowerStr = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
-import { mount } from '@vue/test-utils';
-
-import BkButton, { BkButtonGroup } from '../';
-describe('BkButtonGroup.tsx', () => {
-  it('renders slot default when passed', async () => {
-    const wrapper = await mount(BkButtonGroup, {
-      slots: {
-        default: [
-          h(BkButton),
-          h(BkButton),
-        ],
-
-      },
-    });
-    expect(wrapper.findAllComponents(BkButton).length).toEqual(2);
-  });
-
-  it('renders without slot', async () => {
-    const wrapper = await mount(BkButtonGroup, {
-    });
-    expect(wrapper.html()).toMatch('');
-  });
-
-  it('it accepts valid size props', () => {
-    const validTypes = ['small', 'large'];
-    const { validator } = BkButtonGroup.props.size;
-    validTypes.forEach(valid => expect(validator(valid)).toBe(true));
-    expect(validator('batman')).toBe(false);
-  });
-});
+/**
+ * 生成n位长度的字符串
+ * @param {Number} n
+ * @param str,默认26位字母及数字
+ */
+export const randomStr = (n: number, str = lowerStr) => {
+  let result = '';
+  for (let i = 0; i < n; i++) {
+    result += str[parseInt((Math.random() * str.length).toString(), 10)];
+  }
+  return result;
+};

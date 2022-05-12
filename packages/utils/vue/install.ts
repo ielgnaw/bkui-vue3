@@ -1,4 +1,4 @@
-/*
+/**
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
  *
@@ -22,35 +22,37 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
-*/
-// import '@bkui-vue/styles';
+ */
 
+import { App, Plugin } from 'vue';
 
-// export { default } from './preset';
-// export * from './components';
+export interface OriginComponent {
+  name: string;
+  install?: Plugin;
+}
 
+export const withInstall = <T extends OriginComponent>(
+  component: T) => {
+  component.install = function (app: App, { prefix } = {}) {
+    const pre = app.config.globalProperties.bkUIPrefix || prefix || 'Bk';
+    app.component(pre + component.name, component);
+  };
+  return component as typeof component & Plugin;
+};
 
-import { App } from 'vue';
-
-import * as components from './components';
-
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
-      }
+export const withInstallProps = <T extends OriginComponent, K extends Record<string, unknown>>(
+  component: T,
+  childComponents: K,
+  isProps = false) => {
+  component.install = function (app: App, { prefix } = {}) {
+    const pre = app.config.globalProperties.bkUIPrefix || prefix || 'Bk';
+    app.component(pre + component.name, component);
+    !isProps && Object.values(childComponents).forEach((child: any) => {
+      app.component(pre + child.name, child);
     });
+  };
+  Object.keys(childComponents).forEach((key) => {
+    component[key] = childComponents[key];
+  });
+  return component as typeof component & Plugin & Readonly<typeof childComponents>;
 };
-
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
-};
-
-export * from './components';

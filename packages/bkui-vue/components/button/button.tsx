@@ -26,8 +26,8 @@
 
 import { computed, defineComponent, ExtractPropTypes, PropType, ref } from 'vue';
 
-import BkLoading, { BkLoadingMode, BkLoadingSize } from '@bkui-vue/loading';
-import { classes, PropTypes } from '@bkui-vue/shared';
+// import BkLoading, { BkLoadingMode, BkLoadingSize } from '@bkui-vue/loading';
+import { classes, PropTypes } from '@ielgnaw/utils';
 
 
 type IButtonNativeType = PropType<'button' | 'submit' | 'reset'>;
@@ -41,7 +41,7 @@ const buttonProps = {
   iconRight: PropTypes.string,
   disabled: PropTypes.bool,
   loading: PropTypes.bool,
-  loadingMode: PropTypes.commonType(Object.values(BkLoadingMode)),
+  // loadingMode: PropTypes.commonType(Object.values(BkLoadingMode)),
   outline: PropTypes.bool,
   text: PropTypes.bool,
   nativeType: {
@@ -74,15 +74,15 @@ export default defineComponent({
         'no-slot': !showSlot,
       }, `${themeCls} ${btnClsPrefix} ${hoverTheme}`);
     });
-    const loadingTheme = computed(() => {
-      if (props.text || props.outline || props.hoverTheme) {
-        if (isHover.value && !props.text) return 'white';
-        return props.hoverTheme || props.theme;
-      }
-      return ['', 'default'].includes(props.theme) ? '' : 'white';
-    });
-    const loadingSize = computed(() => (
-      (isText.value || props.size === BkLoadingSize.Small) ? BkLoadingSize.Mini : BkLoadingSize.Small));
+    // const loadingTheme = computed(() => {
+    //   if (props.text || props.outline || props.hoverTheme) {
+    //     if (isHover.value && !props.text) return 'white';
+    //     return props.hoverTheme || props.theme;
+    //   }
+    //   return ['', 'default'].includes(props.theme) ? '' : 'white';
+    // });
+    // const loadingSize = computed(() => (
+    //   (isText.value || props.size === BkLoadingSize.Small) ? BkLoadingSize.Mini : BkLoadingSize.Small));
     const handleClick = () => {
       if (props.loading) return;
       /**
@@ -113,7 +113,7 @@ export default defineComponent({
         onMouseover={handleMouseOver}
         onMouseleave={handleMouseout}
       >
-        {
+        {/* {
           props.loading && (
             <BkLoading
               loading
@@ -122,7 +122,7 @@ export default defineComponent({
               theme={loadingTheme.value}
               size={loadingSize.value} />
           )
-        }
+        } */}
         {
           slots.default && <span class={`${btnClsPrefix}-text`}>{slots.default?.()}</span>
         }

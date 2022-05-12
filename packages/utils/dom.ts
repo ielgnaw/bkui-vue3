@@ -23,24 +23,20 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
-import { App } from 'vue';
 
-import * as components from './components';
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
-      }
-    });
-};
+export function classes(dynamicCls: object, constCls = ''): string {
+  return Object.entries(dynamicCls).filter(entry => entry[1])
+    .map(entry => entry[0])
+    .join(' ')
+    .concat(constCls ? ` ${constCls}` : '');
+}
 
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
-};
+/**
+ * 解析当前组件ClassName，自动添加前缀
+ * @param clsName 当前ClassName
+ * @param prefix 前缀，默认为bk
+ * @returns prefix-clsName
+ */
+export function resolveClassName(clsName: string, prefix = 'bk') {
+  return `${prefix}-${clsName}`;
+}
