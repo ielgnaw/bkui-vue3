@@ -23,56 +23,27 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
+import { defineComponent } from 'vue';
+import { RouterView } from 'vue-router';
 
-import { resolve } from 'path';
-import DefineOptions from 'unplugin-vue-define-options/vite';
-import { defineConfig } from 'vite';
+import DemoNav from './components/demo-nav';
 
-import Vue from '@vitejs/plugin-vue';
-import VueJsx from '@vitejs/plugin-vue-jsx';
-
-export default defineConfig({
-  plugins: [Vue(), VueJsx(), DefineOptions()],
-  optimizeDeps: {
-    disabled: true,
-  },
-  resolve: {
-    alias: [
-      // {
-      //   find: '@site',
-      //   replacement: resolve(__dirname, '.'),
-      // },
-      // {
-      //   find: '^bkui-vue$',
-      //   replacement: resolve(__dirname, '../packages/bkui-vue/index'),
-      // },
-      // {
-      //   find: /^@?bkui-vue\/(icon\/)/,
-      //   replacement: resolve(__dirname, '../packages/$1'),
-      // },
-      // {
-      //   find: /^@?bkui-vue\/([^/]*)/,
-      //   replacement: resolve(__dirname, '../packages/$1/src'),
-      // },
-      {
-        find: /^@?ielgnaw\/([^/]*)/,
-        replacement: resolve(__dirname, 'packages/$1'),
-      },
-    ],
-  },
-  test: {
-    exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/.{idea,git,cache,output,temp}/**',
-      '**/bak/**',
-      '**/.bak/**',
-    ],
-    clearMocks: true,
-    environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts'],
-    transformMode: {
-      web: [/\.[jt]sx$/],
-    },
+import './app.less';
+export default defineComponent({
+  name: 'App',
+  render() {
+    return (
+      <div class="page-container">
+        <div class="page-container-header"></div>
+        <div class="page-container-body">
+          <div class="body-nav">
+            <DemoNav/>
+          </div>
+          <div class="body-wrapper">
+            <RouterView/>
+          </div>
+        </div>
+      </div>
+    );
   },
 });

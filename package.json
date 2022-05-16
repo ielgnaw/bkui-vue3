@@ -36,8 +36,8 @@
     "stylelint": "stylelint ./{packages,site}/**/*.{vue,less} --custom-syntax",
     "stylelint:fix": "stylelint --fix ./{packages,site}/**/*.{vue,less} --custom-syntax",
     "test:unit": "jest --passWithNoTests --config=./jest.config.js",
-    "test": "vitest",
-    "test:coverage": "vitest --run --coverage",
+    "test": "vitest --config ./packages/site/vite.config.ts",
+    "test:coverage": "vitest --run --coverage --config ./packages/site/vite.config.ts",
     "cz": "git-cz"
   },
   "devDependencies": {

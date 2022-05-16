@@ -27,5 +27,6 @@
     "vue",
     "scss",
     "sass"
-  ]
+  ],
+  "vitest.commandLine": "npx vitest --config ./packages/site/vite.config.ts"
 }
