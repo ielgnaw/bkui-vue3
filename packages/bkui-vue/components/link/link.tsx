@@ -1,4 +1,4 @@
-/**
+/*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
  *
@@ -22,18 +22,49 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- */
+*/
 
-export * from './z-index-manager';
-export * from './popover';
-export * from './pop-manager';
-export * from './mask-manager';
-export * from './helper';
-export * from './vue-types';
-export * from './scrollbar-width';
-export * from './random';
-export * from './object';
-export * from './array';
-export * from './function';
-export * from './dom';
-export * from './vue';
+import { defineComponent } from 'vue';
+
+import { classes, PropTypes } from '@ielgnaw/utils';
+
+export default defineComponent({
+  name: 'Link',
+  props: {
+    theme: PropTypes.theme(['danger', 'success', 'primary', 'warning', 'default']).def('default'),
+    href: PropTypes.string.def(''),
+    disabled: PropTypes.bool.def(false),
+    underline: PropTypes.bool.def(false),
+    target: PropTypes.string.def('_self'),
+  },
+  setup(props, { emit }) {
+    const handleClick = (event: Event) => {
+      if (props.disabled) {
+        event.preventDefault();
+        return false;
+      }
+      emit('click', event);
+    };
+
+    return {
+      handleClick,
+    };
+  },
+  render() {
+    const linkClass = classes({
+      'is-disabled': this.disabled,
+      'has-underline': this.underline,
+    }, `${this.theme} bk-link`);
+
+    return (
+      <a href={this.href}
+      target={this.target}
+      class={linkClass}
+      onClick={this.handleClick}>
+      <span>
+        {this.$slots.default?.()}
+      </span>
+    </a>
+    );
+  },
+});

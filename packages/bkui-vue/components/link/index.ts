@@ -24,5 +24,8 @@
 * IN THE SOFTWARE.
 */
 
-export * from './button';
-export * from './link';
+import { withInstall } from '@ielgnaw/utils';
+
+import Component from './link';
+const BkLink = withInstall(Component);
+export default BkLink;

@@ -24,5 +24,55 @@
 * IN THE SOFTWARE.
 */
 
-export * from './button';
-export * from './link';
+import { resolve } from 'path';
+import DefineOptions from 'unplugin-vue-define-options/vite';
+import { defineConfig } from 'vite';
+
+import Vue from '@vitejs/plugin-vue';
+import VueJsx from '@vitejs/plugin-vue-jsx';
+
+export default defineConfig({
+  plugins: [Vue(), VueJsx(), DefineOptions()],
+  optimizeDeps: {
+    disabled: true,
+  },
+  resolve: {
+    alias: [
+      // {
+      //   find: '@site',
+      //   replacement: resolve(__dirname, '.'),
+      // },
+      // {
+      //   find: '^bkui-vue$',
+      //   replacement: resolve(__dirname, '../packages/bkui-vue/index'),
+      // },
+      // {
+      //   find: /^@?bkui-vue\/(icon\/)/,
+      //   replacement: resolve(__dirname, '../packages/$1'),
+      // },
+      // {
+      //   find: /^@?bkui-vue\/([^/]*)/,
+      //   replacement: resolve(__dirname, '../packages/$1/src'),
+      // },
+      {
+        find: /^@?ielgnaw\/([^/]*)/,
+        replacement: resolve(__dirname, 'packages/$1'),
+      },
+    ],
+  },
+  test: {
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.{idea,git,cache,output,temp}/**',
+      '**/bak/**',
+      '**/.bak/**',
+    ],
+    clearMocks: true,
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+    transformMode: {
+      web: [/\.[jt]sx$/],
+    },
+  },
+});

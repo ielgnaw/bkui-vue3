@@ -71,14 +71,14 @@ module.exports = {
     },
   ],
   rules: {
-    'simple-import-sort/imports': ['error', {
-      groups: [
-        ['^[a-zA-Z]'],
-        ['^@\\w'],
-        ['^\\.\\.'],
-        ['^\\.'],
-      ],
-    }],
+    // 'simple-import-sort/imports': ['error', {
+    //   groups: [
+    //     ['^[a-zA-Z]'],
+    //     ['^@\\w'],
+    //     ['^\\.\\.'],
+    //     ['^\\.'],
+    //   ],
+    // }],
     'no-param-reassign': ['error', { props: false }],
 
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',

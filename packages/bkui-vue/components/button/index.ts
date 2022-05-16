@@ -24,15 +24,13 @@
 * IN THE SOFTWARE.
 */
 
+
 import { withInstallProps } from '@ielgnaw/utils';
 
 import Component from './button';
 import ButtonGroup from './button-group';
-
 const BkButton = withInstallProps(Component, { ButtonGroup });
-
 export default BkButton;
-
 export {
   ButtonGroup as BkButtonGroup,
   BkButton,

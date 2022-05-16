@@ -24,37 +24,78 @@
  * IN THE SOFTWARE.
 */
 
-import { h } from 'vue';
-
 import { test, describe, expect } from 'vitest';
+
 import { mount } from '@vue/test-utils';
 
-import BkButton, { BkButtonGroup } from '../';
+import Link from '../';
 
-describe('BkButtonGroup.tsx', () => {
-  test('renders slot default when passed', async () => {
-    const wrapper = await mount(BkButtonGroup, {
+const linkContent = 'bk-link is testing';
+describe('Link.tsx', () => {
+  test('render test', async () => {
+    const wrapper = await mount(Link, {
       slots: {
-        default: [
-          h(BkButton),
-          h(BkButton),
-        ],
-
+        default: linkContent,
       },
     });
-    expect(wrapper.findAllComponents(BkButton).length).toEqual(2);
+    expect(wrapper.text()).toEqual(linkContent);
+    expect(wrapper.classes()).toContain('bk-link');
   });
 
-  test('renders without slot', async () => {
-    const wrapper = await mount(BkButtonGroup, {
+  test('emit click event when is not disabled', async () => {
+    const wrapper = await mount(Link, {
+      slots: {
+        default: linkContent,
+      },
     });
-    expect(wrapper.html()).toMatch('');
+
+    await wrapper.trigger('click');
+    expect(wrapper.emitted('click')).toBeDefined();
   });
 
-  test('it accepts valid size props', () => {
-    const validTypes = ['small', 'large'];
-    const { validator } = BkButtonGroup.props.size;
-    validTypes.forEach(valid => expect(validator(valid)).toBe(true));
+  test('disabled render', async () => {
+    const wrapper = await mount(Link, {
+      slots: {
+        default: linkContent,
+      },
+      props: {
+        disabled: true,
+      },
+    });
+
+    expect(wrapper.classes()).toContain('is-disabled');
+  });
+
+  test('test link underline', async () => {
+    const wrapper = await mount(Link, {
+      slots: {
+        default: linkContent,
+      },
+      props: {
+        underline: true,
+      },
+    });
+
+    expect(wrapper.classes()).toContain('has-underline');
+  });
+
+  test('test link theme', async () => {
+    const themes = ['default', 'primary', 'success', 'warning', 'danger'];
+    const { validator } = Link.props.theme;
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    themes.forEach(async (theme: string) => {
+      const wrapper = await mount(Link, {
+        slots: {
+          default: linkContent,
+        },
+        props: {
+          theme,
+        },
+      });
+      expect(validator(theme)).toBe(true);
+      expect(wrapper.classes()).toContain(theme);
+    });
+
     expect(validator('batman')).toBe(false);
   });
 });

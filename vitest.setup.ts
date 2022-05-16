@@ -24,5 +24,11 @@
 * IN THE SOFTWARE.
 */
 
-export * from './button';
-export * from './link';
+import ResizeObserver from 'resize-observer-polyfill';
+import { vi } from 'vitest';
+
+import { config } from '@vue/test-utils';
+
+vi.stubGlobal('ResizeObserver', ResizeObserver);
+
+config.global.stubs = {};
