@@ -36,7 +36,6 @@ import router from './router';
 import '@ielgnaw/ui';
 
 import './reset.less';
-import './patch.less';
 
 const app = createApp(App);
 app.use(bkuiVue);
