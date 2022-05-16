@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -24,70 +25,52 @@
  * IN THE SOFTWARE.
 */
 
-import { resolve } from 'path';
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
-import vueJsx from '@vitejs/plugin-vue-jsx';
-import defineOptions from 'unplugin-vue-define-options/vite';
+declare module '*.png' {
+  const value: any;
+  export default value;
+}
 
-import md from './vite-md';
+declare module '*.gif' {
+  const src: string;
+  export default src;
+}
 
-const base = process.env.PUBLIC_PATH || '/';
+declare module '*.jpg' {
+  const src: string;
+  export default src;
+}
 
-export default defineConfig({
-  base,
-  resolve: {
-    alias: [
-      // {
-      //   find: '@site',
-      //   replacement: resolve(__dirname, '.'),
-      // },
-      // {
-      //   find: '^bkui-vue$',
-      //   replacement: resolve(__dirname, '../packages/bkui-vue/index'),
-      // },
-      // {
-      //   find: /^@?bkui-vue\/(icon\/)/,
-      //   replacement: resolve(__dirname, '../packages/$1'),
-      // },
-      // {
-      //   find: /^@?bkui-vue\/([^/]*)/,
-      //   replacement: resolve(__dirname, '../packages/$1/src'),
-      // },
-      {
-        find: /^@?ielgnaw\/([^/]*)/,
-        replacement: resolve(__dirname, '../$1'),
-      },
-    ],
-  },
-  plugins: [
-    vueJsx(),
-    vue({
-      include: [/\.vue$/, /\.md$/],
-    }),
-    md,
-    defineOptions(),
-  ],
-  server: {
-    host: '0.0.0.0',
-    fs: {
-      strict: false,
-    },
-  },
-  test: {
-    exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/.{idea,git,cache,output,temp}/**',
-      '**/bak/**',
-      '**/.bak/**',
-    ],
-    clearMocks: true,
-    environment: 'jsdom',
-    // setupFiles: ['scripts/vitest.setup.ts'],
-    setupFiles: [resolve(__dirname, '../../scripts/vitest.setup.ts')],
-    transformMode: {
-      web: [/\.[jt]sx$/],
-    },
-  },
-});
+declare module '*.jpeg' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.webp' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.svg' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.css' {
+  const content: any;
+  export default content;
+}
+
+declare module '*.module.css' {
+  const classes: { readonly [key: string]: string };
+  export default classes;
+}
+
+declare module '*.module.scss' {
+  const classes: { readonly [key: string]: string };
+  export default classes;
+}
+
+declare module '*.module.sass' {
+  const classes: { readonly [key: string]: string };
+  export default classes;
+}

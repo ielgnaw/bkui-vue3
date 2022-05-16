@@ -24,6 +24,21 @@
 * IN THE SOFTWARE.
 */
 
+import { defineComponent } from 'vue';
 
-export * from './button';
-export * from './link';
+// import DemoTitle from '../../components/demo-title';
+
+import StartMd from './start.md';
+
+export default defineComponent({
+  render() {
+    return (
+      <div style="background: white">
+        {/* <DemoTitle
+          name="快速上手"
+          desc="本节介绍如何在项目中结合 webpack 一起使用 @blueking/bkui-vue。"/> */}
+          <StartMd/>
+      </div>
+    );
+  },
+});

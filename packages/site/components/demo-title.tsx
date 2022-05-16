@@ -24,6 +24,45 @@
 * IN THE SOFTWARE.
 */
 
+import { defineComponent } from 'vue';
 
-export * from './button';
-export * from './link';
+// import { Share } from '@bkui-vue/icon';
+
+import './demo-title.less';
+
+export default defineComponent({
+  name: 'DemoTitile',
+  props: {
+    name: {
+      type: String,
+      required: true,
+    },
+    desc: {
+      type: String,
+      default: '',
+    },
+    link: {
+      type: String,
+      default: '',
+    },
+  },
+  setup() {
+    // const { name } = useRoute();
+    return {
+      // name,
+    };
+  },
+  render() {
+    return <div class="demo-title">
+      <div class="title-name">{this.name}</div>
+      <div class="title-desc">{this.desc}
+        {
+          this.link && <a class="desc-link" href={this.link}>
+            {/* <Share/> */}
+            如何使用?
+          </a>
+        }
+      </div>
+    </div>;
+  },
+});

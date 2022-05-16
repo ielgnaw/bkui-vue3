@@ -11,23 +11,24 @@
     "noUnusedLocals": true,
     "noImplicitAny": false,
     "module": "esnext",
-    "target": "esnext",
+    "target": "es6",
     "lib": [
       "dom",
       "es2017"
     ],
-    "baseUrl": "./",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "baseUrl": "../../packages",
     "paths": {
-      "@bkui-vue/*": [
+      "@ielgnaw/*": [
         "*/src"
       ]
     },
-    "skipLibCheck": true,
-    "allowJs": true,
     "importHelpers": true,
     "isolatedModules": true,
     "sourceMap": true,
     "noEmitOnError": true,
   },
-  "include": ["./**/*.ts", "./**/*.tsx"]
+  "include": ["./**/*.ts", "./**/*.tsx"],
+  "exclude": ["node_modules", "./**/*.js"]
 }

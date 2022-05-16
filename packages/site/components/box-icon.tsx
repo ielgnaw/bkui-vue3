@@ -23,7 +23,32 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
+import { defineComponent } from 'vue';
 
+// import BkPopover from '@bkui-vue/popover';
 
-export * from './button';
-export * from './link';
+import './box-icon.less';
+
+export default defineComponent({
+  name: 'BoxIcon',
+  props: {
+    tips: String,
+    active: Boolean,
+  },
+  emits: ['click'],
+  setup() {
+    return {};
+  },
+  render() {
+    return (
+      <div>tmp</div>
+      // <BkPopover content={this.tips} theme="dark">
+      //   <div
+      //     class={`box-icon ${this.active ? 'is-active' : ''}`}
+      //     onClick={() => this.$emit('click')}>
+      //     {this.$slots.default?.()}
+      //   </div>
+      // </BkPopover>
+    );
+  },
+});

@@ -24,6 +24,10 @@
 * IN THE SOFTWARE.
 */
 
-
-export * from './button';
-export * from './link';
+export interface IPropsTableItem {
+  name: string;
+  type: string,
+  default: unknown;
+  desc: string;
+  optional: string[];
+}

@@ -32,14 +32,19 @@ module.exports = {
   ],
   parserOptions: {
     parser: '@typescript-eslint/parser',
-    ecmaVersion: 2019,
+    ecmaFeatures: {
+      jsx: true,
+    },
+    // ecmaVersion: 2019,
+    ecmaVersion: 'latest',
     sourceType: 'module',
     tsconfigRootDir: __dirname,
-    project: 'tsconfig.json',
+    // project: 'tsconfig.json',
   },
   plugins: [
     'codecc',
-    'simple-import-sort',
+    'vue',
+    // 'simple-import-sort',
   ],
   env: {
     es6: true,
@@ -54,7 +59,7 @@ module.exports = {
     },
     {
       files: ['*.vue'],
-      parser: require.resolve('vue-eslint-parser'),
+      parser: 'vue-eslint-parser',
       rules: {
         indent: 'off',
         'codecc/license': 'off',

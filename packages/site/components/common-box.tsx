@@ -23,7 +23,35 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
+import { defineComponent } from 'vue';
 
+import './common-box.less';
 
-export * from './button';
-export * from './link';
+export default defineComponent({
+  props: {
+    title: {
+      type: String,
+      required: true,
+    },
+    subtitle: {
+      type: String,
+      required: true,
+    },
+  },
+  setup() {
+    return {};
+  },
+  render() {
+    return (
+      <div class="common-box">
+        <div class="common-box-header">
+          <div class="header-title">{this.title}</div>
+          <div class="header-desc">{this.subtitle}</div>
+        </div>
+        <div class="common-box-content">
+            {this.$slots.default?.()}
+        </div>
+      </div>
+    );
+  },
+});
