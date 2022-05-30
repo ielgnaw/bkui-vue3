@@ -38,6 +38,7 @@ import '@ielgnaw/ui';
 import './reset.less';
 
 const app = createApp(App);
+console.error(bkuiVue);
 app.use(bkuiVue);
 app.use(router);
 

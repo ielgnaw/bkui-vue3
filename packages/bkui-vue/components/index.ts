@@ -24,6 +24,5 @@
 * IN THE SOFTWARE.
 */
 
-
-export * from './button';
-export * from './link';
+export { default as Button } from './button';
+export { default as Link } from './link';

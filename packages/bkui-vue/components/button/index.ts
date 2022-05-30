@@ -24,7 +24,6 @@
 * IN THE SOFTWARE.
 */
 
-
 import { withInstallProps } from '@ielgnaw/utils';
 
 import Component from './button';

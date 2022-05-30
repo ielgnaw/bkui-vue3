@@ -267,18 +267,18 @@ const routes: RouteRecordRaw[] = [
   //     navName: 'Breadcrumb 面包屑',
   //   },
   // },
-  // /**
-  //  * @description:文字链接
-  //  */
-  // {
-  //   path: '/link',
-  //   name: 'link',
-  //   component: () => import('../views/link/index'),
-  //   meta: {
-  //     group: NavGroupMeta.Nav,
-  //     navName: 'Link 文字链接',
-  //   },
-  // },
+  /**
+   * @description:文字链接
+   */
+  {
+    path: '/link',
+    name: 'link',
+    component: () => import('../views/link'),
+    meta: {
+      group: NavGroupMeta.Nav,
+      navName: 'Link 文字链接',
+    },
+  },
   // /**
   //  * @description:折叠面板
   //  */

@@ -48,7 +48,7 @@ export default defineComponent({
     },
     desc: {
       type: String,
-      required: true,
+      required: false,
     },
     language: {
       type: String,
@@ -109,7 +109,7 @@ export default defineComponent({
         text: () => activeCode.value,
       });
       ['success', 'error'].forEach((theme) => {
-        console.error(theme);
+        console.log(theme);
         // copyInstance.on(theme, () => BkMessage({
         //   theme,
         //   message: theme === 'success' ? '复制成功' : '复制失败',

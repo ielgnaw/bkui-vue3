@@ -156,8 +156,6 @@ const demos = [{
 
 
 export default defineComponent({
-  name: 'Button',
-
   render() {
     return (
       <div>
@@ -166,21 +164,23 @@ export default defineComponent({
           desc="常用的操作按钮"
           link={`${import.meta.env.VITE_APP_BASE_URL ?? ''}/button`}
         />
-          {
-            demos.map(({ DemoComponent, ...demo }) => (
-              <DemoBox {...demo}>
-                  <DemoComponent />
-              </DemoBox>
-            ))
-          }
+        {
+          demos.map(({ DemoComponent, ...demo }) => (
+            <DemoBox {...demo}>
+              <DemoComponent />
+            </DemoBox>
+          ))
+        }
         <PropsBox
           title="Button Attributes"
           subtitle=""
-          propsData={buttonProps}/>
+          propsData={buttonProps}
+        />
         <PropsBox
           title="Button Events"
           subtitle=""
-          propsData={buttonEvents}/>
+          propsData={buttonEvents}
+        />
       </div>
     );
   },
