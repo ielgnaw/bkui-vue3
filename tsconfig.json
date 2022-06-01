@@ -1,4 +1,9 @@
 {
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "compilerOptions": {
     "strictNullChecks": false,
     "strict": true,
@@ -19,7 +24,10 @@
     "baseUrl": "./",
     "paths": {
       "@bkui-vue/*": [
-        "*/src"
+        "*/packages"
+      ],
+      "@ielgnaw/*": [
+        "*/packages"
       ]
     },
     "skipLibCheck": true,

@@ -23,38 +23,10 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
+import { exec } from 'child_process';
+import path from 'path';
+import { promisify } from 'util';
 
-
-// import '@bkui-vue/styles';
-
-
-// export { default } from './preset';
-// export * from './components';
-
-
-import '@ielgnaw/ui';
-
-import { App } from 'vue';
-
-import * as components from './components';
-
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
-      }
-    });
+export default async () => {
+  await promisify(exec)(`tsc -p ${path.resolve(__dirname, '../tsconfig.declaration.json')}`);
 };
-
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
-};
-
-export * from './components';

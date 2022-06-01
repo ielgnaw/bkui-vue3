@@ -23,38 +23,36 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
+import ora from 'ora';
+import { parentPort } from 'worker_threads';
 
+import { compileStyle } from '../compiler/compile-style';
+import { writeFileRecursive } from '../compiler/helpers';
+import { webpackBuildScript } from '../compiler/webpack-script';
+import { ILibTaskOption, ITaskItem } from '../typings/task';
 
-// import '@bkui-vue/styles';
-
-
-// export { default } from './preset';
-// export * from './components';
-
-
-import '@ielgnaw/ui';
-
-import { App } from 'vue';
-
-import * as components from './components';
-
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
-      }
-    });
-};
-
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
-};
-
-export * from './components';
+parentPort!.on('message', ({ task, taskOption }) => {
+  (task.type === 'style'
+    ?  compileStyleTask(task)
+    :  compileScript(task, taskOption).catch(() => {
+      parentPort!.postMessage(null);
+    })).finally(() => {
+    parentPort!.postMessage(task);
+  });
+});
+async function compileStyleTask({ url, newPath }: ITaskItem) {
+  const spinner = ora(`building style ${url} \n`).start();
+  const { css, resource, varCss } = await compileStyle(url).catch(() => ({
+    css: '',
+    resource: '',
+    varCss: '',
+  }));
+  css.length && writeFileRecursive(newPath.replace(/\.(css|less|scss)$/, '.css'), css);
+  resource.length && writeFileRecursive(newPath, resource);
+  varCss.length && writeFileRecursive(newPath.replace(/\.(css|less|scss)$/, '.variable.css'), varCss);
+  css.length ? spinner.succeed() : spinner.fail();
+}
+async function compileScript(list: ITaskItem[], taskOption: ILibTaskOption) {
+  console.info(list.length, '++++++++++');
+  return webpackBuildScript(list, taskOption);
+}

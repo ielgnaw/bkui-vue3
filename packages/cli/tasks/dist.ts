@@ -24,37 +24,12 @@
 * IN THE SOFTWARE.
 */
 
+import { Task, TaskRunner } from '../typings/task';
+import bundleDist from '../utils/bundle-dist';
 
-// import '@bkui-vue/styles';
-
-
-// export { default } from './preset';
-// export * from './components';
-
-
-import '@ielgnaw/ui';
-
-import { App } from 'vue';
-
-import * as components from './components';
-
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
-      }
-    });
+const compileTaskRunner: TaskRunner<undefined> = async () => {
+  process.env.NODE_ENV = 'production';
+  await bundleDist();
 };
 
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
-};
-
-export * from './components';
+export default new Task<undefined>('compile dist', compileTaskRunner);

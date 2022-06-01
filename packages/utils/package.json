@@ -5,9 +5,10 @@
   "scripts": {
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "prepack": "yarn build",
-    "build": "yarn clean && tsc --build && cp \"./package.json\" ./dist/",
+    "1build": "yarn clean && tsc --build && cp \"./package.json\" ./dist/",
     "test": "echo 'no test'",
-    "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0"
+    "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0",
+    "build": "echo 333"
   },
   "peerDependencies": {
     "vue": "^3.2.0"

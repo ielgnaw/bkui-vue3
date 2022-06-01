@@ -23,38 +23,14 @@
 * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
-
-
-// import '@bkui-vue/styles';
-
-
-// export { default } from './preset';
-// export * from './components';
-
-
-import '@ielgnaw/ui';
-
-import { App } from 'vue';
-
-import * as components from './components';
-
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
+import { AtRule, Root } from 'postcss';
+export const transformCssImport = () => ({
+  postcssPlugin: 'transform-css-import',
+  Once(root: Root) {
+    root.walkAtRules((rule: AtRule) => {
+      if (rule.params && /@bkui-vue/.test(rule.params)) {
+        rule.params = rule.params.replace('@bkui-vue', '..');
       }
     });
-};
-
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
-};
-
-export * from './components';
+  },
+});

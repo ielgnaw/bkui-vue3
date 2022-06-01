@@ -24,37 +24,45 @@
 * IN THE SOFTWARE.
 */
 
+import fs from 'fs';
+import path from 'path';
+import rimraf from 'rimraf';
 
-// import '@bkui-vue/styles';
+const cwd = process.cwd();
 
-
-// export { default } from './preset';
-// export * from './components';
-
-
-import '@ielgnaw/ui';
-
-import { App } from 'vue';
-
-import * as components from './components';
-
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
+const rm = (path: string) => {
+  if (fs.existsSync(path)) {
+    rimraf(`${path}`, (err) => {
+      if (err) {
+        console.log(err);
       }
     });
+  }
 };
 
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
+const clean = (dir: string) => {
+  rm(`${dir}/node_modules`);
+  rm(`${dir}/dist`);
 };
 
-export * from './components';
+const cleanRoot = () => clean(cwd);
+
+const cleanWorkSpaces = () => {
+  const workspaces: string[] = ['packages'];
+
+  workspaces.forEach((workspace: string) => {
+    fs.readdir(workspace, (err, folders: string[]) => {
+      folders.forEach((folder) => {
+        // clean(`${cwd}/${workspace}/${folder}`);
+        clean(path.join(`${cwd}/${workspace}/${folder}`));
+      });
+
+      if (err) {
+        throw err;
+      }
+    });
+  });
+};
+
+cleanRoot();
+cleanWorkSpaces();

@@ -38,7 +38,11 @@
     "1cz": "git-cz",
     "test": "vitest --config ./packages/site/vite.config.ts",
     "test:coverage": "vitest --run --coverage --config ./packages/site/vite.config.ts",
-    "dev": "pnpm -C packages/site dev"
+    "dev": "pnpm -C packages/site dev",
+    "build": "pnpm -r build",
+    "clean:node_modules": "ts-node scripts/clean-node-modules.ts",
+    "2build:dist": "rimraf dist && lerna run --stream --scope cli dist",
+    "build:dist": "rimraf dist && pnpm -C packages/cli dist"
   },
   "devDependencies": {
     "@babel/core": "~7.17.9",
@@ -142,7 +146,8 @@
         "eslint-plugin-promise": "^6.0.0",
         "@typescript-eslint/eslint-plugin": "^5.9.1",
         "eslint-plugin-vue": "^8.3.0",
-        "semantic-release": "^15.0.0"
+        "semantic-release": "^15.0.0",
+        "prettier": "~2.6.2"
       }
     }
   }

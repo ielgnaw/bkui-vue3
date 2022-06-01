@@ -24,37 +24,39 @@
 * IN THE SOFTWARE.
 */
 
+import { program } from 'commander';
 
-// import '@bkui-vue/styles';
-
-
-// export { default } from './preset';
-// export * from './components';
-
-
-import '@ielgnaw/ui';
-
-import { App } from 'vue';
-
-import * as components from './components';
-
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
-      }
+import distTask from './tasks/dist';
+// import libTask from './tasks/lib';
+// import releaseTask from './tasks/release';
+import excuteTask from './utils/excute-task';
+export const run = async () => {
+  // program
+  //   .command('lib')
+  //   .option('-a, --analyze', 'analyze all components bunlders')
+  //   .description('build components')
+  //   .action(async (cmd) => {
+  //     await excuteTask(libTask)({
+  //       analyze: !!cmd.analyze,
+  //     });
+  //   });
+  program
+    .command('dist')
+    .description('build dist')
+    .action(async () => {
+      await excuteTask(distTask)();
     });
+  // program
+  //   .command('release')
+  //   .description('release bkui check')
+  //   .action(async () => {
+  //     await excuteTask(releaseTask)();
+  //   });
+  program.on('command:*', () => {
+    console.error('Invalid command. Please check bkui-vue package.json', program.args.join(' '));
+    process.exit(1);
+  });
+  program.parse(process.argv);
 };
 
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
-};
-
-export * from './components';
+run();

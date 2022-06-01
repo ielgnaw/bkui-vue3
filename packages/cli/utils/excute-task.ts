@@ -24,37 +24,19 @@
 * IN THE SOFTWARE.
 */
 
+import chalk from 'chalk';
 
-// import '@bkui-vue/styles';
+import { Task } from '../typings/task';
 
-
-// export { default } from './preset';
-// export * from './components';
-
-
-import '@ielgnaw/ui';
-
-import { App } from 'vue';
-
-import * as components from './components';
-
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
-      }
-    });
+export default <T>(task: Task<T>) => async (options?: T) => {
+  console.log(chalk.yellow(`Running ${chalk.bold(task.name)} task`));
+  task.setOptions(options);
+  try {
+    console.group();
+    await task.exec();
+    console.groupEnd();
+  } catch (e) {
+    console.trace(e);
+    process.exit(1);
+  }
 };
-
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
-};
-
-export * from './components';

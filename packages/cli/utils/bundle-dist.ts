@@ -24,37 +24,61 @@
 * IN THE SOFTWARE.
 */
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { resolve } from 'path';
 
-// import '@bkui-vue/styles';
+import { build } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import vueJsx from '@vitejs/plugin-vue-jsx';
+import { PACKAGES_URL, COMPONENT_URL, DIST_URL } from '../compiler/helpers';
 
+const entry = resolve(COMPONENT_URL, './index.ts');
 
-// export { default } from './preset';
-// export * from './components';
-
-
-import '@ielgnaw/ui';
-
-import { App } from 'vue';
-
-import * as components from './components';
-
-const createInstall = (prefix = 'Bk') => (app: App) => {
-  const pre = app.config.globalProperties.bkUIPrefix || prefix;
-  Object
-    .keys(components).forEach((key) => {
-      const component = components[key];
-      if ('install' in component) {
-        app.use(component, { prefix: pre });
-      } else {
-        app.component(pre + key, components[key]);
-      }
-    });
-};
-
-export default {
-  createInstall,
-  install: createInstall(),
-  version: '0.0.1',
-};
-
-export * from './components';
+export default async () => await build({
+  resolve: {
+    alias: [
+      // {
+      //   find: /^@ielgnaw\/(icon\/)/,
+      //   replacement: resolve(COMPONENT_URL, './$1'),
+      // },
+      // {
+      //   find: /^@ielgnaw\/([^/]*)/,
+      //   replacement: resolve(COMPONENT_URL, './$1/src'),
+      // },
+      {
+        find: /^@ielgnaw\/([^/]*)/,
+        replacement: resolve(PACKAGES_URL, './$1'),
+      },
+    ],
+  },
+  plugins: [vueJsx(), vue()],
+  build: {
+    outDir: DIST_URL,
+    minify: true,
+    lib: {
+      entry,
+      name: 'bkuiVue',
+      fileName: format => `index.${format}.js`,
+    },
+    rollupOptions: {
+      external: ['vue'],
+      output: [
+        {
+          format: 'cjs',
+          exports: 'named',
+        },
+        {
+          format: 'esm',
+          exports: 'named',
+        },
+        {
+          globals: {
+            vue: 'Vue',
+          },
+          exports: 'named',
+          format: 'umd',
+        },
+      ],
+    },
+  },
+});
