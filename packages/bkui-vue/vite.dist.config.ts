@@ -24,17 +24,20 @@
 * IN THE SOFTWARE.
 */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { resolve } from 'path';
-
-import { build } from 'vite';
+import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
-import { PACKAGES_URL, COMPONENT_URL, DIST_URL } from '../compiler/helpers';
+
+export const BKUI_DIR = resolve(__dirname, '../../');
+export const PACKAGES_URL = resolve(BKUI_DIR, './packages');
+export const COMPONENT_URL = resolve(BKUI_DIR, './packages/bkui-vue');
+// export const DIST_URL =  resolve(BKUI_DIR, './dist');
+export const DIST_URL =  resolve(COMPONENT_URL, './dist');
 
 const entry = resolve(COMPONENT_URL, './index.ts');
 
-export default async () => await build({
+export default defineConfig(() => ({
   resolve: {
     alias: [
       // {
@@ -51,7 +54,10 @@ export default async () => await build({
       },
     ],
   },
-  plugins: [vueJsx(), vue()],
+  plugins: [
+    vueJsx({ optimize: false, enableObjectSlots: true }),
+    vue(),
+  ],
   build: {
     outDir: DIST_URL,
     minify: true,
@@ -81,4 +87,4 @@ export default async () => await build({
       ],
     },
   },
-});
+}));

@@ -1,16 +1,13 @@
 {
-  "ts-node": {
-    "compilerOptions": {
-      "module": "commonjs"
-    }
-  },
   "compilerOptions": {
     "strictNullChecks": false,
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "./lib",
     "experimentalDecorators": true,
-    "resolveJsonModule": true,
     "jsx": "preserve",
     "noUnusedParameters": true,
     "noUnusedLocals": true,
@@ -21,30 +18,25 @@
       "dom",
       "es2017"
     ],
-    "baseUrl": "./",
-    "paths": {
-      // "@bkui-vue/*": [
-      //   "*/packages"
-      // ],
-      "@ielgnaw/*": [
-        // "*/packages"
-        "packages/*"
-      ]
-    },
     "skipLibCheck": true,
     "allowJs": true,
+    "baseUrl": "./",
+    "paths": {
+      "vue-types": [
+        "node_modules/vue-types/"
+      ]
+    },
     "importHelpers": true,
     "isolatedModules": true,
     "sourceMap": true,
-    "noEmitOnError": true,
+    "noEmitOnError": true
   },
   "include": [
-    "./**/*.ts",
-    "./**/*.tsx",
-    "./**/*.d.ts"
+    "**/*.d.ts",
+    "**/*.tsx",
+    "**/*.ts",
   ],
   "exclude": [
-    "**/__test__/**",
-    "node_modules"
+    "**/__test__/**"
   ]
 }

@@ -42,7 +42,10 @@
     "build": "pnpm -r build",
     "clean:node_modules": "ts-node scripts/clean-node-modules.ts",
     "2build:dist": "rimraf dist && lerna run --stream --scope cli dist",
-    "build:dist": "rimraf dist && pnpm -C packages/cli dist"
+    "3build:dist": "rimraf dist && pnpm -C packages/cli dist",
+    "2build:lib": "rimraf lib && pnpm -C packages/cli lib",
+    "build:dist": "rimraf dist && pnpm -C packages/bkui-vue build:dist",
+    "build:lib": "rimraf lib && pnpm -C packages/bkui-vue build:lib"
   },
   "devDependencies": {
     "@babel/core": "~7.17.9",
@@ -107,8 +110,7 @@
     "vitest": "~0.12.6",
     "vue": "^3.2.0",
     "vue-eslint-parser": "~8.3.0",
-    "vue-router": "~4.0.14",
-    "vue-types": "~4.1.1"
+    "vue-router": "~4.0.14"
   },
   "main": "lib/index.js",
   "module": "lib/index.js",

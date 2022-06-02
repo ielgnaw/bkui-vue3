@@ -4,7 +4,12 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo 111"
+    "build": "echo 111",
+    "build:lib": "rimraf lib && tsc -p tsconfig.declaration.json",
+    "build:dist": "rimraf dist && vite build -c vite.dist.config.ts",
+    "1build:dist": "vite build -c vite.dist.config.ts && vite build -c vite.dist-min.config.ts",
+    "2build:lib": "tsc index.ts --declaration --emitDeclarationOnly --allowSyntheticDefaultImports --jsx preserve --outfile dist/index.d.ts",
+    "1build:lib": "vite build -c vite.lib.config.ts"
   },
   "keywords": [],
   "author": "",
