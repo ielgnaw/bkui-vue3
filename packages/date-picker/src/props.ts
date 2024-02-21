@@ -196,6 +196,12 @@ export const datePickerProps = {
     type: Boolean,
     default: true,
   },
+
+  // 单个 panel 的宽度
+  panelWidth: {
+    type: Number,
+    default: 261,
+  },
 } as const;
 
 export type DatePickerProps = Readonly<ExtractPropTypes<typeof datePickerProps>>;
