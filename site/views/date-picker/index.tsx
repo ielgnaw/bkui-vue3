@@ -74,7 +74,7 @@ export default defineComponent({
         >
           <BaseDemo />
         </DemoBox>
-        <DemoBox
+        {/* <DemoBox
           title='开启日期时间范围'
           desc='通过设置 type 属性为 datetimerange 来开启时间设置'
           componentName='date-picker'
@@ -130,7 +130,7 @@ export default defineComponent({
           demoName='demo-tsx'
         >
           <DemoTsx />
-        </DemoBox>
+        </DemoBox> */}
         <DemoBox
           title='年选择器与月选择器'
           desc='通过 type 属性配置年选择器与月选择器'

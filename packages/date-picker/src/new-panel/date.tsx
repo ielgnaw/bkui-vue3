@@ -48,29 +48,29 @@ import { AngleDoubleLeft, AngleDoubleRight, AngleLeft, AngleRight } from '@bkui-
 
 import Confirm from '../base/confirm';
 import DateTable from '../base/date-table';
-import MonthTable from '../base/month-table';
 import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType, SelectionModeType } from '../interface';
+import MonthTable from '../new-base/month-table';
 import YearTable from '../new-base/year-table';
-import { formatDateLabels, iconBtnCls, siblingMonth, timePickerKey } from '../utils';
+import { formatDateLabels, getYearCells, iconBtnCls, siblingMonth, timePickerKey } from '../utils';
 
 import Time from './time';
 
 const datePanelProps = {
-  modelValue: {
+  value: {
     type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
   },
   shortcuts: {
     type: Array as PropType<DatePickerShortcutsType>,
     default: () => [],
   },
-  // multiple: {
-  //   type: Boolean,
-  //   default: false,
-  // },
-  // clearable: {
-  //   type: Boolean,
-  //   default: true,
-  // },
+  multiple: {
+    type: Boolean,
+    default: false,
+  },
+  clearable: {
+    type: Boolean,
+    default: true,
+  },
   shortcutClose: {
     type: Boolean,
     default: false,
@@ -98,14 +98,14 @@ const datePanelProps = {
     type: Date,
     required: true,
   },
-  // confirm: {
-  //   type: Boolean,
-  //   default: false,
-  // },
-  // showTime: {
-  //   type: Boolean,
-  //   default: false,
-  // },
+  confirm: {
+    type: Boolean,
+    default: false,
+  },
+  showTime: {
+    type: Boolean,
+    default: false,
+  },
   // format: {
   //   type: String,
   //   default: 'yyyy-MM-dd',
@@ -115,13 +115,15 @@ const datePanelProps = {
     type: Function as PropType<DisabledDateType>,
     default: () => false,
   },
-  // timePickerOptions: {
-  //   type: Object as PropType<Record<string, any>>,
-  //   default: () => ({}),
-  // },
+  timePickerOptions: {
+    type: Object as PropType<Record<string, any>>,
+    default: () => ({}),
+  },
 } as const;
 
 export type DatePanelProps = Readonly<ExtractPropTypes<typeof datePanelProps>>;
+
+const getTableType = curView => (curView.match(/^time/) ? 'time-table' : `${curView}-table`);
 
 export default defineComponent({
   name: 'DatePanel',
@@ -130,7 +132,7 @@ export default defineComponent({
   setup(props, { slots, emit }) {
     const { resolveClassName } = usePrefix();
 
-    const dates = ref((props.modelValue as DatePickerValueType[]).slice().sort() as any);
+    const dates = ref((props.value as DatePickerValueType[]).slice().sort() as any);
 
     // type: date, daterange, datetime, datetimerange => selectionMode: date
     // type: year => selectionMode: year
@@ -142,7 +144,7 @@ export default defineComponent({
     // currentView: year => tableType: year-table
     // currentView: month => tableType: month-table
     // currentView: time => tableType: time-table
-    // const tableType = ref('');
+    const tableType = ref(getTableType(currentView.value));
 
     const panelDate = ref(props.startDate || dates.value[0] || new Date());
 
@@ -153,7 +155,8 @@ export default defineComponent({
     };
 
     const changeYear = dir => {
-      if (currentView.value === 'year') {
+      console.error('dirdirdir', dir, props.selectionMode, tableType.value);
+      if (props.selectionMode === 'year' || tableType.value === 'year-table') {
         panelDate.value = new Date((panelDate.value as Date).getFullYear() + dir * 10, 0, 1);
       } else {
         panelDate.value = siblingMonth(panelDate.value, dir * 12);
@@ -183,13 +186,17 @@ export default defineComponent({
     };
 
     const handlePreSelection = value => {
+      console.error('handlePreSelection', value);
       panelDate.value = value;
-      if (currentView.value === 'year') {
-        currentView.value = 'month';
+      if (tableType.value === 'year-table') {
+        tableType.value = 'month-table';
+      } else {
+        tableType.value = getTableType(currentView.value);
       }
     };
 
     const handlePick = (value, _visible = false, type, _shortcut) => {
+      console.error('handlePick', value, _visible, type, _shortcut);
       let val = value;
       if (props.selectionMode === 'year') {
         val = new Date(value.getFullYear(), 0, 1);
@@ -202,6 +209,29 @@ export default defineComponent({
       dates.value = [val];
       // pick 参数：dates, visible, type, isUseShortCut
       emit('pick', val, false, type || props.selectionMode);
+    };
+
+    const reset = () => {
+      currentView.value = props.selectionMode;
+      tableType.value = getTableType(currentView.value);
+    };
+
+    const panelPickerHandlers = computed(() =>
+      tableType.value === `${currentView.value}-table` ? handlePick : handlePreSelection,
+    );
+
+    const pickYear = value => {
+      let val = value;
+      // 当前 datepicker 的 type 不是 year，说明是点击 datepicker 里的年份切换到年选择器的
+      if (tableType.value !== `${currentView.value}-table`) {
+        panelDate.value = value;
+        tableType.value = getTableType(currentView.value);
+      } else {
+        val = new Date(value.getFullYear(), 0, 1);
+        dates.value = [val];
+        emit('pick', val);
+      }
+      // emit('pick', val, false, type || props.selectionMode);
     };
 
     // const { proxy } = getCurrentInstance();
@@ -228,31 +258,26 @@ export default defineComponent({
     //   },
     // );
 
-    // watch(
-    //   () => props.selectionMode,
-    //   type => {
-    //     state.currentView = type;
-    //     state.tableType = getTableType(type);
-    //   },
-    // );
+    watch(
+      () => props.selectionMode,
+      type => {
+        currentView.value = type;
+        tableType.value = getTableType(type);
+      },
+    );
 
-    // watch(
-    //   () => props.modelValue,
-    //   newVal => {
-    //     state.dates = newVal;
-    //     const panelDate = props.multiple ? state.dates[state.dates.length - 1] : props.startDate || state.dates[0];
-    //     state.panelDate = panelDate || new Date();
-    //   },
-    // );
+    watch(
+      () => props.value,
+      newVal => {
+        dates.value = newVal;
+        const pDate = props.multiple ? dates.value[dates.value.length - 1] : props.startDate || dates.value[0];
+        panelDate.value = pDate || new Date();
+      },
+    );
 
     // const handlePickClear = () => {
     //   resetView();
     //   emit('pick-clear');
-    // };
-
-    // const reset = () => {
-    //   state.currentView = props.selectionMode;
-    //   state.tableType = getTableType(state.currentView);
     // };
 
     // const onToggleVisibility = open => {
@@ -261,8 +286,6 @@ export default defineComponent({
     //     timeSpinnerEndRef?.value?.updateScroll();
     //   }
     // };
-
-    // const isTime = computed(() => state.currentView === 'time');
 
     // const handleToggleTime = () => {
     //   state.currentView = state.currentView === 'time' ? 'date' : 'time';
@@ -277,7 +300,7 @@ export default defineComponent({
       const { labels, separator } = formatDateLabels(locale, datePanelLabelStr, date);
 
       const handler = type => () => {
-        currentView.value = type;
+        tableType.value = getTableType(type);
       };
 
       return {
@@ -298,13 +321,6 @@ export default defineComponent({
       () => (datePanelLabel as any).value.labels[1].type === 'year' || currentView.value === 'date',
     );
 
-    const panelPickerHandlers = computed(() => {
-      if (currentView.value === 'date') {
-        return handlePick;
-      }
-      return handlePreSelection;
-    });
-
     // watch(
     //   currentView,
     //   v => {
@@ -315,7 +331,8 @@ export default defineComponent({
     //   },
     // );
 
-    // const timeDisabled = computed(() => !state.dates[0]);
+    const isTime = computed(() => currentView.value === 'time');
+    const timeDisabled = computed(() => !dates.value[0]);
 
     // function handlePickClick() {
     //   emit('pick-click');
@@ -323,9 +340,14 @@ export default defineComponent({
 
     // const { resolveClassName } = usePrefix();
 
+    const yearPanelLabelClick = () => {
+      tableType.value = getTableType('year');
+    };
+
     return {
       resolveClassName,
       currentView,
+      tableType,
       dates,
       panelDate,
       hasShortcuts,
@@ -335,17 +357,22 @@ export default defineComponent({
 
       changeYear,
       changeMonth,
+      pickYear,
+
+      timeDisabled,
+      isTime,
 
       handleShortcutClick,
       panelPickerHandlers,
+      reset,
 
-      // ...toRefs(state),
+      yearPanelLabelClick,
+
       // datePanelLabel,
       // handleShortcutClick,
       // changeYear,
       // changeMonth,
       // reset,
-      // isTime,
       // hasShortcuts,
       // timeDisabled,
       // onToggleVisibility,
@@ -362,26 +389,84 @@ export default defineComponent({
   render() {
     const renderView = () => {
       let view: VNode = null;
-      switch (this.currentView) {
-        case 'date':
+      switch (this.tableType) {
+        case 'date-table':
           view = <div>date-table</div>;
           break;
-        case 'year':
+        case 'year-table':
           view = (
             <YearTable
               tableDate={this.panelDate as Date}
               disabledDate={this.disabledDate}
               selectionMode={this.selectionMode}
-              modelValue={this.dates as DatePickerValueType}
+              value={this.dates as DatePickerValueType}
+              focusedDate={this.focusedDate}
+              // onPick={this.panelPickerHandlers}
+              onPickYear={this.pickYear}
+            />
+          );
+          break;
+        case 'month-table':
+          view = (
+            <MonthTable
+              tableDate={this.panelDate as Date}
+              disabledDate={this.disabledDate}
+              selectionMode={this.selectionMode}
+              value={this.dates as DatePickerValueType}
               focusedDate={this.focusedDate}
               onPick={this.panelPickerHandlers}
             />
           );
           break;
-        case 'month':
-          view = <div>month-table</div>;
+        case 'time-table':
+          view = <div>time-table</div>;
           break;
-        case 'time':
+        default:
+          break;
+      }
+      return view;
+    };
+
+    // const date = this.panelDate;
+    // const locale = 'zh-CN';
+    // const datePanelLabelStr = '[yyyy]-[mm]';
+    // const { labels, separator } = formatDateLabels(locale, datePanelLabelStr, date);
+    // console.error('labels', labels);
+
+    const renderDatePanelLabel = () => {
+      let view: VNode = null;
+      const startYear = Math.floor(this.panelDate.getFullYear() / 10) * 10;
+      const yearCells = getYearCells(startYear);
+      const firstYear = yearCells[0].date;
+      const lastYear = yearCells[yearCells.length - 1].date;
+      switch (this.tableType) {
+        case 'date-table':
+          view = <div>date-table</div>;
+          break;
+        case 'year-table':
+          view = (
+            <>
+              <span>
+                <span>
+                  {firstYear.getFullYear()} - {lastYear.getFullYear()}
+                </span>
+              </span>
+            </>
+          );
+          break;
+        case 'month-table':
+          view = (
+            <>
+              <span
+                onClick={() => this.yearPanelLabelClick()}
+                class={this.resolveClassName('date-picker-header-label')}
+              >
+                {this.panelDate.getFullYear()}
+              </span>
+            </>
+          );
+          break;
+        case 'time-table':
           view = <div>time-table</div>;
           break;
         default:
@@ -430,26 +515,26 @@ export default defineComponent({
                 style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}
               ></AngleDoubleLeft>
             </span>
-
-            {this.currentView === 'date' ? (
+            {this.tableType === 'date-table' ? (
               <span
                 class={iconBtnCls('prev')}
                 onClick={() => this.changeMonth(-1)}
+                v-show={this.currentView === 'date'}
               >
                 <AngleLeft style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}></AngleLeft>
               </span>
             ) : (
               ''
             )}
-
-            {this.datePanelLabel && Object.keys(this.datePanelLabel).length > 0 ? (
+            {renderDatePanelLabel()}
+            {/* {this.datePanelLabel && Object.keys(this.datePanelLabel).length > 0 ? (
               <span>
                 <span
                   class={this.resolveClassName('date-picker-header-label')}
                   v-show={this.showLabelFirst}
                   onClick={() => this.datePanelLabel.labels[0].handler()}
                 >
-                  {this.datePanelLabel.labels[0].label}
+                  {this.datePanelLabel.labels[0].label}--
                 </span>
                 {this.currentView === 'date' ? ` ${this.datePanelLabel.separator} ` : ' '}
                 <span
@@ -457,13 +542,12 @@ export default defineComponent({
                   v-show={this.showLabelSecond}
                   onClick={() => this.datePanelLabel.labels[1].handler()}
                 >
-                  {this.datePanelLabel.labels[1].label}
+                  {this.datePanelLabel.labels[1].label}++
                 </span>
               </span>
             ) : (
               ''
-            )}
-
+            )} */}
             <span
               class={iconBtnCls('next', '-double')}
               onClick={() => this.changeYear(+1)}
@@ -472,11 +556,11 @@ export default defineComponent({
                 style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}
               ></AngleDoubleRight>
             </span>
-
-            {this.currentView === 'date' ? (
+            {this.tableType === 'date-table' ? (
               <span
                 class={iconBtnCls('next')}
                 onClick={() => this.changeMonth(+1)}
+                v-show={this.currentView === 'date'}
               >
                 <AngleRight style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}></AngleRight>
               </span>
@@ -496,7 +580,7 @@ export default defineComponent({
                         tableDate={this.panelDate as Date}
                         disabledDate={this.disabledDate}
                         selectionMode={this.selectionMode}
-                        modelValue={this.dates as DatePickerValueType}
+                        value={this.dates as DatePickerValueType}
                         focusedDate={this.focusedDate}
                         onPick={this.panelPickerHandlers}
                       />
@@ -507,7 +591,7 @@ export default defineComponent({
                         tableDate={this.panelDate as Date}
                         disabledDate={this.disabledDate}
                         selectionMode={this.selectionMode}
-                        modelValue={this.dates as DatePickerValueType}
+                        value={this.dates as DatePickerValueType}
                         focusedDate={this.focusedDate}
                         onPick={this.panelPickerHandlers}
                       />
@@ -518,7 +602,7 @@ export default defineComponent({
                         tableDate={this.panelDate as Date}
                         disabledDate={this.disabledDate}
                         selectionMode={this.selectionMode}
-                        modelValue={this.dates as DatePickerValueType}
+                        value={this.dates as DatePickerValueType}
                         focusedDate={this.focusedDate}
                         onPick={this.panelPickerHandlers}
                       />
@@ -543,20 +627,21 @@ export default defineComponent({
               />
             )}*/}
           </div>
-          {/* {this.confirm ? (
+
+          {this.confirm ? (
             <Confirm
               clearable={this.clearable}
               showTime={this.showTime}
               timeDisabled={this.timeDisabled}
               isTime={this.isTime}
-              onPick-toggle-time={this.handleToggleTime}
-              onPick-clear={this.handlePickClear}
-              onPick-success={this.handlePickSuccess}
+              // onPick-toggle-time={this.handleToggleTime}
+              // onPick-clear={this.handlePickClear}
+              // onPick-success={this.handlePickSuccess}
               v-slots={this.$slots}
             ></Confirm>
           ) : (
             ''
-          )} */}
+          )}
         </div>
         {this.hasShortcuts ? (
           <div class={this.resolveClassName('picker-panel-sidebar')}>{this.$slots.shortcuts?.() ?? null}</div>

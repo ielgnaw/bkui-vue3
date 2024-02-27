@@ -30,9 +30,9 @@ import { computed, defineComponent, PropType } from 'vue';
 import { usePrefix } from '@bkui-vue/config-provider';
 
 import type { DatePickerValueType } from '../interface';
-import { clearHours, getYearCells } from '../utils';
+import { clearHours } from '../utils';
 
-const yearTableProps = {
+const monthTableProps = {
   tableDate: {
     type: Date,
     required: true,
@@ -70,13 +70,50 @@ const yearTableProps = {
   },
 } as const;
 
-export type YearTableProps = Readonly<ExtractPropTypes<typeof yearTableProps>>;
+export type MonthTableProps = Readonly<ExtractPropTypes<typeof monthTableProps>>;
 
 export default defineComponent({
-  name: 'YearTable',
-  props: yearTableProps,
-  emits: ['pickYear' /* 'pick-click', 'change-range' */],
+  name: 'MonthTable',
+  props: monthTableProps,
+  emits: ['pick', 'pick-click', 'change-range'],
   setup(props, { emit }) {
+    const dates = computed(() => {
+      const { /* selectionMode */ value, rangeState } = props;
+      const rangeSelecting = /* selectionMode === 'range' &&  */ rangeState.selecting;
+      return rangeSelecting ? [rangeState.from] : value;
+    });
+
+    const cells = computed(() => {
+      const cells = [];
+      const cellTmpl = {
+        text: '',
+        selected: false,
+        disabled: false,
+      };
+
+      const tableYear = props.tableDate.getFullYear();
+      const selectedDays = (dates.value as any[])
+        .filter(Boolean)
+        .map(date => clearHours(new Date(date.getFullYear(), date.getMonth(), 1)));
+      const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), props.focusedDate.getMonth(), 1));
+
+      for (let i = 0; i < 12; i++) {
+        const cell = JSON.parse(JSON.stringify(cellTmpl));
+        cell.date = new Date(tableYear, i, 1);
+        cell.text = tCell(i + 1);
+        const day = clearHours(cell.date);
+        cell.disabled =
+          typeof props.disabledDate === 'function' && props.disabledDate(cell.date) && props.selectionMode === 'month';
+        cell.selected = selectedDays.includes(day);
+        cell.focused = day === focusedDate;
+        cells.push(cell);
+      }
+
+      return cells;
+    });
+
+    const tCell = nr => (String(nr).length > 1 ? nr : `0${nr}`);
+
     const { resolveClassName } = usePrefix();
 
     const getCellCls = cell => [
@@ -92,109 +129,42 @@ export default defineComponent({
       if (cell.disabled || cell.type === 'weekLabel') {
         return;
       }
-
       const newDate = new Date(clearHours(cell.date));
 
-      emit('pickYear', newDate);
-      // emit('pick-click');
+      emit('pick', newDate);
+      emit('pick-click');
     };
 
-    const dates = computed(() => {
-      const { /* selectionMode */ value, rangeState } = props;
-      const rangeSelecting = /* selectionMode === 'range' && */ rangeState.selecting;
-      return rangeSelecting ? [rangeState.from] : value;
-    });
-
-    const startYear = computed(() => Math.floor(props.tableDate.getFullYear() / 10) * 10);
-
-    const cells = computed(() => {
-      const ret = getYearCells(startYear.value);
-
-      const selectedDays = (dates.value as any[])
-        .filter(Boolean)
-        .map(date => clearHours(new Date(date.getFullYear(), 0, 1)));
-
-      const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), 0, 1));
-
-      ret.forEach((item, i) => {
-        item.text = '';
-        item.date = new Date(startYear.value + i, 0, 1);
-        item.disabled =
-          typeof props.disabledDate === 'function' && props.disabledDate(item.date) && props.selectionMode === 'year';
-
-        const day = clearHours(item.date);
-        item.selected = selectedDays.includes(day);
-        item.focused = day === focusedDate;
-      });
-
-      return ret;
-    });
-
-    // const cells = computed(() => {
-    //   const cells = [];
-    //   const cellTmpl = {
-    //     text: '',
-    //     selected: false,
-    //     disabled: false,
-    //   };
-
-    //   const selectedDays = (dates.value as any[])
-    //     .filter(Boolean)
-    //     .map(date => clearHours(new Date(date.getFullYear(), 0, 1)));
-
-    //   const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), 0, 1));
-
-    //   for (let i = 0; i < 10; i++) {
-    //     const cell = JSON.parse(JSON.stringify(cellTmpl));
-    //     cell.date = new Date(startYear.value + i, 0, 1);
-    //     cell.disabled =
-    //       typeof props.disabledDate === 'function' && props.disabledDate(cell.date) && props.selectionMode === 'year';
-
-    //     const day = clearHours(cell.date);
-    //     cell.selected = selectedDays.includes(day);
-    //     cell.focused = day === focusedDate;
-    //     cells.push(cell);
-    //   }
-    //   console.error(cells);
-
-    //   return cells;
-    // });
-
-    // const handleMouseMove = cell => {
-    //   if (!props.rangeState.selecting) {
-    //     return;
-    //   }
-    //   if (cell.disabled) {
-    //     return;
-    //   }
-    //   const newDate = cell.date;
-    //   emit('change-range', newDate);
-    // };
+    const handleMouseMove = cell => {
+      if (!props.rangeState.selecting) {
+        return;
+      }
+      if (cell.disabled) {
+        return;
+      }
+      const newDate = cell.date;
+      emit('change-range', newDate);
+    };
 
     return {
       cells,
       getCellCls,
       handleClick,
-      // handleMouseMove,
+      handleMouseMove,
       resolveClassName,
     };
   },
   render() {
     return (
-      <div class={[this.resolveClassName('date-picker-cells'), this.resolveClassName('date-picker-cells-year')]}>
+      <div class={[this.resolveClassName('date-picker-cells'), this.resolveClassName('date-picker-cells-month')]}>
         {this.cells.map(cell => (
           <span
             class={this.getCellCls(cell)}
             onClick={() => this.handleClick(cell)}
-            // onMouseenter={() => this.handleMouseMove(cell)}
+            onMouseenter={() => this.handleMouseMove(cell)}
           >
-            <em>{cell.date.getFullYear()}</em>
+            <em>{cell.text}</em>
           </span>
-          // <div
-          //   class={this.resolveClassName('picker-panel-shortcut')}
-          //   onClick={() => this.handleShortcutClick(shortcut)}>
-          //   {shortcut.text}
-          // </div>
         ))}
       </div>
     );

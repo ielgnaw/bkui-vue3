@@ -26,12 +26,16 @@
   const initDateTime = ref(new Date());
   const yearValue = ref('');
   const handleYearChange = (val) => {
-    console.warn('handleChange', val);
+    console.warn('handleChange', val, initDateTime);
     yearValue.value = val;
   };
+  // setTimeout(() => {
+  //   console.error(('setTimeoutsetTimeoutsetTimeout'));
+  //   initDateTime.value = new Date(new Date().setFullYear(new Date().getFullYear() + 200));
+  // }, 3000);
   const monthValue = ref('');
   const handleMonthChange = (val) => {
-    console.warn('handleChange', val);
+    console.warn('handleChange', val, initDateTime);
     monthValue.value = val;
   };
 </script>

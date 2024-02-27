@@ -117,24 +117,21 @@ export function useCalendar(props, slots, emit) {
   };
 
   const handleBlur = e => {
-    if (internalFocus.value) {
-      internalFocus.value = false;
-      return;
-    }
-    if (visible.value) {
-      e.preventDefault();
-      return;
-    }
-
-    isFocused.value = false;
-    onSelectionModeChange(props.type);
-    internalValue.value = internalValue.value.slice();
-
-    reset();
-
-    pickerPanelRef?.value?.onToggleVisibility(false);
-
-    formItem?.validate?.('blur');
+    console.error('handleBlurhandleBlurhandleBlur');
+    // if (internalFocus.value) {
+    //   internalFocus.value = false;
+    //   return;
+    // }
+    // if (visible.value) {
+    //   e.preventDefault();
+    //   return;
+    // }
+    // isFocused.value = false;
+    // onSelectionModeChange(props.type);
+    // internalValue.value = internalValue.value.slice();
+    // reset();
+    // pickerPanelRef?.value?.onToggleVisibility(false);
+    // formItem?.validate?.('blur');
   };
 
   const reset = () => {
@@ -244,17 +241,17 @@ export function useCalendar(props, slots, emit) {
     // }
   };
 
-  const emitChange = type => {
-    nextTick(() => {
-      // 使用 :value 或 :model-value 的时候才需要 handleChange，此时没有触发 update:modelValue
-      // 使用 v-model 时才会触发 update:modelValue 事件
-      emit('update:modelValue', publicVModelValue.value);
-      emit('change', publicStringValue.value, type);
-      // this.dispatch('bk-form-item', 'form-change');
-      if (props.type.indexOf('time') < 0) {
-        inputRef?.value?.blur();
-      }
-    });
+  const emitChange = (type = selectionMode.value) => {
+    // nextTick(() => {
+    // 使用 :value 或 :model-value 的时候才需要 handleChange，此时没有触发 update:modelValue
+    // 使用 v-model 时才会触发 update:modelValue 事件
+    emit('update:modelValue', publicVModelValue.value);
+    emit('change', publicStringValue.value, type);
+    // this.dispatch('bk-form-item', 'form-change');
+    if (props.type.indexOf('time') < 0) {
+      inputRef?.value?.blur();
+    }
+    // });
   };
 
   const inputFocus = () => {
@@ -300,6 +297,52 @@ export function useCalendar(props, slots, emit) {
     if (newValue !== oldValue && !isDisabled && isValidDate) {
       tmpValue.value = newDate;
     }
+  };
+
+  const onPick = (_dates, _visible = false, _shortcut) => {
+    let dates = _dates;
+    if (props.multiple) {
+      const pickedTimeStamp = dates.getTime();
+      const indexOfPickedDate = internalValue.value.findIndex(date => date && date.getTime() === pickedTimeStamp);
+      const allDates = [...internalValue.value, dates].filter(Boolean);
+      const timeStamps = allDates
+        .map(date => date.getTime())
+        .filter((ts, i, arr) => arr.indexOf(ts) === i && i !== indexOfPickedDate);
+      internalValue.value = timeStamps.map(ts => new Date(ts));
+    } else {
+      // dates = this.parseDate(dates);
+      dates = parseDate(_dates, props.type, props.multiple, props.format);
+      internalValue.value = Array.isArray(dates) ? dates : [dates];
+      // console.error('internalValue.value', internalValue.value);
+    }
+
+    if (internalValue.value[0]) {
+      // focusedDate.value = internalValue.value[0];
+      [focusedDate.value] = internalValue.value;
+    }
+
+    focusedTime.value = {
+      ...focusedTime.value,
+      time: internalValue.value.map(extractTime),
+    };
+
+    if (!isConfirm.value) {
+      onSelectionModeChange(props.type);
+      visible.value = _visible;
+    }
+
+    // 点击至今后，datetimerange 不关闭弹框，因为有可能需要修改开始日期的时间，daterange 可以直接关闭弹框
+    // if (type === 'upToNow' && props.type === 'daterange') {
+    //   onPickSuccess();
+    // }
+
+    shortcut.value = _shortcut;
+
+    emitChange();
+
+    // 抛出快捷项选择变化事件
+    const shortcutIndex = props.shortcuts.findIndex(item => item === shortcut.value);
+    emit('shortcut-change', shortcut.value, shortcutIndex);
   };
 
   const longWidthCls = computed(() => {
@@ -397,8 +440,8 @@ export function useCalendar(props, slots, emit) {
 
   watch(
     () => props.modelValue,
-    modelValue => {
-      internalValue.value = parseDate(modelValue, props.type, props.multiple, props.format);
+    newValue => {
+      internalValue.value = parseDate(newValue, props.type, props.multiple, props.format);
       if (props.withValidate) {
         formItem?.validate?.('change');
       }
@@ -480,6 +523,7 @@ export function useCalendar(props, slots, emit) {
     displayValue,
     selectionMode,
     focusedDate,
+    isConfirm,
 
     inputRef,
     setInputRef,
@@ -495,6 +539,8 @@ export function useCalendar(props, slots, emit) {
     handleInputChange,
     handleInputInput,
     handleClear,
+    onPick,
+
     panel,
     opened,
     handleInputMouseenter,

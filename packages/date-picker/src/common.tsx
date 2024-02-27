@@ -24,10 +24,6 @@
  * IN THE SOFTWARE.
  */
 
-import { type ComponentPublicInstance } from 'vue';
-
-import { Close } from '@bkui-vue/icon';
-
 export const dateIcon = (
   <>
     <svg
@@ -92,62 +88,3 @@ export const timeIcon = (
     </svg>
   </>
 );
-
-export function createDefaultTrigger(props, params: any) {
-  const {
-    resolveClassName,
-    fontSizeCls,
-    forceInputRerender,
-    localReadonly,
-    displayValue,
-    setInputRef,
-    handleFocus,
-    handleBlur,
-    showClose,
-    handleIconClick,
-    handleKeydown,
-    handleInputChange,
-    handleInputInput,
-    handleClear,
-  } = params;
-
-  return (
-    <div>
-      <span
-        class={['icon-wrapper', props.disabled ? 'disabled' : '']}
-        onClick={handleIconClick}
-      >
-        {props.type === 'time' || props.type === 'timerange' ? timeIcon : dateIcon}
-      </span>
-      <input
-        type='text'
-        class={[
-          resolveClassName('date-picker-editor'),
-          props.readonly ? 'readonly' : '',
-          fontSizeCls,
-          props.behavior === 'simplicity' ? 'only-bottom-border' : '',
-        ]}
-        // ref='inputRef'
-        ref={(el: Element | ComponentPublicInstance | null) => setInputRef(el)}
-        key={forceInputRerender.value}
-        readonly={localReadonly.value}
-        disabled={props.disabled}
-        placeholder={props.placeholder}
-        value={displayValue.value}
-        onClick={handleFocus}
-        onBlur={handleBlur}
-        onKeydown={handleKeydown}
-        onChange={handleInputChange}
-        onInput={handleInputInput}
-      />
-      {props.clearable && showClose.value ? (
-        <Close
-          onClick={handleClear}
-          class='clear-action'
-        />
-      ) : (
-        ''
-      )}
-    </div>
-  );
-}

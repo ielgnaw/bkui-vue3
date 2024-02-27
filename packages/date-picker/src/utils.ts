@@ -344,6 +344,16 @@ export const siblingMonth = (src, diff) => {
   return temp;
 };
 
+export const getYearCells = (startYear: number) => {
+  const cells = [];
+  for (let i = 0; i < 10; i++) {
+    const cell: { date?: Date } = {};
+    cell.date = new Date(startYear + i, 0, 1);
+    cells.push(cell);
+  }
+  return cells;
+};
+
 export const formatDateLabels = (() => {
   /*
     Formats:

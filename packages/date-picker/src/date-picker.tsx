@@ -24,13 +24,15 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent, ref, SlotsType, Teleport, Transition, type VNode } from 'vue';
+import { type ComponentPublicInstance, defineComponent, ref, SlotsType, Teleport, Transition, type VNode } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
+import { Close } from '@bkui-vue/icon';
 
 import PickerDropdown from './base/picker-dropdown';
-import { createDefaultTrigger } from './common';
+import { dateIcon, timeIcon } from './common';
+// import { createDefaultTrigger } from './common';
 import type { DatePickerPanelType, SelectionModeType } from './interface';
 import DatePanel from './new-panel/date';
 import DateRangePanel from './panel/date-range';
@@ -65,28 +67,28 @@ export default defineComponent({
     const { resolveClassName } = usePrefix();
     const params = useCalendar(props, slots, emit);
 
-    const defaultTrigger = createDefaultTrigger(props, {
-      resolveClassName,
-      fontSizeCls: params.fontSizeCls,
-      forceInputRerender: params.forceInputRerender,
-      localReadonly: params.localReadonly,
-      displayValue: params.displayValue,
-      setInputRef: params.setInputRef,
-      handleFocus: params.handleFocus,
-      handleBlur: params.handleBlur,
-      showClose: params.showClose,
-      handleIconClick: params.handleIconClick,
-      handleKeydown: params.handleKeydown,
-      handleInputChange: params.handleInputChange,
-      handleInputInput: params.handleInputInput,
-      handleClear: params.handleClear,
-    });
+    // const defaultTrigger = createDefaultTrigger(props, {
+    //   resolveClassName,
+    //   fontSizeCls: params.fontSizeCls,
+    //   forceInputRerender: params.forceInputRerender,
+    //   localReadonly: params.localReadonly,
+    //   displayValue: params.displayValue,
+    //   setInputRef: params.setInputRef,
+    //   handleFocus: params.handleFocus,
+    //   handleBlur: params.handleBlur,
+    //   showClose: params.showClose,
+    //   handleIconClick: params.handleIconClick,
+    //   handleKeydown: params.handleKeydown,
+    //   handleInputChange: params.handleInputChange,
+    //   handleInputInput: params.handleInputInput,
+    //   handleClear: params.handleClear,
+    // });
 
     const triggerRef = ref<HTMLElement>(null);
 
     return {
       resolveClassName,
-      defaultTrigger,
+      // defaultTrigger,
       triggerRef,
       ...params,
     };
@@ -127,44 +129,7 @@ export default defineComponent({
     //   inputRef?.value?.blur();
     //   reset();
     // };
-    // const onPick = (_dates, visible = false, type, shortcut) => {
-    //   let dates = _dates;
-    //   if (props.multiple) {
-    //     const pickedTimeStamp = dates.getTime();
-    //     const indexOfPickedDate = state.internalValue.findIndex(date => date && date.getTime() === pickedTimeStamp);
-    //     const allDates = [...state.internalValue, dates].filter(Boolean);
-    //     const timeStamps = allDates
-    //       .map(date => date.getTime())
-    //       .filter((ts, i, arr) => arr.indexOf(ts) === i && i !== indexOfPickedDate);
-    //     state.internalValue = timeStamps.map(ts => new Date(ts));
-    //   } else {
-    //     // dates = this.parseDate(dates);
-    //     dates = parseDate(_dates, props.type, props.multiple, props.format);
-    //     state.internalValue = Array.isArray(dates) ? dates : [dates];
-    //   }
-    //   if (state.internalValue[0]) {
-    //     // state.focusedDate = state.internalValue[0];
-    //     const [v] = state.internalValue;
-    //     state.focusedDate = v;
-    //   }
-    //   state.focusedTime = {
-    //     ...state.focusedTime,
-    //     time: state.internalValue.map(extractTime),
-    //   };
-    //   if (!isConfirm.value) {
-    //     onSelectionModeChange(props.type);
-    //     state.visible = visible;
-    //   }
-    //   // 点击至今后，datetimerange 不关闭弹框，因为有可能需要修改开始日期的时间，daterange 可以直接关闭弹框
-    //   if (type === 'upToNow' && props.type === 'daterange') {
-    //     onPickSuccess();
-    //   }
-    //   state.shortcut = shortcut;
-    //   emitChange(type);
-    //   // 抛出快捷项选择变化事件
-    //   const shortcutIndex = props.shortcuts.findIndex(item => item === state.shortcut);
-    //   emit('shortcut-change', state.shortcut, shortcutIndex);
-    // };
+
     // const triggerRef = ref<HTMLElement>(null);
     // const handleToggleTime = () => {
     //   pickerPanelRef.value.handleToggleTime?.();
@@ -183,6 +148,48 @@ export default defineComponent({
 
     // const slots = { ...shortcutsSlot, ...confirmSlot };
 
+    const renderTrigger = () => {
+      return (
+        <div>
+          <span
+            class={['icon-wrapper', this.disabled ? 'disabled' : '']}
+            onClick={this.handleIconClick}
+          >
+            {this.type === 'time' || this.type === 'timerange' ? timeIcon : dateIcon}
+          </span>
+          <input
+            type='text'
+            class={[
+              this.resolveClassName('date-picker-editor'),
+              this.readonly ? 'readonly' : '',
+              this.fontSizeCls,
+              this.behavior === 'simplicity' ? 'only-bottom-border' : '',
+            ]}
+            // ref='inputRef'
+            ref={(el: Element | ComponentPublicInstance | null) => this.setInputRef(el)}
+            key={this.forceInputRerender}
+            readonly={this.localReadonly}
+            disabled={this.disabled}
+            placeholder={this.placeholder}
+            value={this.displayValue}
+            onClick={this.handleFocus}
+            onBlur={this.handleBlur}
+            onKeydown={this.handleKeydown}
+            onChange={this.handleInputChange}
+            onInput={this.handleInputInput}
+          />
+          {this.clearable && this.showClose ? (
+            <Close
+              onClick={this.handleClear}
+              class='clear-action'
+            />
+          ) : (
+            ''
+          )}
+        </div>
+      );
+    };
+
     const renderPanel = () => {
       let panel: VNode = null;
       switch (this.panel) {
@@ -190,7 +197,9 @@ export default defineComponent({
           panel = (
             <DatePanel
               ref='pickerPanelRef'
-              modelValue={this.internalValue}
+              value={this.internalValue}
+              multiple={this.multiple}
+              clearable={this.clearable}
               shortcuts={this.shortcuts}
               shortcutClose={this.shortcutClose}
               selectionMode={this.selectionMode}
@@ -198,6 +207,14 @@ export default defineComponent({
               startDate={this.startDate}
               focusedDate={this.focusedDate}
               disabledDate={this.disabledDate}
+              confirm={this.isConfirm}
+              showTime={this.type === 'datetime' || this.type === 'datetimerange'}
+              timePickerOptions={this.timePickerOptions}
+              onPick={this.onPick}
+              // onPick-clear={this.handleClear}
+              // onPick-success={this.onPickSuccess}
+              // onSelection-mode-change={this.onSelectionModeChange}
+              // v-slots={slots}
             />
           );
           break;
@@ -217,7 +234,7 @@ export default defineComponent({
           onMouseenter={this.handleInputMouseenter}
           onMouseleave={this.handleInputMouseleave}
         >
-          {this.$slots.trigger?.(this.displayValue) ?? this.defaultTrigger}
+          {this.$slots.trigger?.(this.displayValue) ?? renderTrigger()}
         </div>
         <Teleport
           to='body'
