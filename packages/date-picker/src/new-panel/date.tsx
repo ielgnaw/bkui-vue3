@@ -50,6 +50,7 @@ import Confirm from '../base/confirm';
 import DateTable from '../base/date-table';
 import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType, SelectionModeType } from '../interface';
 import MonthTable from '../new-base/month-table';
+import QuarterTable from '../new-base/quarter-table';
 import YearTable from '../new-base/year-table';
 import { formatDateLabels, getYearCells, iconBtnCls, siblingMonth, timePickerKey } from '../utils';
 
@@ -79,7 +80,7 @@ const datePanelProps = {
     type: String as PropType<SelectionModeType>,
     default: 'date',
     validator(v) {
-      if (['year', 'month', 'date', 'time'].indexOf(v) < 0) {
+      if (['year', 'month', 'quarter', 'date', 'time'].indexOf(v) < 0) {
         console.error(`selectionMode property is not valid: '${v}'`);
         return false;
       }
@@ -135,14 +136,16 @@ export default defineComponent({
     const dates = ref((props.value as DatePickerValueType[]).slice().sort() as any);
 
     // type: date, daterange, datetime, datetimerange => selectionMode: date
-    // type: year => selectionMode: year
     // type: month => selectionMode: month
+    // type: quarter => selectionMode: quarter
+    // type: year => selectionMode: year
     // type: time, timerange => selectionMode: time
     const currentView = ref(props.selectionMode || 'date');
 
     // currentView: date => tableType: date-table
-    // currentView: year => tableType: year-table
     // currentView: month => tableType: month-table
+    // currentView: quarter => tableType: quarter-table
+    // currentView: year => tableType: year-table
     // currentView: time => tableType: time-table
     const tableType = ref(getTableType(currentView.value));
 
@@ -400,9 +403,20 @@ export default defineComponent({
               disabledDate={this.disabledDate}
               selectionMode={this.selectionMode}
               value={this.dates as DatePickerValueType}
-              focusedDate={this.focusedDate}
-              // onPick={this.panelPickerHandlers}
+              // focusedDate={this.focusedDate}
               onPickYear={this.pickYear}
+            />
+          );
+          break;
+        case 'quarter-table':
+          view = (
+            <QuarterTable
+              tableDate={this.panelDate as Date}
+              disabledDate={this.disabledDate}
+              selectionMode={this.selectionMode}
+              value={this.dates as DatePickerValueType}
+              // focusedDate={this.focusedDate}
+              onPick={this.panelPickerHandlers}
             />
           );
           break;
@@ -413,7 +427,7 @@ export default defineComponent({
               disabledDate={this.disabledDate}
               selectionMode={this.selectionMode}
               value={this.dates as DatePickerValueType}
-              focusedDate={this.focusedDate}
+              // focusedDate={this.focusedDate}
               onPick={this.panelPickerHandlers}
             />
           );
@@ -455,6 +469,18 @@ export default defineComponent({
           );
           break;
         case 'month-table':
+          view = (
+            <>
+              <span
+                onClick={() => this.yearPanelLabelClick()}
+                class={this.resolveClassName('date-picker-header-label')}
+              >
+                {this.panelDate.getFullYear()}
+              </span>
+            </>
+          );
+          break;
+        case 'quarter-table':
           view = (
             <>
               <span

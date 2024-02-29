@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { format as dateFnsFormat, toDate } from 'date-fns';
+import { format as dateFnsFormat, parse as dateFnsParse, toDate } from 'date-fns';
 import type { InjectionKey } from 'vue';
 
 import { resolveClassName } from '@bkui-vue/shared';
@@ -138,6 +138,15 @@ export const typeValueResolver = {
     formatter: (value, format) => dateFormat(value, format),
     parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
   },
+  quarter: {
+    formatter: (value, format) => {
+      return dateFnsFormat(toDate(new Date(value)), format);
+    },
+    // parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
+    parser: (text, format) => {
+      return dateFnsParse(dateFnsFormat(text, format), format, new Date());
+    },
+  },
   year: {
     formatter: (value, format) => dateFormat(value, format),
     parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
@@ -243,6 +252,7 @@ export const extractTime = (date: Date) => {
 export const DEFAULT_FORMATS: Record<PickerTypeType, string> = {
   date: 'yyyy-MM-dd',
   month: 'yyyy-MM',
+  quarter: 'yyyy-QQQ',
   year: 'yyyy',
   datetime: 'yyyy-MM-dd HH:mm:ss',
   time: 'HH:mm:ss',

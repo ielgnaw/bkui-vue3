@@ -87,10 +87,11 @@ export function useCalendar(props, slots, emit) {
     }
 
     // type: date, daterange, datetime, datetimerange => selectionMode: date
-    // type: year => selectionMode: year
     // type: month => selectionMode: month
+    // type: quarter => selectionMode: quarter
+    // type: year => selectionMode: year
     // type: time, timerange => selectionMode: time
-    selectionMode.value = ['year', 'month', 'date', 'time'].indexOf(type) > -1 && type;
+    selectionMode.value = ['year', 'month', 'quarter', 'date', 'time'].indexOf(type) > -1 && type;
     return selectionMode.value;
   }
 

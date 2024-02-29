@@ -42,6 +42,7 @@ export const datePickerProps = {
     validator(value) {
       const validList: PickerTypeType[] = [
         'year',
+        'quarter',
         'month',
         'date',
         'daterange',

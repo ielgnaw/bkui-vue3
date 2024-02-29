@@ -47,7 +47,7 @@ import type { DatePickerProps } from './props';
 
 export type DatePickerPlacementType = ComputedPlacement;
 
-export type DatePickerTypeType = 'year' | 'month' | 'date' | 'daterange' | 'datetime' | 'datetimerange';
+export type DatePickerTypeType = 'year' | 'month' | 'quarter' | 'date' | 'daterange' | 'datetime' | 'datetimerange';
 export type TimePickerTypeType = 'time' | 'timerange';
 export type PickerTypeType = DatePickerTypeType | TimePickerTypeType;
 
@@ -76,7 +76,7 @@ export interface ITimePickerCtx {
 
 export type DatePickerPanelType = 'DateRangePanel' | 'DatePanel' | 'RangeTimePickerPanel' | 'TimePickerPanel';
 
-export type SelectionModeType = 'year' | 'month' | 'date' | 'time';
+export type SelectionModeType = 'year' | 'month' | 'quarter' | 'date' | 'time';
 
 export interface IDisabledHMS {
   disabledHours?: number[];

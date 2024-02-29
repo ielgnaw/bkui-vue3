@@ -60,10 +60,10 @@ const monthTableProps = {
       selecting: false,
     }),
   },
-  focusedDate: {
-    type: Date,
-    required: true,
-  },
+  // focusedDate: {
+  //   type: Date,
+  //   required: true,
+  // },
   cellClass: {
     type: Function,
     default: () => '',
@@ -95,7 +95,8 @@ export default defineComponent({
       const selectedDays = (dates.value as any[])
         .filter(Boolean)
         .map(date => clearHours(new Date(date.getFullYear(), date.getMonth(), 1)));
-      const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), props.focusedDate.getMonth(), 1));
+
+      // const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), props.focusedDate.getMonth(), 1));
 
       for (let i = 0; i < 12; i++) {
         const cell = JSON.parse(JSON.stringify(cellTmpl));
@@ -105,7 +106,7 @@ export default defineComponent({
         cell.disabled =
           typeof props.disabledDate === 'function' && props.disabledDate(cell.date) && props.selectionMode === 'month';
         cell.selected = selectedDays.includes(day);
-        cell.focused = day === focusedDate;
+        // cell.focused = day === focusedDate;
         cells.push(cell);
       }
 
