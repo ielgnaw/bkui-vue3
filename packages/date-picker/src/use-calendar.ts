@@ -30,7 +30,7 @@ import { usePrefix } from '@bkui-vue/config-provider';
 import { useFormItem } from '@bkui-vue/shared';
 
 import type { DatePickerPanelType, SelectionModeType } from './interface';
-import { datePickerKey, extractTime, formatDate, isAllEmptyArr, parseDate } from './utils';
+import { datePickerKey, EVENT_CODE, extractTime, formatDate, isAllEmptyArr, parseDate } from './utils';
 
 export function useCalendar(props, slots, emit) {
   const { resolveClassName } = usePrefix();
@@ -38,7 +38,9 @@ export function useCalendar(props, slots, emit) {
 
   const isRange = props.type.includes('range');
   const emptyArray = isRange ? [null, null] : [null];
+
   const initialArr = isRange ? ((props.value || props.modelValue) as any[]) : [props.value || props.modelValue];
+
   let initialValue = isAllEmptyArr(initialArr)
     ? emptyArray
     : parseDate(props.value || props.modelValue, props.type, props.multiple, props.format);
@@ -51,9 +53,9 @@ export function useCalendar(props, slots, emit) {
       initialValue = Array.isArray(v) ? v : [v];
     }
   }
+  const internalValue = ref(initialValue);
 
   const forceInputRerender = ref(1);
-  const internalValue = ref(initialValue);
   const inputRef = ref(null);
   const isFocused = ref(false);
   const visible = ref(false);
@@ -71,8 +73,12 @@ export function useCalendar(props, slots, emit) {
     time: initialValue.map(extractTime),
     active: false,
   });
+
+  // input 输入框输入的值
+  const userInputValue = ref(formatDate(props.value || props.modelValue, props.type, props.multiple, props.format));
+
   // for 编辑时，mouseleave 事件中缓存的 value
-  const tmpValue = ref(initialValue);
+  // const tmpValue = ref(initialValue);
 
   const focusedDate = ref(initialValue[0] || props.startDate || new Date());
 
@@ -108,17 +114,27 @@ export function useCalendar(props, slots, emit) {
       return;
     }
     isFocused.value = true;
-    if (e && e.type === 'focus') {
-      return;
-    }
+    // console.error('focusfocusfocusfocus');
     if (!props.disabled) {
       visible.value = true;
       // emit('changeVisible', state.visible);
     }
+    // if (props.readonly) {
+    //   return;
+    // }
+    // isFocused.value = true;
+    // if (e && e.type === 'focus') {
+    //   return;
+    // }
+    // if (!props.disabled) {
+    //   visible.value = true;
+    //   // emit('changeVisible', state.visible);
+    // }
   };
 
   const handleBlur = e => {
-    console.error('handleBlurhandleBlurhandleBlur');
+    // console.error('handleBlurhandleBlurhandleBlur');
+    visible.value = false;
     // if (internalFocus.value) {
     //   internalFocus.value = false;
     //   return;
@@ -143,17 +159,17 @@ export function useCalendar(props, slots, emit) {
     if (props.readonly || props.disabled) {
       return;
     }
-    if (visualValue?.value) {
-      showClose.value = true;
-    }
-    internalValue.value = tmpValue.value;
+    // if (visualValue?.value) {
+    showClose.value = true;
+    // }
+    // internalValue.value = tmpValue.value;
   };
   const handleInputMouseleave = _e => {
     // if (e.toElement?.classList.contains('clear-action')) {
     //   return;
     // }
     showClose.value = false;
-    internalValue.value = tmpValue.value;
+    // internalValue.value = tmpValue.value;
   };
 
   const handleClose = (e?: Event) => {
@@ -166,6 +182,7 @@ export function useCalendar(props, slots, emit) {
       e.stopPropagation();
       return;
     }
+    console.error('handleClosehandleClosehandleClose', visible.value);
     if (visible.value) {
       const pickerPanel = pickerPanelRef?.value?.$el;
       if (e && pickerPanel && pickerPanel.contains(e.target)) {
@@ -186,60 +203,70 @@ export function useCalendar(props, slots, emit) {
   };
 
   const handleKeydown = (e: KeyboardEvent) => {
-    const { keyCode } = e;
-    // tab
-    if (keyCode === 9) {
-      if (visible.value) {
-        e.stopPropagation();
-        e.preventDefault();
-        if (isConfirm.value) {
-          const selector = `.${resolveClassName('picker-confirm')} > *`;
-          const tabbable = pickerDropdownRef.value.$el.querySelectorAll(selector);
-          internalFocus.value = true;
-          const element = [...tabbable][e.shiftKey ? 'pop' : 'shift']();
-          element.focus();
-        } else {
-          handleClose();
-        }
-      } else {
-        // this.focused = false;
-      }
-    }
-    // left, top, right, bottom
-    const arrows = [37, 38, 39, 40];
-    if (!visible.value && arrows.includes(keyCode)) {
-      visible.value = true;
-      // emit('changeVisible', visible.value);
+    if (props.readonly || props.disabled) {
       return;
     }
-    // esc
-    if (keyCode === 27) {
-      if (visible.value) {
-        e.stopPropagation();
-        handleClose();
-      }
+
+    const { code } = e;
+    if (code === EVENT_CODE.enter || code === EVENT_CODE.numpadEnter) {
+      // 刷新 input，文本改变时，会触发 change 事件即执行 handleInputChange
+      forceInputRerender.value = forceInputRerender.value + 1;
     }
-    // enter
-    // if (keyCode === 13 && state.timeEnterMode) {
-    //   const timePickers = findChildComponents(this, 'TimeSpinner');
-    //   if (timePickers.length > 0) {
-    //     const columnsPerPicker = timePickers[0].showSeconds ? 3 : 2;
-    //     const pickerIndex = Math.floor(state.focusedTime.column / columnsPerPicker);
-    //     const value = state.focusedTime.time[pickerIndex];
-    //     timePickers[pickerIndex].chooseValue(value);
-    //     return;
+
+    // const { keyCode } = e;
+    // // tab
+    // if (keyCode === 9) {
+    //   if (visible.value) {
+    //     e.stopPropagation();
+    //     e.preventDefault();
+    //     if (isConfirm.value) {
+    //       const selector = `.${resolveClassName('picker-confirm')} > *`;
+    //       const tabbable = pickerDropdownRef.value.$el.querySelectorAll(selector);
+    //       internalFocus.value = true;
+    //       const element = [...tabbable][e.shiftKey ? 'pop' : 'shift']();
+    //       element.focus();
+    //     } else {
+    //       handleClose();
+    //     }
+    //   } else {
+    //     // this.focused = false;
     //   }
     // }
-    if (!arrows.includes(keyCode)) {
-      return;
-    }
-    if (focusedTime.value.active) {
-      e.preventDefault();
-    }
-    // const timePickers = findChildComponents(this, 'TimeSpinner');
-    // if (timePickers.length > 0) {
-    //   this.navigateTimePanel(keyValueMapper[keyCode]);
+    // // left, top, right, bottom
+    // const arrows = [37, 38, 39, 40];
+    // if (!visible.value && arrows.includes(keyCode)) {
+    //   visible.value = true;
+    //   // emit('changeVisible', visible.value);
+    //   return;
     // }
+    // // esc
+    // if (keyCode === 27) {
+    //   if (visible.value) {
+    //     e.stopPropagation();
+    //     handleClose();
+    //   }
+    // }
+    // // enter
+    // // if (keyCode === 13 && state.timeEnterMode) {
+    // //   const timePickers = findChildComponents(this, 'TimeSpinner');
+    // //   if (timePickers.length > 0) {
+    // //     const columnsPerPicker = timePickers[0].showSeconds ? 3 : 2;
+    // //     const pickerIndex = Math.floor(state.focusedTime.column / columnsPerPicker);
+    // //     const value = state.focusedTime.time[pickerIndex];
+    // //     timePickers[pickerIndex].chooseValue(value);
+    // //     return;
+    // //   }
+    // // }
+    // if (!arrows.includes(keyCode)) {
+    //   return;
+    // }
+    // if (focusedTime.value.active) {
+    //   e.preventDefault();
+    // }
+    // // const timePickers = findChildComponents(this, 'TimeSpinner');
+    // // if (timePickers.length > 0) {
+    // //   this.navigateTimePanel(keyValueMapper[keyCode]);
+    // // }
   };
 
   const emitChange = (type = selectionMode.value) => {
@@ -272,32 +299,48 @@ export function useCalendar(props, slots, emit) {
   };
 
   const handleInputChange = e => {
+    // debugger;
+    const newDate = parseDate(userInputValue.value, props.type, props.multiple, props.format);
+    const isValidDate = newDate.reduce((valid, date) => valid && date instanceof Date, true);
     const isArrayValue = props.type.includes('range') || props.multiple;
-    const oldValue = visualValue.value;
-    const newValue = e.target.value;
-    const newDate = parseDate(newValue, props.type, props.multiple, props.format);
     const valueToTest = isArrayValue ? newDate : newDate[0];
     const isDisabled = props.disabledDate?.(valueToTest);
-    const isValidDate = newDate.reduce((valid, date) => valid && date instanceof Date, true);
-    if (newValue !== oldValue && !isDisabled && isValidDate) {
-      emitChange(props.type);
+    if (!isDisabled && isValidDate) {
+      // 格式化，例如输入 2024-1 则格式化成 2024-01，输入框显示的值 displayValue 会根据 userInputValue 的值来变化
+      userInputValue.value = formatDate(e.target.value, props.type, props.multiple, props.format);
       internalValue.value = newDate;
+      emitChange(props.type);
     } else {
-      forceInputRerender.value = forceInputRerender.value + 1;
+      // 输入不正确，或者输入的数据是 disabled 的，那么就还原之前的
+      userInputValue.value = formatDate(internalValue.value[0], props.type, props.multiple, props.format);
     }
+
+    // const oldValue = visualValue.value;
+    // const newValue = e.target.value;
+    // const newDate = parseDate(newValue, props.type, props.multiple, props.format);
+    // const valueToTest = isArrayValue ? newDate : newDate[0];
+    // const isDisabled = props.disabledDate?.(valueToTest);
+    // const isValidDate = newDate.reduce((valid, date) => valid && date instanceof Date, true);
+    // if (newValue !== oldValue && !isDisabled && isValidDate) {
+    //   emitChange(props.type);
+    //   internalValue.value = newDate;
+    // } else {
+    //   forceInputRerender.value = forceInputRerender.value + 1;
+    // }
   };
 
   const handleInputInput = e => {
-    const isArrayValue = props.type.includes('range') || props.multiple;
-    const oldValue = visualValue.value;
-    const newValue = e.target.value;
-    const newDate = parseDate(newValue, props.type, props.multiple, props.format);
-    const valueToTest = isArrayValue ? newDate : newDate[0];
-    const isDisabled = props.disabledDate?.(valueToTest);
-    const isValidDate = newDate.reduce((valid, date) => valid && date instanceof Date, true);
-    if (newValue !== oldValue && !isDisabled && isValidDate) {
-      tmpValue.value = newDate;
-    }
+    userInputValue.value = e.target.value;
+    //   const isArrayValue = props.type.includes('range') || props.multiple;
+    //   const oldValue = visualValue.value;
+    //   const newValue = e.target.value;
+    //   const newDate = parseDate(newValue, props.type, props.multiple, props.format);
+    //   const valueToTest = isArrayValue ? newDate : newDate[0];
+    //   const isDisabled = props.disabledDate?.(valueToTest);
+    //   const isValidDate = newDate.reduce((valid, date) => valid && date instanceof Date, true);
+    //   if (newValue !== oldValue && !isDisabled && isValidDate) {
+    //     tmpValue.value = newDate;
+    //   }
   };
 
   const onPick = (_dates, _visible = false, _shortcut) => {
@@ -311,14 +354,12 @@ export function useCalendar(props, slots, emit) {
         .filter((ts, i, arr) => arr.indexOf(ts) === i && i !== indexOfPickedDate);
       internalValue.value = timeStamps.map(ts => new Date(ts));
     } else {
-      // dates = this.parseDate(dates);
       dates = parseDate(_dates, props.type, props.multiple, props.format);
       internalValue.value = Array.isArray(dates) ? dates : [dates];
       // console.error('internalValue.value', internalValue.value);
     }
 
     if (internalValue.value[0]) {
-      // focusedDate.value = internalValue.value[0];
       [focusedDate.value] = internalValue.value;
     }
 
@@ -405,14 +446,25 @@ export function useCalendar(props, slots, emit) {
 
   const opened = computed(() => (props.open === null ? visible.value : props.open));
 
-  const visualValue = computed(() => formatDate(internalValue.value, props.type, props.multiple, props.format));
+  // const visualValue = computed(() => {
+  //   debugger;
+  //   return formatDate(internalValue.value, props.type, props.multiple, props.format);
+  // });
 
+  // input 输入框显示的值
   const displayValue = computed(() => {
     // 展示快捷文案
-    if (shortcut.value?.text && props.useShortcutText) {
-      return shortcut.value.text;
+    // if (shortcut.value?.text && props.useShortcutText) {
+    //   return shortcut.value.text;
+    // }
+    // return visualValue.value;
+
+    if (userInputValue.value !== null) {
+      return userInputValue.value;
     }
-    return visualValue.value;
+    return '';
+
+    // return userInputValue.value || '';
   });
 
   const isConfirm = computed(
@@ -481,7 +533,8 @@ export function useCalendar(props, slots, emit) {
   watch(
     () => internalValue.value,
     v => {
-      tmpValue.value = v;
+      const d = Array.isArray(v) ? v[0] : v;
+      userInputValue.value = formatDate(d, props.type, props.multiple, props.format);
     },
   );
 

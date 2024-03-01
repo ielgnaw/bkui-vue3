@@ -14,7 +14,7 @@
       月选择器 {{ monthValue }}
     </p>
     <bk-date-picker
-      v-model="initDateTime"
+      v-model="initMonthDateTime"
       type="month"
       @change="handleMonthChange"
     />
@@ -25,7 +25,7 @@
       季度选择器 {{ quarterValue }}
     </p>
     <bk-date-picker
-      v-model="initDateTime"
+      v-model="initQuarterDateTime"
       type="quarter"
       @change="handleQuarterChange"
     />
@@ -40,19 +40,22 @@
     console.warn('handleChange', val, initDateTime);
     yearValue.value = val;
   };
-  setTimeout(() => {
-    console.error(('setTimeoutsetTimeoutsetTimeout'));
-    initDateTime.value = new Date(2220, 1, 19);
-  }, 3000);
+  // setTimeout(() => {
+  //   console.error(('setTimeoutsetTimeoutsetTimeout'));
+  //   initDateTime.value = new Date(2220, 1, 19);
+  // }, 3000);
+
+  const initMonthDateTime = ref(new Date(2012, 5));
   const monthValue = ref('');
   const handleMonthChange = (val) => {
-    console.warn('handleChange', val, initDateTime);
+    console.warn('handleChange', val, initMonthDateTime);
     monthValue.value = val;
   };
 
+  const initQuarterDateTime = ref(new Date(2016, 3, 5));
   const quarterValue = ref('');
   const handleQuarterChange = (val) => {
-    console.warn('handleChange', val, initDateTime);
+    console.warn('handleChange', val, initQuarterDateTime);
     quarterValue.value = val;
   };
 </script>

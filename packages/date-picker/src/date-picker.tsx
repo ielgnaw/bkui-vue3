@@ -157,6 +157,7 @@ export default defineComponent({
           >
             {this.type === 'time' || this.type === 'timerange' ? timeIcon : dateIcon}
           </span>
+          {this.displayValue}--{this.showClose}--
           <input
             type='text'
             class={[
@@ -172,7 +173,12 @@ export default defineComponent({
             disabled={this.disabled}
             placeholder={this.placeholder}
             value={this.displayValue}
-            onClick={this.handleFocus}
+            // onClick={this.handleFocus}
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+            onFocus={this.handleFocus}
             onBlur={this.handleBlur}
             onKeydown={this.handleKeydown}
             onChange={this.handleInputChange}

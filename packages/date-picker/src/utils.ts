@@ -24,13 +24,31 @@
  * IN THE SOFTWARE.
  */
 
-import { format as dateFnsFormat, parse as dateFnsParse, toDate } from 'date-fns';
+import { format as dateFnsFormat, isValid, parse as dateFnsParse /* , toDate */ } from 'date-fns';
 import type { InjectionKey } from 'vue';
 
 import { resolveClassName } from '@bkui-vue/shared';
 
 import fecha from './fecha';
 import type { IDatePickerCtx, ITimePickerCtx, PickerTypeType } from './interface';
+
+export const EVENT_CODE = {
+  tab: 'Tab',
+  enter: 'Enter',
+  space: 'Space',
+  left: 'ArrowLeft', // 37
+  up: 'ArrowUp', // 38
+  right: 'ArrowRight', // 39
+  down: 'ArrowDown', // 40
+  esc: 'Escape',
+  delete: 'Delete',
+  backspace: 'Backspace',
+  numpadEnter: 'NumpadEnter',
+  pageUp: 'PageUp',
+  pageDown: 'PageDown',
+  home: 'Home',
+  end: 'End',
+};
 
 export const RANGE_SEPARATOR = ' - ';
 
@@ -59,7 +77,12 @@ export const RANGE_SEPARATOR = ' - ';
 // };
 
 const dateFormat = (_date, format) => {
-  const date = toDate(new Date(_date));
+  // const date = toDate(new Date(_date));
+  if (_date instanceof Date) {
+    return dateFnsFormat(_date, format || 'yyyy-MM-dd');
+  }
+
+  const date = dateFnsParse(_date, format || 'yyyy-MM-dd', new Date());
   if (!date || isNaN(date.getTime())) {
     return '';
   }
@@ -135,16 +158,30 @@ export const typeValueResolver = {
     parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
   },
   month: {
-    formatter: (value, format) => dateFormat(value, format),
-    parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
-  },
-  quarter: {
     formatter: (value, format) => {
-      return dateFnsFormat(toDate(new Date(value)), format);
+      return dateFormat(value, format);
     },
     // parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
     parser: (text, format) => {
-      return dateFnsParse(dateFnsFormat(text, format), format, new Date());
+      const parseRet = dateFnsParse(text, format, new Date());
+      if (isValid(parseRet)) {
+        return parseRet;
+      }
+      return false;
+    },
+  },
+  quarter: {
+    formatter: (value, format) => {
+      // return dateFnsFormat(toDate(new Date(value)), format);
+      return dateFormat(value, format);
+    },
+    // parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
+    parser: (text, format) => {
+      const parseRet = dateFnsParse(text, format || 'yyyy-QQQ', new Date());
+      if (isValid(parseRet)) {
+        return parseRet;
+      }
+      return false;
     },
   },
   year: {
