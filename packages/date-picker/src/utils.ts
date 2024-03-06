@@ -505,3 +505,5 @@ export const mergeDateHMS = (date, ...hms) => {
 };
 
 export const capitalize = str => str[0].toUpperCase() + str.slice(1);
+
+export const pad = str => (String(str).length > 1 ? str : `0${str}`);

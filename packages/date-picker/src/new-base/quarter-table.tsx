@@ -75,7 +75,7 @@ export type QuarterTableProps = Readonly<ExtractPropTypes<typeof quarterTablePro
 export default defineComponent({
   name: 'QuarterTable',
   props: quarterTableProps,
-  emits: ['pick', 'pick-click', 'change-range'],
+  emits: ['pick', 'pickClick', 'changeRange'],
   setup(props, { emit }) {
     const dates = computed(() => {
       const { /* selectionMode */ value, rangeState } = props;
@@ -136,7 +136,7 @@ export default defineComponent({
       const newDate = new Date(clearHours(cell.date));
 
       emit('pick', newDate);
-      emit('pick-click');
+      emit('pickClick');
     };
 
     const handleMouseMove = cell => {
@@ -147,7 +147,7 @@ export default defineComponent({
         return;
       }
       const newDate = cell.date;
-      emit('change-range', newDate);
+      emit('changeRange', newDate);
     };
 
     return {

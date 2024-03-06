@@ -26,7 +26,7 @@
 
 // import type { Placement } from '@popperjs/core';
 // import { bkZIndexManager, BKPopover, IBKPopover } from '@bkui-vue/shared';
-import type { ExtractPropTypes } from 'vue';
+import type { ExtractPropTypes, VNode } from 'vue';
 import {
   // onMounted,
   // onBeforeUnmount,
@@ -39,7 +39,6 @@ import {
   reactive,
   ref,
   toRefs,
-  type VNode,
   watch,
 } from 'vue';
 
@@ -47,12 +46,12 @@ import { usePrefix } from '@bkui-vue/config-provider';
 import { AngleDoubleLeft, AngleDoubleRight, AngleLeft, AngleRight } from '@bkui-vue/icon';
 
 import Confirm from '../base/confirm';
-import DateTable from '../base/date-table';
 import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType, SelectionModeType } from '../interface';
+import DateTable from '../new-base/date-table';
 import MonthTable from '../new-base/month-table';
 import QuarterTable from '../new-base/quarter-table';
 import YearTable from '../new-base/year-table';
-import { formatDateLabels, getYearCells, iconBtnCls, siblingMonth, timePickerKey } from '../utils';
+import { formatDateLabels, getYearCells, iconBtnCls, pad, siblingMonth, timePickerKey } from '../utils';
 
 import Time from './time';
 
@@ -189,17 +188,20 @@ export default defineComponent({
     };
 
     const handlePreSelection = value => {
-      console.error('handlePreSelection', value);
       panelDate.value = value;
-      if (tableType.value === 'year-table') {
-        tableType.value = 'month-table';
+      if (currentView.value === 'date') {
+        if (tableType.value === 'year-table') {
+          tableType.value = 'month-table';
+        } else if (tableType.value === 'month-table') {
+          tableType.value = 'date-table';
+        }
       } else {
         tableType.value = getTableType(currentView.value);
       }
     };
 
     const handlePick = (value, _visible = false, type, _shortcut) => {
-      console.error('handlePick', value, _visible, type, _shortcut);
+      // console.error('handlePick', value, _visible, type, _shortcut);
       let val = value;
       if (props.selectionMode === 'year') {
         val = new Date(value.getFullYear(), 0, 1);
@@ -219,23 +221,9 @@ export default defineComponent({
       tableType.value = getTableType(currentView.value);
     };
 
-    const panelPickerHandlers = computed(() =>
-      tableType.value === `${currentView.value}-table` ? handlePick : handlePreSelection,
-    );
-
-    const pickYear = value => {
-      let val = value;
-      // 当前 datepicker 的 type 不是 year，说明是点击 datepicker 里的年份切换到年选择器的
-      if (tableType.value !== `${currentView.value}-table`) {
-        panelDate.value = value;
-        tableType.value = getTableType(currentView.value);
-      } else {
-        val = new Date(value.getFullYear(), 0, 1);
-        dates.value = [val];
-        emit('pick', val);
-      }
-      // emit('pick', val, false, type || props.selectionMode);
-    };
+    const panelPickerHandlers = computed(() => {
+      return tableType.value === `${currentView.value}-table` ? handlePick : handlePreSelection;
+    });
 
     // const { proxy } = getCurrentInstance();
     // provide(timePickerKey, {
@@ -316,13 +304,13 @@ export default defineComponent({
       };
     });
 
-    const showLabelFirst = computed(
-      () => (datePanelLabel as any).value.labels[0].type === 'year' || currentView.value === 'date',
-    );
+    // const showLabelFirst = computed(
+    //   () => (datePanelLabel as any).value.labels[0].type === 'year' || currentView.value === 'date',
+    // );
 
-    const showLabelSecond = computed(
-      () => (datePanelLabel as any).value.labels[1].type === 'year' || currentView.value === 'date',
-    );
+    // const showLabelSecond = computed(
+    //   () => (datePanelLabel as any).value.labels[1].type === 'year' || currentView.value === 'date',
+    // );
 
     // watch(
     //   currentView,
@@ -343,8 +331,8 @@ export default defineComponent({
 
     // const { resolveClassName } = usePrefix();
 
-    const yearPanelLabelClick = () => {
-      tableType.value = getTableType('year');
+    const panelLabelClick = (type: string) => {
+      tableType.value = getTableType(type);
     };
 
     return {
@@ -355,12 +343,11 @@ export default defineComponent({
       panelDate,
       hasShortcuts,
       datePanelLabel,
-      showLabelFirst,
-      showLabelSecond,
+      // showLabelFirst,
+      // showLabelSecond,
 
       changeYear,
       changeMonth,
-      pickYear,
 
       timeDisabled,
       isTime,
@@ -369,7 +356,7 @@ export default defineComponent({
       panelPickerHandlers,
       reset,
 
-      yearPanelLabelClick,
+      panelLabelClick,
 
       // datePanelLabel,
       // handleShortcutClick,
@@ -394,7 +381,16 @@ export default defineComponent({
       let view: VNode = null;
       switch (this.tableType) {
         case 'date-table':
-          view = <div>date-table</div>;
+          view = (
+            <DateTable
+              tableDate={this.panelDate as Date}
+              disabledDate={this.disabledDate}
+              selectionMode={this.selectionMode}
+              value={this.dates as DatePickerValueType}
+              // focusedDate={this.focusedDate}
+              onPick={this.panelPickerHandlers}
+            />
+          );
           break;
         case 'year-table':
           view = (
@@ -404,7 +400,7 @@ export default defineComponent({
               selectionMode={this.selectionMode}
               value={this.dates as DatePickerValueType}
               // focusedDate={this.focusedDate}
-              onPickYear={this.pickYear}
+              onPick={this.panelPickerHandlers}
             />
           );
           break;
@@ -455,7 +451,25 @@ export default defineComponent({
       const lastYear = yearCells[yearCells.length - 1].date;
       switch (this.tableType) {
         case 'date-table':
-          view = <div>date-table</div>;
+          view = (
+            <>
+              <span>
+                <span
+                  class={this.resolveClassName('date-picker-header-label')}
+                  onClick={() => this.panelLabelClick('year')}
+                >
+                  {this.panelDate.getFullYear()}
+                </span>
+                {this.currentView === 'date' ? ` ${this.datePanelLabel.separator} ` : ' '}
+                <span
+                  class={this.resolveClassName('date-picker-header-label')}
+                  onClick={() => this.panelLabelClick('month')}
+                >
+                  {pad(this.panelDate.getMonth() + 1)}
+                </span>
+              </span>
+            </>
+          );
           break;
         case 'year-table':
           view = (
@@ -472,7 +486,7 @@ export default defineComponent({
           view = (
             <>
               <span
-                onClick={() => this.yearPanelLabelClick()}
+                onClick={() => this.panelLabelClick('year')}
                 class={this.resolveClassName('date-picker-header-label')}
               >
                 {this.panelDate.getFullYear()}
@@ -484,7 +498,7 @@ export default defineComponent({
           view = (
             <>
               <span
-                onClick={() => this.yearPanelLabelClick()}
+                onClick={() => this.panelLabelClick('year')}
                 class={this.resolveClassName('date-picker-header-label')}
               >
                 {this.panelDate.getFullYear()}

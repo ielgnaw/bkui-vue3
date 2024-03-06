@@ -157,7 +157,7 @@ export default defineComponent({
           >
             {this.type === 'time' || this.type === 'timerange' ? timeIcon : dateIcon}
           </span>
-          {this.displayValue}--{this.showClose}--
+          {/* {this.displayValue}--{this.showClose}-- */}
           <input
             type='text'
             class={[

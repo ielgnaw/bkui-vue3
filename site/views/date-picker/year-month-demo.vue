@@ -1,14 +1,14 @@
 <template>
-  <!-- <div>
+  <div>
     <p style="font-size: 14px;">
       年选择器 {{ yearValue }}
     </p>
     <bk-date-picker
-      v-model="initDateTime"
+      v-model="initYearDateTime"
       type="year"
       @change="handleYearChange"
     />
-  </div> -->
+  </div>
   <div>
     <p style="font-size: 14px;">
       月选择器 {{ monthValue }}
@@ -34,10 +34,10 @@
 
 <script setup>
   import { ref } from 'vue';
-  const initDateTime = ref(new Date(2016, 12, 5));
+  const initYearDateTime = ref(new Date(2016, 12, 5));
   const yearValue = ref('');
   const handleYearChange = (val) => {
-    console.warn('handleChange', val, initDateTime);
+    console.warn('handleChange', val, initYearDateTime);
     yearValue.value = val;
   };
   // setTimeout(() => {

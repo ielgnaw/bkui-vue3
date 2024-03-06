@@ -75,7 +75,7 @@ export type YearTableProps = Readonly<ExtractPropTypes<typeof yearTableProps>>;
 export default defineComponent({
   name: 'YearTable',
   props: yearTableProps,
-  emits: ['pickYear' /* 'pick-click', 'change-range' */],
+  emits: ['pick' /* 'pick-click', 'change-range' */],
   setup(props, { emit }) {
     const { resolveClassName } = usePrefix();
 
@@ -95,7 +95,7 @@ export default defineComponent({
 
       const newDate = new Date(clearHours(cell.date));
 
-      emit('pickYear', newDate);
+      emit('pick', newDate);
       // emit('pick-click');
     };
 

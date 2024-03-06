@@ -1,13 +1,24 @@
 <template>
-  <bk-date-picker
-    v-model="dateValue"
-    clearable
-    :disable-date="disableDate"
-  />
+  <div>
+    <p style="font-size: 14px;">
+      日期选择器 {{ dateValue }}
+    </p>
+    <bk-date-picker
+      v-model="initDate"
+      clearable
+      :disable-date="disableDate"
+      @change="handleChange"
+    />
+  </div>
 </template>
 
 <script setup>
   import { ref } from 'vue';
-  const dateValue = ref(new Date());
+  const initDate = ref(new Date());
   const disableDate = date => date && date.valueOf() < Date.now() - 86400;
+  const dateValue = ref('');
+  const handleChange = (val) => {
+    console.warn('handleChange', val, initDate);
+    dateValue.value = val;
+  };
 </script>
