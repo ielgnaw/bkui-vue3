@@ -2,7 +2,7 @@
 
 .@{bk-prefix}-date-picker {
   display: inline-block;
-  width: 261px;
+  width: var(--panel-width);
   line-height: normal;
 
   &.long {
@@ -302,7 +302,7 @@
 
   span {
     display: inline-block;
-    width: 34px;
+    width: 33px;
     height: 32px;
     line-height: 32px;
     text-align: center;
@@ -316,6 +316,7 @@
       line-height: 32px;
 
       cursor: pointer;
+      border-radius: 4px;
     }
   }
 
@@ -323,7 +324,7 @@
     text-align: center;
 
     span {
-      width: 28px;
+      width: 27px;
       height: 26px;
       margin: 3px;
       line-height: 26px;
@@ -427,21 +428,22 @@ span.@{bk-prefix}-date-picker-cells-cell-disabled.@{bk-prefix}-date-picker-cells
 
 .@{bk-prefix}-date-picker-cells-year,
 .@{bk-prefix}-date-picker-cells-month {
-  margin-top: 7px;
+  margin-top: 4px;
 
   span {
-    width: 36px;
-    height: 32px;
-    margin: 10px 12px;
-    line-height: 32px;
+    width: 42px;
+    height: 28px;
+    margin: 4px 8px;
+    line-height: 28px;
     text-align: center;
     border-radius: 3px;
 
     em {
       width: 36px;
-      height: 32px;
-      line-height: 32px;
+      height: 28px;
+      line-height: 28px;
       text-align: center;
+      border-radius: 4px;
     }
   }
 }
@@ -467,10 +469,11 @@ span.@{bk-prefix}-date-picker-cells-cell-disabled.@{bk-prefix}-date-picker-cells
 
 .@{bk-prefix}-date-picker-prev-btn {
   float: left;
+  margin-left: 4px;
 }
 
 .@{bk-prefix}-date-picker-prev-btn-arrow-double {
-  margin-left: 10px;
+  margin-left: 12px;
 }
 
 .@{bk-prefix}-date-picker-prev-btn-arrow-double i:after {
@@ -479,10 +482,11 @@ span.@{bk-prefix}-date-picker-cells-cell-disabled.@{bk-prefix}-date-picker-cells
 
 .@{bk-prefix}-date-picker-next-btn {
   float: right;
+  margin-right: 4px;
 }
 
 .@{bk-prefix}-date-picker-next-btn-arrow-double {
-  margin-right: 10px;
+  margin-right: 12px;
 }
 
 .@{bk-prefix}-date-picker-next-btn-arrow-double i:after {

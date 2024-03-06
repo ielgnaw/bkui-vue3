@@ -32,6 +32,9 @@ import { resolveClassName } from '@bkui-vue/shared';
 import fecha from './fecha';
 import type { IDatePickerCtx, ITimePickerCtx, PickerTypeType } from './interface';
 
+// 单个 panel 的宽度
+export const PANEL_WIDTH = 250;
+
 export const EVENT_CODE = {
   tab: 'Tab',
   enter: 'Enter',

@@ -74,14 +74,6 @@ export default defineComponent({
         >
           <BaseDemo />
         </DemoBox>
-        {/* <DemoBox
-          title='开启日期时间范围'
-          desc='通过设置 type 属性为 datetimerange 来开启时间设置'
-          componentName='date-picker'
-          demoName='range-demo'
-        >
-          <RangeDemo />
-        </DemoBox>
         <DemoBox
           title='开启时间设置'
           desc='通过设置 type 属性为 datetime 来开启时间设置'
@@ -89,6 +81,14 @@ export default defineComponent({
           demoName='with-time-demo'
         >
           <WithTimeDemo />
+        </DemoBox>
+        {/* <DemoBox
+          title='开启日期时间范围'
+          desc='通过设置 type 属性为 datetimerange 来开启时间设置'
+          componentName='date-picker'
+          demoName='range-demo'
+        >
+          <RangeDemo />
         </DemoBox>
         <DemoBox
           title='trigger slot'

@@ -38,6 +38,7 @@ import DatePanel from './new-panel/date';
 import DateRangePanel from './panel/date-range';
 import { datePickerProps } from './props';
 import { useCalendar } from './use-calendar';
+import { PANEL_WIDTH } from './utils';
 
 export default defineComponent({
   name: 'DatePicker',
@@ -209,7 +210,6 @@ export default defineComponent({
               shortcuts={this.shortcuts}
               shortcutClose={this.shortcutClose}
               selectionMode={this.selectionMode}
-              panelWidth={this.panelWidth}
               startDate={this.startDate}
               focusedDate={this.focusedDate}
               disabledDate={this.disabledDate}
@@ -232,6 +232,9 @@ export default defineComponent({
     return (
       <div
         class={[this.resolveClassName('date-picker'), this.type === 'datetimerange' ? 'long' : '', this.longWidthCls]}
+        style={{
+          '--panel-width': `${PANEL_WIDTH}px`,
+        }}
         v-clickoutside={this.handleClose}
       >
         <div
@@ -261,7 +264,7 @@ export default defineComponent({
                   {this.$slots.header?.() ?? null}
                 </div>
               ) : null}
-              {this.panel}--{this.type}--{this.selectionMode}
+              {/* {this.panel}--{this.type}--{this.selectionMode} */}
               {renderPanel()}
               {/* {this.panel === 'DateRangePanel' ? (
                 <DateRangePanel

@@ -76,7 +76,8 @@ export interface ITimePickerCtx {
 
 export type DatePickerPanelType = 'DateRangePanel' | 'DatePanel' | 'RangeTimePickerPanel' | 'TimePickerPanel';
 
-export type SelectionModeType = 'year' | 'month' | 'quarter' | 'date' | 'time';
+// export type SelectionModeType = 'year' | 'month' | 'quarter' | 'date' | 'time';
+export type SelectionModeType = PickerTypeType;
 
 export interface IDisabledHMS {
   disabledHours?: number[];

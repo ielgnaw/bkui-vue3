@@ -59,7 +59,7 @@ export function useCalendar(props, slots, emit) {
   const inputRef = ref(null);
   const isFocused = ref(false);
   const visible = ref(false);
-  const internalFocus = ref(false);
+  // const internalFocus = ref(false);
   const selectionMode = ref<SelectionModeType>('date');
   const pickerPanelRef = ref(null);
   const pickerDropdownRef = ref(null);
@@ -83,21 +83,24 @@ export function useCalendar(props, slots, emit) {
   const focusedDate = ref(initialValue[0] || props.startDate || new Date());
 
   function onSelectionModeChange(_type): SelectionModeType {
-    let type = _type;
-    if (_type.match(/^date/)) {
-      type = 'date';
-    }
+    // let type = _type;
+    // if (_type.match(/^date/)) {
+    //   type = 'date';
+    // }
 
-    if (_type.match(/^time/)) {
-      type = 'time';
-    }
+    // if (_type.match(/time/)) {
+    //   type = 'time';
+    // }
 
-    // type: date, daterange, datetime, datetimerange => selectionMode: date
-    // type: month => selectionMode: month
-    // type: quarter => selectionMode: quarter
-    // type: year => selectionMode: year
-    // type: time, timerange => selectionMode: time
-    selectionMode.value = ['year', 'month', 'quarter', 'date', 'time'].indexOf(type) > -1 && type;
+    // // type: date, daterange, datetime, datetimerange => selectionMode: date
+    // // type: month => selectionMode: month
+    // // type: quarter => selectionMode: quarter
+    // // type: year => selectionMode: year
+    // // type: time, timerange => selectionMode: time
+    // console.error(3444, type);
+    // selectionMode.value = ['year', 'month', 'quarter', 'date', 'time'].indexOf(type) > -1 && type;
+    // return selectionMode.value;
+    selectionMode.value = _type;
     return selectionMode.value;
   }
 
@@ -182,7 +185,6 @@ export function useCalendar(props, slots, emit) {
       e.stopPropagation();
       return;
     }
-    console.error('handleClosehandleClosehandleClose', visible.value);
     if (visible.value) {
       const pickerPanel = pickerPanelRef?.value?.$el;
       if (e && pickerPanel && pickerPanel.contains(e.target)) {
