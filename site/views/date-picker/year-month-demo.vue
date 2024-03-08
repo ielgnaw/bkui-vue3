@@ -3,9 +3,18 @@
     <p style="font-size: 14px;">
       年选择器 {{ yearValue }}
     </p>
+    <!-- <bk-date-picker
+      :value="initYearDateTime"
+      type="year"
+      :open="true"
+      @change="handleYearChange"
+    /> -->
+
+    <!-- :cell-class="getCellClass" -->
     <bk-date-picker
       v-model="initYearDateTime"
       type="year"
+      :append-to-body="false"
       @change="handleYearChange"
     />
   </div>
@@ -19,7 +28,7 @@
       @change="handleQuarterChange"
     />
   </div>
-  <div>
+  <!-- <div>
     <p style="font-size: 14px;">
       月选择器 {{ monthValue }}
     </p>
@@ -28,7 +37,7 @@
       type="month"
       @change="handleMonthChange"
     />
-  </div>
+  </div> -->
 </template>
 
 <script setup>
@@ -51,10 +60,30 @@
     monthValue.value = val;
   };
 
-  const initQuarterDateTime = ref(new Date(2024, 3, 5));
+  const initQuarterDateTime = ref(new Date(2018, 5, 5));
   const quarterValue = ref('');
   const handleQuarterChange = (val) => {
     console.warn('handleChange', val, initQuarterDateTime);
     quarterValue.value = val;
   };
+
+  const getCellClass = (_cell) => {
+    const hasPoint = Math.random() * 10 > 5;
+    return hasPoint ? 'cell-x-Class' : '';
+  };
 </script>
+<style lang="less">
+  .cell-x-Class {
+    position: relative;
+    &::after {
+      content: '';
+      background: red;
+      position: absolute;
+      left: 15px;
+      bottom: 0;
+      border-radius: 50%;
+      border: solid 1px red;
+      width: 26px;
+    }
+  }
+</style>

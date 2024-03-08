@@ -32,6 +32,13 @@ import { resolveClassName } from '@bkui-vue/shared';
 import fecha from './fecha';
 import type { IDatePickerCtx, ITimePickerCtx, PickerTypeType } from './interface';
 
+// 非 year 选择器中，选择年时的下拉框的年份可选数据
+export const ALL_YEARS = (() => {
+  const start = 1900;
+  const end = 2100;
+  return new Array(end - start + 1).fill('').map((_, index) => ({ value: index + start, label: index + start }));
+})();
+
 // 单个 panel 的宽度
 export const PANEL_WIDTH = 248;
 

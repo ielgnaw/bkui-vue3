@@ -29,7 +29,7 @@ import { computed, defineComponent, PropType } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 
-import type { DatePickerValueType, PickerTypeType } from '../interface';
+import type { DatePickerValueType } from '../new-interface';
 import { clearHours, getYearCells } from '../utils';
 
 const yearTableProps = {
@@ -40,36 +40,6 @@ const yearTableProps = {
   disabledDate: {
     type: Function,
   },
-  // selectionMode: {
-  //   type: String,
-  //   required: true,
-  // },
-  type: {
-    type: String as PropType<PickerTypeType>,
-    default: 'date',
-    validator(value) {
-      const validList: PickerTypeType[] = [
-        'year',
-        'quarter',
-        'month',
-        'date',
-        'daterange',
-        'datetime',
-        'datetimerange',
-        'time',
-        'timerange',
-      ];
-      if (validList.indexOf(value) < 0) {
-        console.error(`type property is not valid: '${value}'`);
-        return false;
-      }
-      return true;
-    },
-  },
-  // value: {
-  //   type: Array,
-  //   required: true,
-  // },
   value: {
     type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
     required: true,
@@ -128,12 +98,10 @@ export default defineComponent({
       const currentYear = clearHours(new Date(new Date().getFullYear(), 0, 1));
 
       // const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), 0, 1));
-
       ret.forEach((item, i) => {
         item.text = '';
         item.date = new Date(startYear.value + i, 0, 1);
-        item.disabled =
-          typeof props.disabledDate === 'function' && props.disabledDate(item.date) && props.type === 'year';
+        item.disabled = typeof props.disabledDate === 'function' && props.disabledDate(item.date);
 
         const day = clearHours(item.date);
         item.isCurrentYear = day === currentYear;
@@ -156,47 +124,6 @@ export default defineComponent({
       },
     ];
 
-    // const cells = computed(() => {
-    //   const cells = [];
-    //   const cellTmpl = {
-    //     text: '',
-    //     selected: false,
-    //     disabled: false,
-    //   };
-
-    //   const selectedDays = (dates.value as any[])
-    //     .filter(Boolean)
-    //     .map(date => clearHours(new Date(date.getFullYear(), 0, 1)));
-
-    //   const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), 0, 1));
-
-    //   for (let i = 0; i < 10; i++) {
-    //     const cell = JSON.parse(JSON.stringify(cellTmpl));
-    //     cell.date = new Date(startYear.value + i, 0, 1);
-    //     cell.disabled =
-    //       typeof props.disabledDate === 'function' && props.disabledDate(cell.date) && props.selectionMode === 'year';
-
-    //     const day = clearHours(cell.date);
-    //     cell.selected = selectedDays.includes(day);
-    //     cell.focused = day === focusedDate;
-    //     cells.push(cell);
-    //   }
-    //   console.error(cells);
-
-    //   return cells;
-    // });
-
-    // const handleMouseMove = cell => {
-    //   if (!props.rangeState.selecting) {
-    //     return;
-    //   }
-    //   if (cell.disabled) {
-    //     return;
-    //   }
-    //   const newDate = cell.date;
-    //   emit('change-range', newDate);
-    // };
-
     return {
       cells,
       getCellCls,
@@ -207,10 +134,10 @@ export default defineComponent({
   },
   render() {
     return (
-      <div class={[this.resolveClassName('date-picker-cells'), this.resolveClassName('date-picker-cells-year')]}>
+      <div class={[this.resolveClassName('date-picker-cells-year')]}>
         {this.cells.map(cell => (
           <span
-            class={this.getCellCls(cell)}
+            class={[this.getCellCls(cell), this.cellClass(cell)]}
             onClick={() => this.handleClick(cell)}
             // onMouseenter={() => this.handleMouseMove(cell)}
           >

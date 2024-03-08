@@ -105,6 +105,9 @@ export default defineComponent({
     filterOption: {
       type: Function,
     }, // 配置当前options的过滤规则
+
+    // 滚动到当前选中的 options 的方式
+    scrollActiveOptionBehavior: PropTypes.scrollBehavior().def('smooth'),
   },
   emits: [
     'update:modelValue',
@@ -378,7 +381,7 @@ export default defineComponent({
       const optionsDom = contentRef.value?.querySelectorAll?.('.is-selected');
       optionsDom[0]?.scrollIntoView({
         block: 'center',
-        behavior: 'smooth',
+        behavior: props.scrollActiveOptionBehavior,
       });
     };
 

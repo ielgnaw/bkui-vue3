@@ -24,7 +24,16 @@
  * IN THE SOFTWARE.
  */
 
-import { type ComponentPublicInstance, defineComponent, ref, SlotsType, Teleport, Transition, type VNode } from 'vue';
+import {
+  type ComponentPublicInstance,
+  // computed,
+  defineComponent,
+  ref,
+  SlotsType,
+  Teleport,
+  Transition,
+  type VNode,
+} from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
@@ -33,11 +42,13 @@ import { Close } from '@bkui-vue/icon';
 import PickerDropdown from './base/picker-dropdown';
 import { dateIcon, timeIcon } from './common';
 // import { createDefaultTrigger } from './common';
-import type { DatePickerPanelType, SelectionModeType } from './interface';
+// import { DatePickerPanelType, type SelectionModeType } from './new-interface';
 import DatePanel from './new-panel/date';
-import DateRangePanel from './panel/date-range';
-import { datePickerProps } from './props';
-import { useCalendar } from './use-calendar';
+import QuarterPanel from './new-panel/quarter';
+import YearPanel from './new-panel/year';
+import { datePickerProps } from './new-props';
+import { useCalendar } from './new-use-calendar';
+// import DateRangePanel from './panel/date-range';
 import { PANEL_WIDTH } from './utils';
 
 export default defineComponent({
@@ -68,23 +79,6 @@ export default defineComponent({
     const { resolveClassName } = usePrefix();
     const params = useCalendar(props, slots, emit);
 
-    // const defaultTrigger = createDefaultTrigger(props, {
-    //   resolveClassName,
-    //   fontSizeCls: params.fontSizeCls,
-    //   forceInputRerender: params.forceInputRerender,
-    //   localReadonly: params.localReadonly,
-    //   displayValue: params.displayValue,
-    //   setInputRef: params.setInputRef,
-    //   handleFocus: params.handleFocus,
-    //   handleBlur: params.handleBlur,
-    //   showClose: params.showClose,
-    //   handleIconClick: params.handleIconClick,
-    //   handleKeydown: params.handleKeydown,
-    //   handleInputChange: params.handleInputChange,
-    //   handleInputInput: params.handleInputInput,
-    //   handleClear: params.handleClear,
-    // });
-
     const triggerRef = ref<HTMLElement>(null);
 
     return {
@@ -93,62 +87,8 @@ export default defineComponent({
       triggerRef,
       ...params,
     };
-
-    // const state = reactive({
-    //   showClose: false,
-    //   visible: false,
-    //   internalValue: initialValue,
-    //   disableClickOutSide: false,
-    //   disableCloseUnderTransfer: false,
-    //   selectionMode: 'date' as SelectionModeType,
-    //   // selectionMode: onSelectionModeChange(props.type),
-    //   forceInputRerender: 1,
-    //   isFocused: false,
-    //   focusedTime: {
-    //     column: 0,
-    //     picker: 0,
-    //     time: initialValue.map(extractTime),
-    //     active: false,
-    //   },
-    //   internalFocus: false,
-    //   timeEnterMode: true,
-    //   shortcut,
-    //   onSelectionModeChange,
-    //   // for 编辑时，mouseleave 事件中缓存的 value
-    //   tmpValue: initialValue,
-    // });
-    // const inputRef = ref(null);
-
-    // const pickerPanelRef = ref(null);
-    // const onPickSuccess = () => {
-    //   state.visible = false;
-    //   // 点击 shortcuts 会关闭弹层时，如果不在 nextTick 里触发 pick-success，那么会导致触发 pick-success 的时候，
-    //   // v-model 的值还是之前的值
-    //   nextTick(() => {
-    //     emit('pick-success');
-    //   });
-    //   inputRef?.value?.blur();
-    //   reset();
-    // };
-
-    // const triggerRef = ref<HTMLElement>(null);
-    // const handleToggleTime = () => {
-    //   pickerPanelRef.value.handleToggleTime?.();
-    // };
-    // const onPickFirst = (val, type) => {
-    //   emit('pick-first', val, type);
-    // };
   },
   render() {
-    // // const shortcutsSlot = this.hasShortcuts ? { shortcuts: () => this.$slots.shortcuts?.() || null } : {};
-    // const shortcutsSlot = this.hasShortcuts
-    //   ? { shortcuts: () => this.$slots.shortcuts?.({ change: this.onPick }) || null }
-    //   : {};
-
-    // const confirmSlot = this.hasConfirm ? { confirm: this.$slots.confirm } : {};
-
-    // const slots = { ...shortcutsSlot, ...confirmSlot };
-
     const renderTrigger = () => {
       return (
         <div>
@@ -200,31 +140,57 @@ export default defineComponent({
     const renderPanel = () => {
       let panel: VNode = null;
       switch (this.panel) {
-        case 'DatePanel':
+        case 'YearPanel':
           panel = (
-            <DatePanel
+            <YearPanel
               ref='pickerPanelRef'
               value={this.internalValue}
               multiple={this.multiple}
-              clearable={this.clearable}
-              shortcuts={this.shortcuts}
-              shortcutClose={this.shortcutClose}
-              // selectionMode={this.selectionMode}
-              type={this.type}
               startDate={this.startDate}
-              focusedDate={this.focusedDate}
               disabledDate={this.disabledDate}
-              confirm={this.isConfirm}
-              showTime={this.type === 'datetime' || this.type === 'datetimerange'}
-              timePickerOptions={this.timePickerOptions}
+              cellClass={this.cellClass}
               onPick={this.onPick}
-              // onPick-clear={this.handleClear}
-              // onPick-success={this.onPickSuccess}
-              // onSelection-mode-change={this.onSelectionModeChange}
-              // v-slots={slots}
             />
           );
           break;
+        case 'QuarterPanel':
+          panel = (
+            <QuarterPanel
+              ref='pickerPanelRef'
+              value={this.internalValue}
+              multiple={this.multiple}
+              startDate={this.startDate}
+              disabledDate={this.disabledDate}
+              cellClass={this.cellClass}
+              onPick={this.onPick}
+            />
+          );
+          break;
+        // case 'DatePanel':
+        //   panel = (
+        //     <DatePanel
+        //       ref='pickerPanelRef'
+        //       value={this.internalValue}
+        //       multiple={this.multiple}
+        //       clearable={this.clearable}
+        //       shortcuts={this.shortcuts}
+        //       shortcutClose={this.shortcutClose}
+        //       // selectionMode={this.selectionMode}
+        //       type={this.type}
+        //       startDate={this.startDate}
+        //       focusedDate={this.focusedDate}
+        //       disabledDate={this.disabledDate}
+        //       // confirm={this.isConfirm}
+        //       showTime={this.type === 'datetime' || this.type === 'datetimerange'}
+        //       timePickerOptions={this.timePickerOptions}
+        //       onPick={this.onPick}
+        //       // onPick-clear={this.handleClear}
+        //       // onPick-success={this.onPickSuccess}
+        //       // onSelection-mode-change={this.onSelectionModeChange}
+        //       // v-slots={slots}
+        //     />
+        //   );
+        //   break;
         default:
           break;
       }
@@ -260,11 +226,11 @@ export default defineComponent({
               extPopoverCls={this.extPopoverCls}
               appendToBody={this.appendToBody}
             >
-              {this.hasHeader ? (
+              {/* {this.hasHeader ? (
                 <div class={[this.resolveClassName('date-picker-top-wrapper'), this.headerSlotCls]}>
                   {this.$slots.header?.() ?? null}
                 </div>
-              ) : null}
+              ) : null} */}
               {/* {this.panel}--{this.type}--{this.selectionMode} */}
               {renderPanel()}
               {/* {this.panel === 'DateRangePanel' ? (

@@ -24,12 +24,11 @@
  * IN THE SOFTWARE.
  */
 
-import type { ExtractPropTypes } from 'vue';
-import { computed, defineComponent, PropType } from 'vue';
+import { computed, defineComponent, type ExtractPropTypes, PropType } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 
-import type { DatePickerValueType, PickerTypeType } from '../interface';
+import type { DatePickerValueType } from '../interface';
 import { clearHours } from '../utils';
 
 const quarterTableProps = {
@@ -40,36 +39,6 @@ const quarterTableProps = {
   disabledDate: {
     type: Function,
   },
-  // selectionMode: {
-  //   type: String,
-  //   required: true,
-  // },
-  type: {
-    type: String as PropType<PickerTypeType>,
-    default: 'date',
-    validator(value) {
-      const validList: PickerTypeType[] = [
-        'year',
-        'quarter',
-        'month',
-        'date',
-        'daterange',
-        'datetime',
-        'datetimerange',
-        'time',
-        'timerange',
-      ];
-      if (validList.indexOf(value) < 0) {
-        console.error(`type property is not valid: '${value}'`);
-        return false;
-      }
-      return true;
-    },
-  },
-  // value: {
-  //   type: Array,
-  //   required: true,
-  // },
   value: {
     type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
     required: true,
@@ -94,10 +63,17 @@ const quarterTableProps = {
 
 export type QuarterTableProps = Readonly<ExtractPropTypes<typeof quarterTableProps>>;
 
+type IQuarterCell = {
+  date: Date;
+  text: string;
+  selected: boolean;
+  disabled: boolean;
+};
+
 export default defineComponent({
   name: 'QuarterTable',
   props: quarterTableProps,
-  emits: ['pick', 'pickClick', 'changeRange'],
+  emits: ['pick', 'changeRange'],
   setup(props, { emit }) {
     const dates = computed(() => {
       const { /* selectionMode */ value, rangeState } = props;
@@ -107,34 +83,38 @@ export default defineComponent({
 
     const cells = computed(() => {
       const cells = [];
-      const cellTmpl = {
-        text: '',
-        selected: false,
-        disabled: false,
-      };
 
       const tableYear = props.tableDate.getFullYear();
 
-      const selectedDays = (dates.value as any[])
-        .filter(Boolean)
-        .map(date => Math.floor(new Date(date.getFullYear(), date.getMonth(), 1).getMonth() / 3) + 1);
+      const selectedDays = (dates.value as any[]).filter(Boolean).map(date => {
+        return {
+          year: date.getFullYear(),
+          quarter: Math.floor(new Date(date.getFullYear(), date.getMonth(), 1).getMonth() / 3) + 1,
+          date: clearHours(new Date(date.getFullYear(), date.getMonth(), 1)),
+        };
+      });
+
+      // const selectedDays = (dates.value as any[]).map(date => getQuarter(date));
 
       // const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), props.focusedDate.getMonth(), 1));
 
-      for (let i = 0; i < 12; i += 3) {
-        const cell = JSON.parse(JSON.stringify(cellTmpl));
-        cell.date = new Date(tableYear, i, 1);
-        const quarter = i / 3 + 1;
+      for (let i = 0; i < 12; i++) {
+        const cell: IQuarterCell = {
+          date: new Date(tableYear, i, 1),
+          text: '',
+          selected: false,
+          disabled: false,
+        };
+        const quarter = Math.floor(i / 3 + 1);
         cell.text = `Q${quarter}`;
 
-        cell.disabled =
-          typeof props.disabledDate === 'function' && props.disabledDate(cell.date) && props.type === 'quarter';
+        cell.disabled = typeof props.disabledDate === 'function' && props.disabledDate(cell.date);
 
-        cell.selected = selectedDays.includes(quarter);
-        // cell.focused = day === focusedDate;
-        cells.push(cell);
+        cell.selected = selectedDays[0].year === cell.date.getFullYear() && selectedDays[0].quarter === quarter;
+        if (i % 3 === 0) {
+          cells.push(cell);
+        }
       }
-
       return cells;
     });
 
@@ -156,7 +136,6 @@ export default defineComponent({
       const newDate = new Date(clearHours(cell.date));
 
       emit('pick', newDate);
-      emit('pickClick');
     };
 
     const handleMouseMove = cell => {
@@ -180,7 +159,7 @@ export default defineComponent({
   },
   render() {
     return (
-      <div class={[this.resolveClassName('date-picker-cells'), this.resolveClassName('date-picker-cells-quarter')]}>
+      <div class={this.resolveClassName('date-picker-cells-quarter')}>
         {this.cells.map(cell => (
           <span
             class={this.getCellCls(cell)}

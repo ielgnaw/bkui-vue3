@@ -286,6 +286,19 @@ export class PropTypes extends propTypesNS {
       },
     });
   }
+
+  static scrollBehavior() {
+    const behavior = ['auto', 'instant', 'smooth'] as const;
+    type BehaviorEnum = ElementType<typeof behavior>;
+    return toType<BehaviorEnum>('InfoType', {
+      validator: (val: BehaviorEnum) => {
+        if (!val || behavior.includes(val)) {
+          return true;
+        }
+        return false;
+      },
+    });
+  }
 }
 
 export enum SelectedTypeEnum {

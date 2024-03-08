@@ -45,6 +45,10 @@ import {
 import { usePrefix } from '@bkui-vue/config-provider';
 import { AngleDoubleLeft, AngleDoubleRight, AngleLeft, AngleRight } from '@bkui-vue/icon';
 
+import DateTable from '../new-base/date-table';
+import MonthTable from '../new-base/month-table';
+import QuarterTable from '../new-base/quarter-table';
+import YearTable from '../new-base/year-table';
 // import Confirm from '../base/confirm';
 import type {
   DatePickerShortcutsType,
@@ -52,11 +56,7 @@ import type {
   DisabledDateType,
   PickerTypeType,
   // SelectionModeType,
-} from '../interface';
-import DateTable from '../new-base/date-table';
-import MonthTable from '../new-base/month-table';
-import QuarterTable from '../new-base/quarter-table';
-import YearTable from '../new-base/year-table';
+} from '../new-interface';
 import {
   // formatDateLabels,
   getYearCells,
