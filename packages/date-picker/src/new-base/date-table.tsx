@@ -30,7 +30,7 @@ import { computed, defineComponent, PropType } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 
-import type { DatePickerValueType, DisabledDateType } from '../interface';
+import type { DatePickerValueType, DisabledDateType, PickerTypeType } from '../interface';
 import { clearHours, isInRange } from '../utils';
 
 const dateTableProps = {
@@ -39,9 +39,31 @@ const dateTableProps = {
     required: true,
   },
   disabledDate: Function as PropType<DisabledDateType>,
-  selectionMode: {
-    type: String,
-    required: true,
+  // selectionMode: {
+  //   type: String,
+  //   required: true,
+  // },
+  type: {
+    type: String as PropType<PickerTypeType>,
+    default: 'date',
+    validator(value) {
+      const validList: PickerTypeType[] = [
+        'year',
+        'quarter',
+        'month',
+        'date',
+        'daterange',
+        'datetime',
+        'datetimerange',
+        'time',
+        'timerange',
+      ];
+      if (validList.indexOf(value) < 0) {
+        console.error(`type property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
   },
   value: {
     type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
@@ -84,7 +106,7 @@ export default defineComponent({
     });
 
     const dates = computed(() => {
-      const rangeSelecting = props.selectionMode === 'range' && props.rangeState.selecting;
+      const rangeSelecting = /* props.type === 'range' &&  */ props.rangeState.selecting;
       return rangeSelecting ? [props.rangeState.from] : props.value;
     });
 
@@ -98,7 +120,7 @@ export default defineComponent({
       const rangeStart = props.rangeState.from && clearHours(props.rangeState.from);
       const rangeEnd = props.rangeState.to && clearHours(props.rangeState.to);
 
-      const isRange = props.selectionMode === 'range';
+      const isRange = false; /* props.type === 'range'; */
       const disableTestFn = typeof props.disabledDate === 'function' && props.disabledDate;
 
       return calendar
@@ -146,6 +168,7 @@ export default defineComponent({
 
     const getCellCls = cell => [
       resolveClassName('date-picker-cells-cell'),
+      resolveClassName('date-picker-cells-cell-day'),
       {
         [resolveClassName('date-picker-cells-cell-selected')]: cell.selected || cell.start || cell.end,
         [resolveClassName('date-picker-cells-cell-disabled')]: cell.disabled,
@@ -168,10 +191,10 @@ export default defineComponent({
   },
   render() {
     return (
-      <div class={this.resolveClassName('date-picker-cells')}>
+      <div class={[this.resolveClassName('date-picker-cells'), this.resolveClassName('date-picker-cells-date')]}>
         <div class={this.resolveClassName('date-picker-cells-header')}>
           {this.headerDays.map(day => (
-            <span>{day}</span>
+            <span class={this.resolveClassName('date-picker-cells-header-week')}>{day}</span>
           ))}
         </div>
         {this.cells.map(cell => (

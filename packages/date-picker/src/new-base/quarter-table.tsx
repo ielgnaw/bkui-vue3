@@ -29,7 +29,7 @@ import { computed, defineComponent, PropType } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 
-import type { DatePickerValueType } from '../interface';
+import type { DatePickerValueType, PickerTypeType } from '../interface';
 import { clearHours } from '../utils';
 
 const quarterTableProps = {
@@ -40,9 +40,31 @@ const quarterTableProps = {
   disabledDate: {
     type: Function,
   },
-  selectionMode: {
-    type: String,
-    required: true,
+  // selectionMode: {
+  //   type: String,
+  //   required: true,
+  // },
+  type: {
+    type: String as PropType<PickerTypeType>,
+    default: 'date',
+    validator(value) {
+      const validList: PickerTypeType[] = [
+        'year',
+        'quarter',
+        'month',
+        'date',
+        'daterange',
+        'datetime',
+        'datetimerange',
+        'time',
+        'timerange',
+      ];
+      if (validList.indexOf(value) < 0) {
+        console.error(`type property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
   },
   // value: {
   //   type: Array,
@@ -106,9 +128,7 @@ export default defineComponent({
         cell.text = `Q${quarter}`;
 
         cell.disabled =
-          typeof props.disabledDate === 'function' &&
-          props.disabledDate(cell.date) &&
-          props.selectionMode === 'quarter';
+          typeof props.disabledDate === 'function' && props.disabledDate(cell.date) && props.type === 'quarter';
 
         cell.selected = selectedDays.includes(quarter);
         // cell.focused = day === focusedDate;
@@ -160,7 +180,7 @@ export default defineComponent({
   },
   render() {
     return (
-      <div class={[this.resolveClassName('date-picker-cells'), this.resolveClassName('date-picker-cells-month')]}>
+      <div class={[this.resolveClassName('date-picker-cells'), this.resolveClassName('date-picker-cells-quarter')]}>
         {this.cells.map(cell => (
           <span
             class={this.getCellCls(cell)}

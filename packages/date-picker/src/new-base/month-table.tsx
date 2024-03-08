@@ -29,7 +29,7 @@ import { computed, defineComponent, PropType } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 
-import type { DatePickerValueType } from '../interface';
+import type { DatePickerValueType, PickerTypeType } from '../interface';
 import { clearHours } from '../utils';
 
 const monthTableProps = {
@@ -40,9 +40,31 @@ const monthTableProps = {
   disabledDate: {
     type: Function,
   },
-  selectionMode: {
-    type: String,
-    required: true,
+  // selectionMode: {
+  //   type: String,
+  //   required: true,
+  // },
+  type: {
+    type: String as PropType<PickerTypeType>,
+    default: 'date',
+    validator(value) {
+      const validList: PickerTypeType[] = [
+        'year',
+        'quarter',
+        'month',
+        'date',
+        'daterange',
+        'datetime',
+        'datetimerange',
+        'time',
+        'timerange',
+      ];
+      if (validList.indexOf(value) < 0) {
+        console.error(`type property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
   },
   // value: {
   //   type: Array,
@@ -96,6 +118,9 @@ export default defineComponent({
         .filter(Boolean)
         .map(date => clearHours(new Date(date.getFullYear(), date.getMonth(), 1)));
 
+      const now = new Date();
+      const currentMonth = clearHours(new Date(now.getFullYear(), now.getMonth(), 1));
+
       // const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), props.focusedDate.getMonth(), 1));
 
       for (let i = 0; i < 12; i++) {
@@ -103,8 +128,9 @@ export default defineComponent({
         cell.date = new Date(tableYear, i, 1);
         cell.text = tCell(i + 1);
         const day = clearHours(cell.date);
+        cell.isCurrentMonth = day === currentMonth;
         cell.disabled =
-          typeof props.disabledDate === 'function' && props.disabledDate(cell.date) && props.selectionMode === 'month';
+          typeof props.disabledDate === 'function' && props.disabledDate(cell.date) && props.type === 'month';
         cell.selected = selectedDays.includes(day);
         // cell.focused = day === focusedDate;
         cells.push(cell);
@@ -122,6 +148,7 @@ export default defineComponent({
       {
         [resolveClassName('date-picker-cells-cell-selected')]: cell.selected,
         [resolveClassName('date-picker-cells-cell-disabled')]: cell.disabled,
+        [resolveClassName('date-picker-cells-cell-today')]: cell.isCurrentMonth,
         [resolveClassName('date-picker-cells-cell-range')]: cell.range && !cell.start && !cell.end,
       },
     ];

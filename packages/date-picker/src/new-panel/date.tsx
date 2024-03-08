@@ -32,32 +32,68 @@ import {
   // onBeforeUnmount,
   computed,
   defineComponent,
-  getCurrentInstance,
-  nextTick,
+  // getCurrentInstance,
+  // nextTick,
   PropType,
-  provide,
-  reactive,
+  // provide,
+  // reactive,
   ref,
-  toRefs,
+  // toRefs,
   watch,
 } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { AngleDoubleLeft, AngleDoubleRight, AngleLeft, AngleRight } from '@bkui-vue/icon';
 
-import Confirm from '../base/confirm';
-import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType, SelectionModeType } from '../interface';
+// import Confirm from '../base/confirm';
+import type {
+  DatePickerShortcutsType,
+  DatePickerValueType,
+  DisabledDateType,
+  PickerTypeType,
+  // SelectionModeType,
+} from '../interface';
 import DateTable from '../new-base/date-table';
 import MonthTable from '../new-base/month-table';
 import QuarterTable from '../new-base/quarter-table';
 import YearTable from '../new-base/year-table';
-import { formatDateLabels, getYearCells, iconBtnCls, pad, PANEL_WIDTH, siblingMonth, timePickerKey } from '../utils';
+import {
+  // formatDateLabels,
+  getYearCells,
+  iconBtnCls,
+  pad,
+  PANEL_WIDTH,
+  siblingMonth,
+  // timePickerKey
+} from '../utils';
 
 import Time from './time';
 
 const datePanelProps = {
   value: {
     type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
+  },
+  type: {
+    type: String as PropType<PickerTypeType>,
+    default: 'date',
+    validator(value) {
+      const validList: PickerTypeType[] = [
+        'year',
+        'quarter',
+        'month',
+        'date',
+        'daterange',
+        'datetime',
+        'datetimerange',
+        'time',
+        'timerange',
+      ];
+      if (validList.indexOf(value) < 0) {
+        console.error(`type property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
   },
   shortcuts: {
     type: Array as PropType<DatePickerShortcutsType>,
@@ -75,17 +111,17 @@ const datePanelProps = {
     type: Boolean,
     default: false,
   },
-  selectionMode: {
-    type: String as PropType<SelectionModeType>,
-    default: 'date',
-    // validator(v) {
-    //   if (['year', 'month', 'quarter', 'date', 'time'].indexOf(v) < 0) {
-    //     console.error(`selectionMode property is not valid: '${v}'`);
-    //     return false;
-    //   }
-    //   return true;
-    // },
-  },
+  // selectionMode: {
+  //   type: String as PropType<SelectionModeType>,
+  //   default: 'date',
+  //   // validator(v) {
+  //   //   if (['year', 'month', 'quarter', 'date', 'time'].indexOf(v) < 0) {
+  //   //     console.error(`selectionMode property is not valid: '${v}'`);
+  //   //     return false;
+  //   //   }
+  //   //   return true;
+  //   // },
+  // },
   startDate: {
     type: Date,
   },
@@ -137,7 +173,7 @@ export default defineComponent({
 
     // selectionMode = props.type
     // 'year' | 'month' | 'quarter' | 'date' | 'daterange' | 'datetime' | 'datetimerange' | 'time' | 'timerange'
-    const currentView = ref(props.selectionMode || 'date');
+    const currentView = ref(props.type || 'date');
 
     // currentView: year => tableType: year-table
     // currentView: month => tableType: month-table
@@ -154,13 +190,13 @@ export default defineComponent({
 
     const resetView = () => {
       setTimeout(() => {
-        currentView.value = props.selectionMode;
+        currentView.value = props.type;
         tableType.value = getTableType(currentView.value);
       }, 500);
     };
 
     const changeYear = dir => {
-      if (props.selectionMode === 'year' || tableType.value === 'year-table') {
+      if (props.type === 'year' || tableType.value === 'year-table') {
         panelDate.value = new Date((panelDate.value as Date).getFullYear() + dir * 10, 0, 1);
       } else {
         panelDate.value = siblingMonth(panelDate.value, dir * 12);
@@ -179,7 +215,7 @@ export default defineComponent({
     const handleShortcutClick = shortcut => {
       if (shortcut.value) {
         // pick 参数：dates, visible, type, isUseShortCut
-        emit('pick', shortcut.value(), false, props.selectionMode, shortcut);
+        emit('pick', shortcut.value(), false, props.type, shortcut);
       }
       if (shortcut.onClick) {
         shortcut.onClick(this);
@@ -205,9 +241,9 @@ export default defineComponent({
     const handlePick = (value, _visible = false, type, _shortcut) => {
       // console.error('handlePick', value, _visible, type, _shortcut);
       let val = value;
-      if (props.selectionMode === 'year') {
+      if (props.type === 'year') {
         val = new Date(value.getFullYear(), 0, 1);
-      } else if (props.selectionMode === 'month') {
+      } else if (props.type === 'month') {
         val = new Date((panelDate.value as Date).getFullYear(), value.getMonth(), 1);
       } else {
         val = new Date(value);
@@ -215,11 +251,11 @@ export default defineComponent({
 
       dates.value = [val];
       // pick 参数：dates, visible, type, isUseShortCut
-      emit('pick', val, false, type || props.selectionMode);
+      emit('pick', val, false, type || props.type);
     };
 
     const reset = () => {
-      currentView.value = props.selectionMode;
+      currentView.value = props.type;
       tableType.value = getTableType(currentView.value);
     };
 
@@ -252,7 +288,7 @@ export default defineComponent({
     // );
 
     watch(
-      () => props.selectionMode,
+      () => props.type,
       type => {
         currentView.value = type;
         tableType.value = getTableType(type);
@@ -388,7 +424,7 @@ export default defineComponent({
             <DateTable
               tableDate={this.panelDate as Date}
               disabledDate={this.disabledDate}
-              selectionMode={this.selectionMode}
+              type={this.type}
               value={this.dates as DatePickerValueType}
               // focusedDate={this.focusedDate}
               onPick={this.panelPickerHandlers}
@@ -400,7 +436,7 @@ export default defineComponent({
             <DateTable
               tableDate={this.panelDate as Date}
               disabledDate={this.disabledDate}
-              selectionMode={this.selectionMode}
+              type={this.type}
               value={this.dates as DatePickerValueType}
               // focusedDate={this.focusedDate}
               onPick={this.panelPickerHandlers}
@@ -412,7 +448,7 @@ export default defineComponent({
             <YearTable
               tableDate={this.panelDate as Date}
               disabledDate={this.disabledDate}
-              selectionMode={this.selectionMode}
+              type={this.type}
               value={this.dates as DatePickerValueType}
               // focusedDate={this.focusedDate}
               onPick={this.panelPickerHandlers}
@@ -424,7 +460,7 @@ export default defineComponent({
             <QuarterTable
               tableDate={this.panelDate as Date}
               disabledDate={this.disabledDate}
-              selectionMode={this.selectionMode}
+              type={this.type}
               value={this.dates as DatePickerValueType}
               // focusedDate={this.focusedDate}
               onPick={this.panelPickerHandlers}
@@ -436,7 +472,7 @@ export default defineComponent({
             <MonthTable
               tableDate={this.panelDate as Date}
               disabledDate={this.disabledDate}
-              selectionMode={this.selectionMode}
+              type={this.type}
               value={this.dates as DatePickerValueType}
               // focusedDate={this.focusedDate}
               onPick={this.panelPickerHandlers}

@@ -209,7 +209,8 @@ export default defineComponent({
               clearable={this.clearable}
               shortcuts={this.shortcuts}
               shortcutClose={this.shortcutClose}
-              selectionMode={this.selectionMode}
+              // selectionMode={this.selectionMode}
+              type={this.type}
               startDate={this.startDate}
               focusedDate={this.focusedDate}
               disabledDate={this.disabledDate}

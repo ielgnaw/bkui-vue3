@@ -29,7 +29,7 @@ import { computed, defineComponent, PropType } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 
-import type { DatePickerValueType } from '../interface';
+import type { DatePickerValueType, PickerTypeType } from '../interface';
 import { clearHours, getYearCells } from '../utils';
 
 const yearTableProps = {
@@ -40,9 +40,31 @@ const yearTableProps = {
   disabledDate: {
     type: Function,
   },
-  selectionMode: {
-    type: String,
-    required: true,
+  // selectionMode: {
+  //   type: String,
+  //   required: true,
+  // },
+  type: {
+    type: String as PropType<PickerTypeType>,
+    default: 'date',
+    validator(value) {
+      const validList: PickerTypeType[] = [
+        'year',
+        'quarter',
+        'month',
+        'date',
+        'daterange',
+        'datetime',
+        'datetimerange',
+        'time',
+        'timerange',
+      ];
+      if (validList.indexOf(value) < 0) {
+        console.error(`type property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
   },
   // value: {
   //   type: Array,
@@ -77,17 +99,6 @@ export default defineComponent({
   props: yearTableProps,
   emits: ['pick' /* 'pick-click', 'change-range' */],
   setup(props, { emit }) {
-    const { resolveClassName } = usePrefix();
-
-    const getCellCls = cell => [
-      resolveClassName('date-picker-cells-cell'),
-      {
-        [resolveClassName('date-picker-cells-cell-selected')]: cell.selected,
-        [resolveClassName('date-picker-cells-cell-disabled')]: cell.disabled,
-        [resolveClassName('date-picker-cells-cell-range')]: cell.range && !cell.start && !cell.end,
-      },
-    ];
-
     const handleClick = cell => {
       if (cell.disabled || cell.type === 'weekLabel') {
         return;
@@ -114,21 +125,36 @@ export default defineComponent({
         .filter(Boolean)
         .map(date => clearHours(new Date(date.getFullYear(), 0, 1)));
 
+      const currentYear = clearHours(new Date(new Date().getFullYear(), 0, 1));
+
       // const focusedDate = clearHours(new Date(props.focusedDate.getFullYear(), 0, 1));
 
       ret.forEach((item, i) => {
         item.text = '';
         item.date = new Date(startYear.value + i, 0, 1);
         item.disabled =
-          typeof props.disabledDate === 'function' && props.disabledDate(item.date) && props.selectionMode === 'year';
+          typeof props.disabledDate === 'function' && props.disabledDate(item.date) && props.type === 'year';
 
         const day = clearHours(item.date);
+        item.isCurrentYear = day === currentYear;
         item.selected = selectedDays.includes(day);
         // item.focused = day === focusedDate;
       });
 
       return ret;
     });
+
+    const { resolveClassName } = usePrefix();
+
+    const getCellCls = cell => [
+      resolveClassName('date-picker-cells-cell'),
+      {
+        [resolveClassName('date-picker-cells-cell-selected')]: cell.selected,
+        [resolveClassName('date-picker-cells-cell-disabled')]: cell.disabled,
+        [resolveClassName('date-picker-cells-cell-today')]: cell.isCurrentYear,
+        [resolveClassName('date-picker-cells-cell-range')]: cell.range && !cell.start && !cell.end,
+      },
+    ];
 
     // const cells = computed(() => {
     //   const cells = [];
