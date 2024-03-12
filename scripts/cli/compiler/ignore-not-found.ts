@@ -23,10 +23,26 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+import webpack from 'webpack';
 
-import { withInstall } from '@bkui-vue/shared';
+export default class IgnoreNotFoundErrorPlugin {
+  constructor(private messageToIgnore: string) {}
 
-import Component from './version-log';
-const BkVersionLog = withInstall(Component);
-export default BkVersionLog;
-export { BkVersionLog };
+  apply(compiler: webpack.Compiler): void {
+    compiler.hooks.done.tap('IgnoreNotFoundErrorPlugin', stats => {
+      stats.compilation.errors = stats.compilation.errors.filter(error => {
+        if (error.message) {
+          return !error.message.includes(this.messageToIgnore);
+        }
+        return true;
+      });
+
+      stats.compilation.warnings = stats.compilation.warnings.filter(warning => {
+        if (warning.message) {
+          return !warning.message.includes(this.messageToIgnore);
+        }
+        return true;
+      });
+    });
+  }
+}

@@ -23,9 +23,13 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-const baseJestConf = require('../../jest.config');
-
-module.exports = {
-  ...baseJestConf,
-  testRegex: 'packages/button/__test__/.*\\.test\\.(js|ts|tsx)$',
+const rawImportLoader = function (this: any, source: string) {
+  const callback = this.async();
+  // 检查是否存在 .less 文件引用
+  if (this.resourcePath.endsWith('.less')) {
+    callback(null, `import 'bkui-vue${this.resourcePath.split('src')[1]}';`);
+  }
+  callback(null, source);
 };
+
+export default rawImportLoader;
