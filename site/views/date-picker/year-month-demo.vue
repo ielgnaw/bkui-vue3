@@ -1,16 +1,16 @@
 <template>
-  <div>
-    <p style="font-size: 14px;">
-      年选择器 {{ yearValue }}
-    </p>
-    <!-- <bk-date-picker
+  <!-- <bk-date-picker
       :value="initYearDateTime"
       type="year"
       :open="true"
       @change="handleYearChange"
     /> -->
 
-    <!-- :cell-class="getCellClass" -->
+  <!-- :cell-class="getCellClass" -->
+  <!-- <div>
+    <p style="font-size: 14px;">
+      年选择器 {{ yearValue }}
+    </p>
     <bk-date-picker
       v-model="initYearDateTime"
       type="year"
@@ -27,8 +27,8 @@
       type="quarter"
       @change="handleQuarterChange"
     />
-  </div>
-  <!-- <div>
+  </div> -->
+  <div>
     <p style="font-size: 14px;">
       月选择器 {{ monthValue }}
     </p>
@@ -37,7 +37,7 @@
       type="month"
       @change="handleMonthChange"
     />
-  </div> -->
+  </div>
 </template>
 
 <script setup>

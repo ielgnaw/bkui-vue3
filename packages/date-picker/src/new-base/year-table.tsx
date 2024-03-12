@@ -104,7 +104,7 @@ export default defineComponent({
         item.disabled = typeof props.disabledDate === 'function' && props.disabledDate(item.date);
 
         const day = clearHours(item.date);
-        item.isCurrentYear = day === currentYear;
+        item.isCurrent = day === currentYear;
         item.selected = selectedDays.includes(day);
         // item.focused = day === focusedDate;
       });
@@ -119,7 +119,7 @@ export default defineComponent({
       {
         [resolveClassName('date-picker-cells-cell-selected')]: cell.selected,
         [resolveClassName('date-picker-cells-cell-disabled')]: cell.disabled,
-        [resolveClassName('date-picker-cells-cell-today')]: cell.isCurrentYear,
+        [resolveClassName('date-picker-cells-cell-today')]: cell.isCurrent,
         [resolveClassName('date-picker-cells-cell-range')]: cell.range && !cell.start && !cell.end,
       },
     ];

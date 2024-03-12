@@ -234,7 +234,8 @@ export function useCalendar(props, slots, emit) {
     const { code } = e;
     if (code === EVENT_CODE.enter || code === EVENT_CODE.numpadEnter) {
       // 刷新 input，文本改变时，会触发 change 事件即执行 handleInputChange
-      forceInputRerender.value = forceInputRerender.value + 1;
+      // 不执行如下代码也可改变值
+      // forceInputRerender.value = forceInputRerender.value + 1;
     }
 
     // const { keyCode } = e;
@@ -410,6 +411,9 @@ export function useCalendar(props, slots, emit) {
       case 'quarter':
         ret = DatePickerPanelType.QuarterPanel;
         break;
+      case 'month':
+        ret = DatePickerPanelType.MonthPanel;
+        break;
 
       default:
         break;
@@ -511,6 +515,7 @@ export function useCalendar(props, slots, emit) {
   });
 
   return {
+    inputRef,
     pickerPanelRef,
     pickerDropdownRef,
 

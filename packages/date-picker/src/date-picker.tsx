@@ -44,6 +44,7 @@ import { dateIcon, timeIcon } from './common';
 // import { createDefaultTrigger } from './common';
 // import { DatePickerPanelType, type SelectionModeType } from './new-interface';
 import DatePanel from './new-panel/date';
+import MonthPanel from './new-panel/month';
 import QuarterPanel from './new-panel/quarter';
 import YearPanel from './new-panel/year';
 import { datePickerProps } from './new-props';
@@ -139,6 +140,7 @@ export default defineComponent({
 
     const renderPanel = () => {
       let panel: VNode = null;
+      console.error(this.panel);
       switch (this.panel) {
         case 'YearPanel':
           panel = (
@@ -156,6 +158,20 @@ export default defineComponent({
         case 'QuarterPanel':
           panel = (
             <QuarterPanel
+              ref='pickerPanelRef'
+              value={this.internalValue}
+              multiple={this.multiple}
+              startDate={this.startDate}
+              disabledDate={this.disabledDate}
+              cellClass={this.cellClass}
+              onPick={this.onPick}
+              // inputRef={this.inputRef}
+            />
+          );
+          break;
+        case 'MonthPanel':
+          panel = (
+            <MonthPanel
               ref='pickerPanelRef'
               value={this.internalValue}
               multiple={this.multiple}

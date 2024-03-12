@@ -68,6 +68,7 @@ type IQuarterCell = {
   text: string;
   selected: boolean;
   disabled: boolean;
+  isCurrent: boolean;
 };
 
 export default defineComponent({
@@ -85,12 +86,16 @@ export default defineComponent({
       const cells = [];
 
       const tableYear = props.tableDate.getFullYear();
+      const now = new Date();
 
       const selectedDays = (dates.value as any[]).filter(Boolean).map(date => {
         return {
           year: date.getFullYear(),
           quarter: Math.floor(new Date(date.getFullYear(), date.getMonth(), 1).getMonth() / 3) + 1,
           date: clearHours(new Date(date.getFullYear(), date.getMonth(), 1)),
+          nowYear: now.getFullYear(),
+          nowQuarter: Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getMonth() / 3) + 1,
+          nowDate: clearHours(new Date(now.getFullYear(), now.getMonth(), 1)),
         };
       });
 
@@ -104,13 +109,15 @@ export default defineComponent({
           text: '',
           selected: false,
           disabled: false,
+          isCurrent: false,
         };
         const quarter = Math.floor(i / 3 + 1);
         cell.text = `Q${quarter}`;
 
         cell.disabled = typeof props.disabledDate === 'function' && props.disabledDate(cell.date);
-
         cell.selected = selectedDays[0].year === cell.date.getFullYear() && selectedDays[0].quarter === quarter;
+        cell.isCurrent = selectedDays[0].nowYear === cell.date.getFullYear() && selectedDays[0].nowQuarter === quarter;
+
         if (i % 3 === 0) {
           cells.push(cell);
         }
@@ -125,6 +132,7 @@ export default defineComponent({
       {
         [resolveClassName('date-picker-cells-cell-selected')]: cell.selected,
         [resolveClassName('date-picker-cells-cell-disabled')]: cell.disabled,
+        [resolveClassName('date-picker-cells-cell-today')]: cell.isCurrent,
         [resolveClassName('date-picker-cells-cell-range')]: cell.range && !cell.start && !cell.end,
       },
     ];
