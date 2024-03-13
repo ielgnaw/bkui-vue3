@@ -140,7 +140,6 @@ export default defineComponent({
 
     const renderPanel = () => {
       let panel: VNode = null;
-      console.error(this.panel);
       switch (this.panel) {
         case 'YearPanel':
           panel = (

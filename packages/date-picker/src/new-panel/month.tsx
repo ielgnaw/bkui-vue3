@@ -24,16 +24,19 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent, type ExtractPropTypes, PropType, ref, watch } from 'vue';
+import { /* type ComponentPublicInstance,  */ defineComponent, type ExtractPropTypes, PropType, ref, watch } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { AngleDoubleLeft, AngleDoubleRight } from '@bkui-vue/icon';
+import Select from '@bkui-vue/select';
 
-import YearTable from '../new-base/year-table';
+import MonthTable from '../new-base/month-table';
 import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType } from '../new-interface';
-import { getYearCells, iconBtnCls, PANEL_WIDTH } from '../utils';
+import { ALL_YEARS, iconBtnCls, PANEL_WIDTH, siblingMonth } from '../utils';
 
-const yearPanelProps = {
+const { Option } = Select;
+
+const quarterPanelProps = {
   value: {
     type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
   },
@@ -60,13 +63,17 @@ const yearPanelProps = {
     type: Function,
     default: () => '',
   },
+  // inputRef: {
+  //   type: Object as PropType<Element | ComponentPublicInstance | null>,
+  //   default: () => '',
+  // },
 } as const;
 
-export type YearPanelProps = Readonly<ExtractPropTypes<typeof yearPanelProps>>;
+export type QuarterPanelProps = Readonly<ExtractPropTypes<typeof quarterPanelProps>>;
 
 export default defineComponent({
   name: 'YearPanel',
-  props: yearPanelProps,
+  props: quarterPanelProps,
   emits: ['pick'],
   setup(props, { emit }) {
     const { resolveClassName } = usePrefix();
@@ -75,16 +82,35 @@ export default defineComponent({
 
     const panelDate = ref(props.startDate || dates.value[0] || new Date());
 
+    const allYears = ref(ALL_YEARS);
+    const selectedYear = ref<number>(panelDate.value.getFullYear());
+
     const changeYear = dir => {
-      panelDate.value = new Date((panelDate.value as Date).getFullYear() + dir * 10, 0, 1);
+      panelDate.value = siblingMonth(panelDate.value, dir * 12);
     };
 
     const handlePick = value => {
-      const val = new Date(value.getFullYear(), 0, 1);
+      const val = new Date(value);
 
       dates.value = [val];
       emit('pick', val);
     };
+
+    const handleSelectYear = (year: number) => {
+      panelDate.value = new Date(year, panelDate.value.getMonth(), panelDate.value.getDate());
+    };
+
+    // const handleSelectToggle = (v: boolean) => {
+    //   console.error(123123, v, props.inputRef);
+    //   props.inputRef.blur();
+    // };
+
+    watch(
+      () => panelDate.value,
+      (v: Date) => {
+        selectedYear.value = v.getFullYear();
+      },
+    );
 
     watch(
       () => props.value,
@@ -99,25 +125,41 @@ export default defineComponent({
       resolveClassName,
 
       dates,
+      allYears,
+      selectedYear,
       panelDate,
 
       changeYear,
       handlePick,
+      handleSelectYear,
     };
   },
 
   render() {
     const renderDatePanelLabel = () => {
-      const startYear = Math.floor(this.panelDate.getFullYear() / 10) * 10;
-      const yearCells = getYearCells(startYear);
-      const firstYear = yearCells[0].date;
-      const lastYear = yearCells[yearCells.length - 1].date;
       return (
-        <>
-          <span>
-            {firstYear.getFullYear()} - {lastYear.getFullYear()}
-          </span>
-        </>
+        <Select
+          v-model={this.selectedYear}
+          class={this.resolveClassName('date-picker-quarter-selectyear')}
+          clearable={false}
+          size='small'
+          behavior='simplicity'
+          popoverOptions={{
+            offset: 4,
+            boundary: 'parent',
+            extCls: this.resolveClassName('date-picker-quarter-selectyear-popover'),
+          }}
+          scrollActiveOptionBehavior='instant'
+          onChange={(year: number) => this.handleSelectYear(year)}
+        >
+          {this.allYears.map((d, i) => (
+            <Option
+              id={d.value}
+              key={i}
+              name={d.label}
+            />
+          ))}
+        </Select>
       );
     };
 
@@ -153,7 +195,7 @@ export default defineComponent({
           </div>
 
           <div class={this.resolveClassName('picker-panel-content')}>
-            <YearTable
+            <MonthTable
               tableDate={this.panelDate as Date}
               disabledDate={this.disabledDate}
               value={this.dates as DatePickerValueType}
