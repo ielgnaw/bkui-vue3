@@ -106,10 +106,18 @@ export const DATA_COLUMNS = [
   {
     label: '序号',
     type: 'index',
-    width: 50,
+    width: 350,
     minWidth: 80,
     sort: {
       value: 'desc',
+    },
+    showOverflowTooltip: {
+      mode: 'static',
+      content: '这是个静态的提示，限制最大宽度为200px，测试一下是否生效，长度不够，数字来凑，哈哈哈',
+      popoverOption: {
+        maxWidth: 300,
+        with: 100,
+      },
     },
     className: () => 'custom-class',
   },
@@ -154,7 +162,7 @@ export const DATA_COLUMNS = [
   {
     label: (column, index) => `状态-${index}-${column.field}`,
     field: 'status',
-    render: ({ row }) => `${row.status}-${row.msg}`,
+    render: ({ row }) => `${row.status}-${row.priority}`,
     sort: true,
   },
 ];

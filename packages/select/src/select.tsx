@@ -34,7 +34,7 @@ import { computed, defineComponent, onMounted, PropType, provide, reactive, ref,
 import Checkbox from '@bkui-vue/checkbox';
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
-import { AngleUp, Close, Search } from '@bkui-vue/icon';
+import { AngleUp, Close, Search, TextAll } from '@bkui-vue/icon';
 import Input from '@bkui-vue/input';
 import Loading from '@bkui-vue/loading';
 import Popover from '@bkui-vue/popover';
@@ -52,6 +52,7 @@ import VirtualRender from '@bkui-vue/virtual-render';
 
 import { isInViewPort, selectKey, toLowerCase, useHover, usePopover, useRegistry, useRemoteSearch } from './common';
 import Option from './option';
+import pinyin from './pinyin/index';
 import SelectTagInput from './selectTagInput';
 import { GroupInstanceType, ISelected, OptionInstanceType, SelectTagInputType } from './type';
 
@@ -67,7 +68,7 @@ export default defineComponent({
     size: PropTypes.size().def(SizeEnum.DEFAULT),
     clearable: PropTypes.bool.def(true),
     loading: PropTypes.bool.def(false),
-    filterable: PropTypes.bool.def(false), // 是否支持搜索
+    filterable: PropTypes.bool.def(true), // 是否支持搜索
     remoteMethod: PropTypes.func,
     scrollHeight: PropTypes.number.def(200),
     showAll: PropTypes.bool.def(false), // 全部
@@ -102,10 +103,9 @@ export default defineComponent({
     keepSearchValue: PropTypes.bool.def(false), // 隐藏popover时是否保留搜索内容,
     prefix: PropTypes.string,
     selectedStyle: SelectedType(),
-    filterOption: {
-      type: Function,
-    }, // 配置当前options的过滤规则
-
+    filterOption: { type: Function }, // 配置当前options的过滤规则
+    searchWithPinyin: PropTypes.bool.def(true), // 拼音搜索
+    highlightKeyword: PropTypes.bool.def(false), // 搜索高亮
     // 滚动到当前选中的 options 的方式
     scrollActiveOptionBehavior: PropTypes.scrollBehavior().def('smooth'),
   },
@@ -120,6 +120,7 @@ export default defineComponent({
     'tag-remove',
     'select',
     'deselect',
+    'search-change',
   ],
   setup(props, { emit }) {
     const t = useLocale('select');
@@ -154,6 +155,8 @@ export default defineComponent({
       keepSearchValue,
       selectedStyle,
       filterOption,
+      searchWithPinyin,
+      highlightKeyword,
     } = toRefs(props);
 
     const localNoDataText = computed(() => {
@@ -210,7 +213,7 @@ export default defineComponent({
     );
     const groupsMap = ref<Map<string, GroupInstanceType>>(new Map());
     const selected = ref<ISelected[]>([]);
-    const cacheSelectedMap = computed<Record<string, string>>(() =>
+    const selectedMap = computed<Record<string, string>>(() =>
       selected.value.reduce((pre, item) => {
         pre[item.value] = item.label;
         return pre;
@@ -248,10 +251,7 @@ export default defineComponent({
       isRemoteSearch.value
         ? list.value
         : list.value.filter(item => {
-            if (hasFilterOptionFunc.value) {
-              return !!filterOption.value(curSearchValue.value, item);
-            }
-            return toLowerCase(String(item[displayKey.value]))?.includes(toLowerCase(curSearchValue.value));
+            return defaultSearchMethod(curSearchValue.value, String(item[displayKey.value]), item);
           }),
     );
     // select组件是否禁用
@@ -275,6 +275,8 @@ export default defineComponent({
         normalSelectedValues.every(val => selected.value.some(item => item.value === val))
       );
     });
+    // 全部选项
+    const isAll = computed(() => selected.value.length === 1 && selected.value[0]?.value === allOptionId.value);
     // 是否含有分组
     const isGroup = computed(() => !!groupsMap.value.size);
     // options是否为空
@@ -379,7 +381,7 @@ export default defineComponent({
     // 滚动到当前选中的options中
     const scrollActiveOptionIntoView = () => {
       const optionsDom = contentRef.value?.querySelectorAll?.('.is-selected');
-      optionsDom[0]?.scrollIntoView({
+      optionsDom?.[0]?.scrollIntoView({
         block: 'center',
         behavior: props.scrollActiveOptionBehavior,
       });
@@ -396,27 +398,52 @@ export default defineComponent({
       }
     };
     // 默认搜索方法
-    const defaultSearchMethod = value => {
+    const defaultSearchMethod = (searchValue: string, optionName: string, filterData: Record<string, any> = {}) => {
+      if (hasFilterOptionFunc.value) {
+        return !!filterOption.value(searchValue, { ...filterData });
+      }
+      if (searchWithPinyin.value) {
+        const pinyinList = pinyin.parse(optionName).map(v => {
+          if (v.type === 2) {
+            return v.target.toLowerCase();
+          }
+          return v.target;
+        });
+        const pinyinStr = pinyinList.reduce((res, cur) => res + cur[0], '');
+        return (
+          pinyinList.join('').indexOf(searchValue) !== -1 ||
+          pinyinStr.indexOf(searchValue) !== -1 ||
+          toLowerCase(String(optionName))?.includes(toLowerCase(searchValue))
+        );
+      }
+      return toLowerCase(String(optionName))?.includes(toLowerCase(searchValue));
+    };
+    // 处理options模式时默认搜索方法
+    const handleDefaultOptionSearch = (searchValue: string) => {
       if (!filterable.value) return;
 
-      if (!value) {
+      if (!searchValue) {
         options.value.forEach(option => {
           option.visible = true;
         });
       } else {
         options.value.forEach(option => {
-          if (hasFilterOptionFunc.value) {
-            option.visible = !!filterOption.value(value, { ...option.$props, ...option.$attrs });
-          } else {
-            option.visible = toLowerCase(String(option.optionName))?.includes(toLowerCase(value));
-          }
+          option.visible = defaultSearchMethod(searchValue, String(option.optionName), {
+            ...option.$props,
+            ...option.$attrs,
+          });
         });
       }
     };
     const { searchValue, customOptionName, curSearchValue, searchLoading } = useRemoteSearch(
-      isRemoteSearch.value ? remoteMethod.value : defaultSearchMethod,
+      isRemoteSearch.value ? remoteMethod.value : handleDefaultOptionSearch,
       initActiveOptionValue,
     );
+
+    // 派发search change事件
+    watch(searchValue, () => {
+      emit('search-change', searchValue.value);
+    });
 
     // 派发change事件
     const emitChange = (val: string | string[]) => {
@@ -472,6 +499,12 @@ export default defineComponent({
     // Option点击事件
     const handleOptionSelected = (option: OptionInstanceType) => {
       if (isDisabled.value || !option) return;
+
+      // 删除全部选项
+      const exitAllIndex = selected.value.findIndex(item => item.value === allOptionId.value);
+      if (exitAllIndex > -1) {
+        selected.value.splice(exitAllIndex, 1);
+      }
 
       if (multiple.value) {
         // 多选
@@ -539,30 +572,32 @@ export default defineComponent({
       activeOptionValue.value = '';
     };
     // 全选/取消全选
-    const handleToggleSelectAll = () => {
+    const toggleSelectAll = () => {
       if (isAllSelected.value) {
         selected.value = [];
       } else {
+        const tmpSelected = [];
         options.value.forEach(option => {
-          if (option.disabled || option.optionID in cacheSelectedMap.value) return;
-          selected.value.push({
+          if (option.disabled) return;
+          tmpSelected.push({
             value: option.optionID,
             label: option.optionName || option.optionID,
           });
         });
         list.value?.forEach(item => {
-          if (item.disabled || item[idKey.value] in cacheSelectedMap.value) return;
-          selected.value.push({
+          if (item.disabled) return;
+          tmpSelected.push({
             value: item[idKey.value],
             label: item[displayKey.value],
           });
         });
+        selected.value = tmpSelected;
       }
       emitChange(selected.value.map(item => item.value));
       focusInput();
     };
     // 全部/取消全部
-    const handleToggleAll = () => {
+    const toggleAll = () => {
       if (!isShowAll.value) return;
 
       const index = selected.value.findIndex(item => item.value === allOptionId.value);
@@ -611,7 +646,7 @@ export default defineComponent({
       return (
         optionsMap.value?.get(tmpValue)?.optionName ||
         listMap.value[tmpValue] ||
-        cacheSelectedMap.value[tmpValue] ||
+        selectedMap.value[tmpValue] ||
         tmpValue
       );
     };
@@ -680,6 +715,7 @@ export default defineComponent({
         // 选择选项
         case 'Enter': {
           const { value } = e.target as HTMLInputElement;
+          // 搜索和创建的时候不触发enter事件
           if ((allowCreate.value && value) || e.target === searchRef.value) return;
           const option = optionsMap.value.get(activeOptionValue.value);
           handleOptionSelected(option);
@@ -707,16 +743,15 @@ export default defineComponent({
         selected,
         activeOptionValue,
         showSelectedIcon,
-        isShowAll,
-        allOptionId,
         selectedStyle: selectedStyle as any, // todo 类型推断
+        curSearchValue,
+        highlightKeyword,
         register,
         unregister,
         registerGroup,
         unregisterGroup,
         handleOptionSelected,
         handleGetLabelByValue,
-        handleToggleAll,
       }),
     );
 
@@ -753,6 +788,7 @@ export default defineComponent({
       curContentText,
       isGroup,
       searchValue,
+      curSearchValue,
       customOptionName,
       isShowAll,
       isShowSelectAll,
@@ -761,6 +797,7 @@ export default defineComponent({
       isCollapseTags,
       popoverConfig,
       isAllSelected,
+      isAll,
       focusInput,
       setHover,
       cancelHover,
@@ -770,7 +807,8 @@ export default defineComponent({
       handleClear,
       hidePopover,
       showPopover,
-      handleToggleSelectAll,
+      toggleSelectAll,
+      toggleAll,
       handleOptionSelected,
       handleClickOutside,
       handleScroll,
@@ -806,7 +844,7 @@ export default defineComponent({
             class='spinner'
             mode='spin'
             size='mini'
-          ></Loading>
+          />
         );
       }
       if (this.clearable && this.isHover && this.selected.length && !this.isDisabled) {
@@ -814,10 +852,10 @@ export default defineComponent({
           <Close
             class='clear-icon'
             onClick={this.handleClear}
-          ></Close>
+          />
         );
       }
-      return <AngleUp class='angle-up'></AngleUp>;
+      return <AngleUp class='angle-up' />;
     };
 
     const renderPrefix = () => {
@@ -838,13 +876,13 @@ export default defineComponent({
         <li
           class={this.resolveClassName('select-option')}
           onMouseenter={this.handleSelectedAllOptionMouseEnter}
-          onClick={this.handleToggleSelectAll}
+          onClick={this.toggleSelectAll}
         >
           {this.selectedStyle === 'checkbox' && (
             <Checkbox
               class={this.resolveClassName('select-checkbox')}
               modelValue={this.isAllSelected}
-              indeterminate={!this.isAllSelected && !!this.selected.length}
+              indeterminate={!this.isAllSelected && !!this.selected.length && !this.isAll}
             />
           )}
           {this.t.selectAll}
@@ -853,13 +891,20 @@ export default defineComponent({
     };
     // 全部
     const renderAll = () => {
-      // 全选和全部是互斥的，只能选一个
-      if (this.isShowSelectAll || !this.isShowAll) return;
+      if (!this.isShowAll) return;
       return (
-        <Option
-          id={this.allOptionId}
-          name={this.t.all}
-        />
+        <div class={this.resolveClassName('select-all')}>
+          <div
+            class={[
+              'wrapper',
+              this.selected.length === 1 && this.selected[0]?.value === this.allOptionId ? 'active' : '',
+            ]}
+            onClick={this.toggleAll}
+          >
+            <TextAll class='select-all-icon' />
+            <span>{this.t.all}</span>
+          </div>
+        </div>
       );
     };
 
@@ -882,7 +927,7 @@ export default defineComponent({
               default: this.$slots?.tag && (() => this.$slots?.tag({ selected: this.selected })),
               suffix: () => suffixIcon(),
             }}
-          ></SelectTagInput>
+          />
         );
       }
       return (
@@ -905,7 +950,7 @@ export default defineComponent({
             ...(typeof this.$slots?.prefix === 'function' ? { prefix: () => this.$slots?.prefix?.() } : null),
             suffix: () => suffixIcon(),
           }}
-        ></Input>
+        />
       );
     };
     const renderSelectTrigger = () => (
@@ -925,6 +970,7 @@ export default defineComponent({
         class={this.resolveClassName('select-content-wrapper')}
         ref='contentRef'
       >
+        {renderAll()}
         {this.filterable && !this.inputSearch && (
           <div class={this.resolveClassName('select-search-wrapper')}>
             <Search
@@ -949,7 +995,7 @@ export default defineComponent({
                 loading={true}
                 mode='spin'
                 size='mini'
-              ></Loading>
+              />
             )}
             <span>{this.curContentText}</span>
           </div>
@@ -965,7 +1011,6 @@ export default defineComponent({
               v-show={this.isShowSelectContent}
             >
               {renderSelectAll()}
-              {renderAll()}
               {this.enableVirtualRender ? (
                 <VirtualRender
                   list={this.virtualList}
