@@ -27,7 +27,7 @@
 import { computed, defineComponent, nextTick, ref, Transition, watch } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
-import { bkZIndexManager, isElement, isPromise, mask } from '@bkui-vue/shared';
+import { bkZIndexManager, getFullscreenRoot, isElement, isPromise, mask } from '@bkui-vue/shared';
 
 import { propsMixin } from './props.mixin';
 
@@ -69,17 +69,17 @@ export default defineComponent({
     const resolveTransfer = () => {
       if (props.transfer) {
         if (typeof props.transfer === 'boolean') {
-          teleportTo.value = 'body';
+          teleportTo.value = getFullscreenRoot();
           return;
         }
 
-        teleportTo.value = props.transfer;
+        teleportTo.value = getFullscreenRoot(props.transfer);
       }
     };
 
-    resolveTransfer();
     const { resolveClassName } = usePrefix();
     const resolveClosetModal = () => {
+      resolveTransfer();
       if (enableTeleport.value) {
         if (typeof teleportTo.value === 'string') {
           const target = document.querySelector(teleportTo.value as string);
@@ -219,7 +219,13 @@ export default defineComponent({
         )}
 
         <div
-          class={[resolveClassName('modal-wrapper'), this.extCls ?? '', this.size, this.fullscreen ? 'fullscreen' : '']}
+          class={[
+            resolveClassName('modal-wrapper'),
+            this.extCls ?? '',
+            this.bodyClass ?? '',
+            this.size,
+            this.fullscreen ? 'fullscreen' : '',
+          ]}
           style={[this.compStyle, this.fullscreen ? this.fullscreenStyle : '']}
         >
           <Transition name={this.animateType}>

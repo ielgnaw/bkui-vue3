@@ -24,6 +24,8 @@
  * IN THE SOFTWARE.
  */
 import throttle from 'lodash/throttle';
+
+import { isElement } from './helper';
 const lowerStr = 'abcdefghijklmnopqrstuvwxyz0123456789';
 /**
  * 生成n位长度的字符串
@@ -115,3 +117,43 @@ export function checkOverflow(el) {
   }
   return isOverflow;
 }
+
+/**
+ * 判定是否在全屏模式下包含指定元素
+ * @param target
+ * @returns
+ */
+export const isFullScreenContainsElement = (target: HTMLElement) => {
+  if (document.fullscreenElement?.shadowRoot) {
+    return document.fullscreenElement.shadowRoot.contains(target);
+  }
+  return document.fullscreenElement?.contains(target);
+};
+
+/**
+ * 当全屏模式开启，获取指定选择器下面的全屏元素
+ * 如果是启用了webcomponent组件，则返回shadowRoot内指定的目标元素
+ * @returns
+ */
+export const getFullscreenRoot = (selector?: HTMLElement | string) => {
+  if (isElement(selector)) {
+    if (isFullScreenContainsElement(selector as HTMLElement)) {
+      return selector;
+    }
+  }
+
+  if (typeof selector === 'string') {
+    const target = document.body.querySelector(selector);
+    return getFullscreenRoot(target as HTMLElement);
+  }
+
+  if (document.fullscreenElement) {
+    if (document.fullscreenElement?.shadowRoot) {
+      return document.fullscreenElement?.shadowRoot;
+    }
+
+    return document.fullscreenElement;
+  }
+
+  return document.body;
+};

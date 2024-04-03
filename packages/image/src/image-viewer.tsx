@@ -29,7 +29,7 @@ import { computed, CSSProperties, defineComponent, effectScope, ref, shallowRef,
 import { usePrefix } from '@bkui-vue/config-provider';
 import { bkTooltips } from '@bkui-vue/directives';
 import { AngleLeft, AngleRight, Close } from '@bkui-vue/icon';
-import { bkZIndexManager } from '@bkui-vue/shared';
+import { bkZIndexManager, getFullscreenRoot } from '@bkui-vue/shared';
 
 import { propsImageViever as props } from './props';
 
@@ -253,9 +253,9 @@ export default defineComponent({
     }
 
     const { resolveClassName } = usePrefix();
-
+    const teleportTo = computed(() => getFullscreenRoot());
     return () => (
-      <Teleport to='body'>
+      <Teleport to={teleportTo.value}>
         <Transition>
           <div
             tabindex='-1'

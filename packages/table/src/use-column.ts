@@ -37,6 +37,11 @@ import { Column, IColSortBehavior, ISortShape, TablePropTypes } from './props';
 export default (props: TablePropTypes, targetColumns: ITableColumn[]) => {
   const resolvedColumns = reactive(props.columns ?? []);
 
+  /**
+   * 初始化Column配置
+   * @param column 传入
+   * @param remove 是否移除当前列
+   */
   const initColumns = (column: ITableColumn[], remove = false) => {
     let resolveColumns: ITableColumn[] = [];
 

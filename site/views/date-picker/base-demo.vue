@@ -6,7 +6,8 @@
     <bk-date-picker
       v-model="initDate"
       clearable
-      :open="true"
+      open
+      append-to-body
       :disable-date="disableDate"
       @change="handleChange"
     />

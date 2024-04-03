@@ -24,7 +24,18 @@
  * IN THE SOFTWARE.
  */
 
-import { computed, defineComponent, nextTick, provide, reactive, Ref, ref, SetupContext, watch } from 'vue';
+import {
+  computed,
+  defineComponent,
+  nextTick,
+  provide,
+  reactive,
+  Ref,
+  ref,
+  SetupContext,
+  watch,
+  watchEffect,
+} from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { debounce } from '@bkui-vue/shared';
@@ -36,9 +47,10 @@ import { PROVIDE_KEY_INIT_COL, PROVIDE_KEY_TB_CACHE } from './const';
 import { EMIT_EVENT_TYPES, EMIT_EVENTS } from './events';
 import useColumnResize from './plugins/use-column-resize';
 import useFixedColumn from './plugins/use-fixed-column';
+import useObserverResize from './plugins/use-observer-resize';
 import useScrollLoading from './plugins/use-scroll-loading';
 import { Column, Settings, tableProps } from './props';
-import useData, { ITableResponse } from './use-attributes';
+import useData from './use-attributes';
 import useColumn from './use-column';
 import { useClass } from './use-common';
 import useRender from './use-render';
@@ -58,7 +70,7 @@ export default defineComponent({
     const bkTableCache = new BkTableCache();
     const targetColumns = reactive([]);
     const { initColumns, columns } = useColumn(props, targetColumns);
-    const tableSchema: ITableResponse = useData(props);
+    const tableSchema = useData(props);
 
     const { resizeColumnStyle, resizeHeadColStyle, registerResizeEvent } = useColumnResize(tableSchema, false, head);
 
@@ -100,6 +112,12 @@ export default defineComponent({
       hasScrollY: hasScrollYRef.value,
     }));
 
+    useObserverResize(root, () => {
+      nextTick(() => {
+        resolveFixedColumns(tableOffsetRight.value);
+      });
+    });
+
     const { renderTableBodySchema, renderTableFooter, renderTableHeadSchema } = useRender(
       props,
       ctx as SetupContext<any>,
@@ -125,39 +143,35 @@ export default defineComponent({
     };
 
     const isFirstLoad = ref(true);
-    // const tableWidth = ref(null);
 
-    watch(
-      () => [props.data, columns],
-      () => {
-        tableSchema.setIndexData().then(() => {
-          tableSchema.formatColumns(columns as Column[]);
-          tableSchema.formatDataSchema(props.data);
-          tableSchema.resetStartEndIndex();
+    watchEffect(() => {
+      tableSchema.formatDataSchema(props.data);
+      tableSchema.formatColumns(columns as Column[]);
+      resolveFixedColumns(tableOffsetRight.value);
+      tableSchema.setIndexData().then(() => {
+        // tableSchema.formatDataSchema(props.data);
+        tableSchema.resetStartEndIndex();
 
-          if (isFirstLoad.value) {
-            tableSchema.resolveByDefColumns();
-            isFirstLoad.value = false;
-          } else {
-            tableSchema.resolvePageData();
-          }
+        if (isFirstLoad.value) {
+          tableSchema.resolveByDefColumns();
+          isFirstLoad.value = false;
+        } else {
+          tableSchema.resolvePageData();
+        }
 
-          registerResizeEvent();
+        registerResizeEvent();
+        nextTick(() => {
+          updateOffsetRight();
+
+          /**
+           * 确保在所有数据渲染完毕再执行fix column计算
+           */
           nextTick(() => {
-            updateOffsetRight();
-            resolveFixedColumns(tableOffsetRight.value);
-
-            /**
-             * 确保在所有数据渲染完毕再执行fix column计算
-             */
-            nextTick(() => {
-              resetTableHeight(root.value);
-            });
+            resetTableHeight(root.value);
           });
         });
-      },
-      { immediate: true, deep: true },
-    );
+      });
+    });
 
     watch(
       () => [props.height, props.maxHeight, props.minHeight],

@@ -110,16 +110,17 @@ export default defineComponent({
           return null;
         },
       };
-      const className = `${resolveClassName('sideslider-wrapper')} ${props.scrollable ? 'scroll-able' : ''} ${
-        props.extCls
-      }`;
+      const className = resolveClassName('sideslider-wrapper');
+      const bodyClass = props.scrollable ? 'scroll-able' : '';
       const maxHeight = slots.footer ? 'calc(100vh - 106px)' : 'calc(100vh - 52px)';
 
       return (
         <Modal
           {...props}
-          maxHeight={maxHeight}
           class={className}
+          maxHeight={maxHeight}
+          extCls={props.extCls}
+          bodyClass={bodyClass}
           onHidden={handleHidden}
           onShown={handleShown}
           onClose={handleClose}

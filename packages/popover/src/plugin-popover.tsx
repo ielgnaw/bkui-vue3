@@ -31,12 +31,14 @@ import { isAvailableId, isElement } from './utils';
 
 export type $Popover = PopoverPropTypes & {
   target: HTMLElement | HTMLElement | MouseEvent;
+  immediate: boolean;
 };
 
 export default function createPopoverComponent(options: $Popover) {
   let $PopoverInstance = null;
   let $PopoverInstanceVm = null;
   let $PopoverInstanceEl: HTMLElement = null;
+  const immediate = options.immediate ?? true;
   const resolvedOptions: any = {
     boundary: 'body',
     placement: 'top',
@@ -138,24 +140,36 @@ export default function createPopoverComponent(options: $Popover) {
     return document.body;
   }
 
-  if ($PopoverInstance === null) {
-    $PopoverInstanceEl = document.createElement('div');
-    getBoundaryDom(resolvedOptions.boundary).append($PopoverInstanceEl);
+  const install = () => {
+    if ($PopoverInstance === null) {
+      $PopoverInstanceEl = document.createElement('div');
+      getBoundaryDom(resolvedOptions.boundary).append($PopoverInstanceEl);
 
-    $PopoverInstance = createApp(popoverComponent);
-    $PopoverInstanceVm = $PopoverInstance.mount($PopoverInstanceEl);
-  }
+      $PopoverInstance = createApp(popoverComponent);
+      $PopoverInstanceVm = $PopoverInstance.mount($PopoverInstanceEl);
+    }
+  };
+
+  const uninstall = () => {
+    if (isElement(options.content)) {
+      (options.content as HTMLElement).remove();
+    }
+    $PopoverInstance.unmount();
+    $PopoverInstance = null;
+    $PopoverInstanceEl?.remove();
+  };
 
   function close() {
-    if ($PopoverInstance) {
-      $PopoverInstance.unmount();
-      $PopoverInstanceVm = null;
-      $PopoverInstance = null;
-      $PopoverInstanceEl.remove();
-    }
+    uninstall();
+    $PopoverInstanceVm = null;
   }
 
-  function show() {
+  function show(target?: MouseEvent | HTMLElement) {
+    install();
+    if (target) {
+      ($PopoverInstanceVm as any)?.updateTarget(target);
+    }
+
     ($PopoverInstanceVm as any)?.show();
   }
 
@@ -167,11 +181,15 @@ export default function createPopoverComponent(options: $Popover) {
     ($PopoverInstanceVm as any)?.hide();
   }
 
+  immediate && install();
+
   return {
+    install,
     close,
     show,
     hide,
     update,
+    uninstall,
     get vm() {
       return $PopoverInstanceVm;
     },

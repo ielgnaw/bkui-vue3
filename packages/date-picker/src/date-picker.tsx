@@ -228,7 +228,7 @@ export default defineComponent({
           {this.$slots.trigger?.(this.displayValue) ?? renderTrigger()}
         </div>
         <Teleport
-          to='body'
+          to={this.teleportTo}
           disabled={!this.appendToBody}
         >
           <Transition name={this.resolveClassName('fade-down-transition')}>

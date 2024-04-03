@@ -43,7 +43,7 @@ import {
 import { usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
 import { Close } from '@bkui-vue/icon';
-import { useFormItem } from '@bkui-vue/shared';
+import { getFullscreenRoot, useFormItem } from '@bkui-vue/shared';
 
 import PickerDropdown from './base/picker-dropdown';
 import { dateIcon, timeIcon } from './common';
@@ -76,6 +76,7 @@ export default defineComponent({
   }>,
   setup(props, { slots, emit }) {
     const { resolveClassName } = usePrefix();
+    const teleportTo = ref(getFullscreenRoot());
     const formItem = useFormItem();
     const isRange = props.type.includes('range');
     const emptyArray = isRange ? [null, null] : [null];
@@ -404,6 +405,7 @@ export default defineComponent({
       if (props.readonly) {
         return;
       }
+      teleportTo.value = getFullscreenRoot();
       state.isFocused = true;
       if (e && e.type === 'focus') {
         return;
@@ -601,7 +603,7 @@ export default defineComponent({
       inputRef,
       triggerRef,
       pickerPanelRef,
-
+      teleportTo,
       handleClose,
       handleIconClick,
       handleInputMouseenter,
@@ -675,7 +677,7 @@ export default defineComponent({
           {this.$slots.trigger?.(this.displayValue) ?? defaultTrigger}
         </div>
         <Teleport
-          to='body'
+          to={this.teleportTo}
           disabled={!this.appendToBody}
         >
           <Transition name='bk-fade-down-transition'>

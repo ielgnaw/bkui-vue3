@@ -26,6 +26,8 @@
 
 import { type ComponentPublicInstance, computed, onMounted, provide, ref, watch } from 'vue';
 
+import { getFullscreenRoot } from '@bkui-vue/shared';
+
 // import { usePrefix } from '@bkui-vue/config-provider';
 // import { useFormItem } from '@bkui-vue/shared';
 // import type { DatePickerPanelType, SelectionModeType } from './interface';
@@ -38,6 +40,7 @@ export function useCalendar(props, slots, emit) {
 
   const isRange = props.type.includes('range');
   const emptyArray = isRange ? [null, null] : [null];
+  const teleportTo = ref(getFullscreenRoot());
 
   const initialArr = isRange ? ((props.value || props.modelValue) as any[]) : [props.value || props.modelValue];
   const initialValue = isAllEmptyArr(initialArr)
@@ -126,6 +129,9 @@ export function useCalendar(props, slots, emit) {
     if (props.readonly) {
       return;
     }
+
+    teleportTo.value = getFullscreenRoot();
+
     isFocused.value = true;
     // console.error('focusfocusfocusfocus');
     if (!props.disabled) {
@@ -525,6 +531,7 @@ export function useCalendar(props, slots, emit) {
     forceInputRerender,
     internalValue,
     focusedDate,
+    teleportTo,
 
     reset,
     setInputRef,

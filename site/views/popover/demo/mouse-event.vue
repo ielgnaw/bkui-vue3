@@ -40,24 +40,19 @@
     },
     methods: {
       handlePopMsgBtn(e) {
-        this.popInstance?.close();
-        this.popInstance = $bkPopover({
-          target: e,
-          content: this.$refs.refContentTable.children[0],
-        });
-
-        this.popInstance?.show();
+        if (!this.popInstance) {
+          this.popInstance = $bkPopover({
+            target: e,
+            content: this.$refs.refContentTable.children[0],
+          });
+        }
       },
       handleShowPop(e) {
-        this.popInstance?.update(e);
-        this.popInstance?.show();
+        this.popInstance?.show(e);
       },
       handleHidePop() {
         this.popInstance?.hide();
       },
-      // handleMouseMove(e) {
-      //   this.popInstance?.update(e);
-      // },
     },
   });
 </script>

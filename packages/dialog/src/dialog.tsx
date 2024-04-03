@@ -330,14 +330,16 @@ export default defineComponent({
       close: () => <Error onClick={this.handleClose} />,
     };
 
-    const className = `${this.resolveClassName('dialog-wrapper ')} ${this.scrollable ? 'scroll-able' : ''} ${
-      this.multiInstance ? 'multi-instance' : ''
-    } ${this.hasFooter ? 'has-footer' : 'no-footer'}`;
+    const className = this.resolveClassName('dialog-wrapper ');
 
+    const bodyClass = `${this.scrollable ? 'scroll-able' : ''} ${this.multiInstance ? 'multi-instance' : ''} ${
+      this.hasFooter ? 'has-footer' : 'no-footer'
+    }`;
     return (
       <Modal
         {...this.$props}
         class={className}
+        bodyClass={bodyClass}
         onClose={this.handleClose}
         isShow={this.isModalShow}
         left={this.data.moveStyle.left}
