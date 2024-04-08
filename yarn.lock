@@ -1060,12 +1060,10 @@
   resolved "https://mirrors.tencent.com/npm/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blueking/date-picker@~1.0.1":
-  version "1.0.1"
-  resolved "https://mirrors.tencent.com/npm/@blueking/date-picker/-/date-picker-1.0.1.tgz#e673f262aa9be83ae5a453a7a1282e75c2ad9f9b"
-  integrity sha512-YtmVtYScUkGvpXqmOChGv9eE2GD6cnwKiecQpOYKRBWSbg4h2ed0LUMwVqvHsWcUCMQvIktDgltF0uXaZp099A==
-  dependencies:
-    dayjs "^1.11.10"
+"@blueking/date-picker@~2.0.0-beta.8":
+  version "2.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@blueking/date-picker/-/date-picker-2.0.0-beta.8.tgz#709c5d48bb2c73ee25ce2a3e5a9e204e27180c68"
+  integrity sha512-1WH2BVzuLRGv5bbiQGwP9YDqbKXfJuWpRKJ7otUfqCg8Z7tMlSv7OY04lX9AhypOhW2vj9gChIXmIjwK0UXbdQ==
 
 "@blueking/log-search@~0.0.9":
   version "0.0.9"

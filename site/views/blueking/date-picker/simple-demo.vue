@@ -5,10 +5,10 @@
   />
 </template>
 <script setup lang="ts">
-  import { ref } from 'vue';
+import { ref } from 'vue';
 
-  import DatePicker from '@blueking/date-picker';
+import DatePicker from '@blueking/date-picker';
 
-  import '@blueking/date-picker/dist/vue3-light.css';
-  const value = ref(['now', 'now+1w']);
+import '@blueking/date-picker/vue3/vue3.css';
+const value = ref(['now', 'now+1w']);
 </script>

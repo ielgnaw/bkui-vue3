@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { defineComponent, ExtractPropTypes, inject, reactive, ref, unref } from 'vue';
+import { defineComponent, ExtractPropTypes, inject, isVNode, reactive, ref, unref } from 'vue';
 
 import { PropTypes } from '@bkui-vue/shared';
 
@@ -158,37 +158,52 @@ export default defineComponent({
           return;
         }
 
-        const colList = tableNode.children.default() || [];
-
         const sortColumns = [];
         let index = 0;
+
+        const resolveChildNode = node => {
+          if (!node) {
+            return null;
+          }
+
+          if (node.type?.name === 'TableColumn') {
+            const resolveProp = Object.assign({ index }, this.copyProps(node.props), {
+              field: node.props.prop || node.props.field,
+              render: node.children?.default,
+            });
+            sortColumns.push(unref(resolveProp));
+            index = index + 1;
+            return null;
+          }
+
+          if (Array.isArray(node?.children)) {
+            return node.children;
+          }
+
+          if (isVNode(node) && node?.children && typeof node?.children === 'object') {
+            return Object.keys(node.children).map(key => node.children[key]);
+          }
+
+          if (typeof node === 'function') {
+            return node();
+          }
+
+          return null;
+        };
+
         const reduceColumns = nodes => {
           if (!Array.isArray(nodes)) {
+            const children = resolveChildNode(nodes);
+            if (children) {
+              reduceColumns(children);
+            }
             return;
           }
-          nodes.forEach((node: any) => {
-            if (Array.isArray(node)) {
-              reduceColumns(node);
-              return;
-            }
 
-            let skipValidateKey0 = true;
-            if (node.type?.name === 'TableColumn') {
-              skipValidateKey0 = Object.hasOwnProperty.call(node.props || {}, 'key');
-              const resolveProp = Object.assign({ index }, this.copyProps(node.props), {
-                field: node.props.prop || node.props.field,
-                render: node.children?.default,
-              });
-              sortColumns.push(unref(resolveProp));
-              index = index + 1;
-            }
-
-            if (node.children?.length && skipValidateKey0 && node.type?.name !== 'Table') {
-              reduceColumns(node.children);
-            }
-          });
+          nodes?.forEach((node: any) => reduceColumns(node));
         };
-        reduceColumns(colList);
+        reduceColumns(tableNode);
+
         this.initColumns(sortColumns);
       };
 

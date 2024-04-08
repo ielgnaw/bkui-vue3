@@ -1,5 +1,22 @@
 ## 更新日志
 
+### 1.0.3-beta.32
+
+* **[feat]**:
+    - fix(table): 动态获取children增加判定逻辑
+
+### 1.0.3-beta.31
+
+* **[feat]**:
+    - fix(table): 动态获取children增加判定逻辑
+
+
+### 1.0.3-beta.30
+
+* **[feat]**:
+    - fix(table): bk-table-column支持嵌套多层自定义父级组件
+
+
 ### 1.0.3-beta.29
 
 * **[feat]**:

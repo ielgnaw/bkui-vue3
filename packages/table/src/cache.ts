@@ -23,18 +23,46 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+
+type StackStorageFnType = {
+  [name: string]: {
+    timerId?: number;
+    fn?: () => void;
+  };
+};
 export default class BkTableCache {
-  storage = undefined;
+  storage: WeakMap<Object, StackStorageFnType> = undefined;
+  defKey = Symbol('bk-table-cache-def-key');
   constructor() {
-    this.storage = {};
+    this.storage = new WeakMap();
   }
 
-  queueStack(methodName, fn = () => {}) {
-    this.storage[methodName] && clearTimeout(this.storage[methodName]);
-    this.storage[methodName] = setTimeout(() => fn());
+  queueStack(methodName, fn = () => {}, key?: Object) {
+    const stackKey = key ?? this.defKey;
+    if (!this.storage.has(stackKey)) {
+      this.storage.set(stackKey, {});
+    }
+
+    const target = this.storage.get(stackKey);
+    if (target[methodName]?.timerId) {
+      clearTimeout(target[methodName]?.timerId);
+    }
+
+    Object.assign(target, {
+      [methodName]: {
+        timerId: setTimeout(fn),
+        fn,
+      },
+    });
   }
 
-  clearQueueStack(methodName) {
-    this.storage[methodName] && clearTimeout(this.storage[methodName]);
+  clearQueueStack(methodName, key?: Object) {
+    const stackKey = key ?? this.defKey;
+    if (this.storage.has(stackKey)) {
+      const target = this.storage.get(stackKey);
+      if (target[methodName]?.timerId) {
+        clearTimeout(target[methodName]?.timerId);
+      }
+    }
   }
 }

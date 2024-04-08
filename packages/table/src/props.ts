@@ -63,7 +63,7 @@ export enum ColumnTypeEnum {
   SELECTION = 'selection',
   INDEX = 'index',
   EXPAND = 'expand',
-  NONE = 'none',
+  NONE = '__COL_TYPE_NONE',
 }
 
 export enum TableAlignEnum {
