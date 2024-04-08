@@ -119,7 +119,7 @@ export function useCalendar(props, slots, emit) {
     internalValue.value = internalValue.value.map(() => null);
     emit('clear');
     emitChange();
-    reset();
+    // reset();
     showClose.value = false;
     // shortcut.value = null;
     // setTimeout(() => onSelectionModeChange(props.type), 500);

@@ -141,6 +141,7 @@ export default defineComponent({
         <Select
           v-model={this.selectedYear}
           class={this.resolveClassName('date-picker-quarter-selectyear')}
+          filterable={false}
           clearable={false}
           size='small'
           behavior='simplicity'

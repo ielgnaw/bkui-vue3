@@ -7,7 +7,7 @@
     /> -->
 
   <!-- :cell-class="getCellClass" -->
-  <div>
+  <!-- <div>
     <p style="font-size: 14px;">
       年选择器 {{ yearValue }}
     </p>
@@ -28,7 +28,7 @@
       :append-to-body="true"
       @change="handleQuarterChange"
     />
-  </div>
+  </div> -->
   <div>
     <p style="font-size: 14px;">
       月选择器 {{ monthValue }}
