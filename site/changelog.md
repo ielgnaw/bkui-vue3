@@ -1,5 +1,24 @@
 ## 更新日志
 
+
+### 1.0.3-beta.35
+
+* **[feat]**:
+    - fix(date-picker): 日期、时间 icon 问题修复
+
+
+### 1.0.3-beta.35
+
+* **[feat]**:
+    - fix(date-picker): 日期、时间 icon 问题修复
+
+
+### 1.0.3-beta.33
+
+* **[feat]**:
+    - feat: 更新业务组件date-picker及去除全局before,after伪类box-sizing设置
+    - fix(table): 兼容table-column嵌套渲染
+
 ### 1.0.3-beta.32
 
 * **[feat]**:
