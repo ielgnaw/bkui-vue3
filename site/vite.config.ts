@@ -38,11 +38,11 @@ export default defineConfig({
     alias: [
       {
         find: /^bkui-vue$/,
-        replacement: resolve(__dirname, './node_modules/bkui-vue/lib/'),
+        replacement: resolve(__dirname, '../packages/bkui-vue/index.ts'),
       },
       {
-        find: /^bkui-vue\/lib/,
-        replacement: resolve(__dirname, './node_modules/bkui-vue/lib/'),
+        find: 'bkui-vue/lib/directives', // 老版本构建 后面业务组件升级后去除
+        replacement: resolve(__dirname, '../packages/bkui-vue/index.ts'),
       },
       {
         find: /^@bkui-vue\/lib\/icon/,
@@ -70,8 +70,11 @@ export default defineConfig({
   },
   build: {
     commonjsOptions: {
-      include: [/\/(node_modules)\//],
+      include: [/\/(lodash|dayjs)\//],
     },
+  },
+  optimizeDeps: {
+    exclude: ['bkui-vue'],
   },
   // css: {
   //   preprocessorOptions: {
