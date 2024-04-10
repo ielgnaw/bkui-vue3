@@ -70,7 +70,9 @@ export default defineConfig({
   },
   build: {
     commonjsOptions: {
-      include: [/\/(lodash|dayjs)\//],
+      include: [
+        /\/(lodash|dayjs|normalize-wheel|json-formatter-js|clipboard|js-calendar|spark-md5|highlight\.js|diff2html|hogan\.js)\//,
+      ],
     },
   },
   optimizeDeps: {
