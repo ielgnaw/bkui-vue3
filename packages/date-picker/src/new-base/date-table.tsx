@@ -30,7 +30,7 @@ import { computed, defineComponent, PropType } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 
-import type { DatePickerValueType, DisabledDateType, PickerTypeType } from '../interface';
+import type { DatePickerValueType, DisabledDateType, PickerTypeType } from '../new-interface';
 import { clearHours, isInRange } from '../utils';
 
 const dateTableProps = {
@@ -49,8 +49,11 @@ const dateTableProps = {
     validator(value) {
       const validList: PickerTypeType[] = [
         'year',
+        'yearrange',
         'quarter',
+        'quarterrange',
         'month',
+        'monthrange',
         'date',
         'daterange',
         'datetime',

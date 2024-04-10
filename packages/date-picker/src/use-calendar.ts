@@ -24,16 +24,16 @@
  * IN THE SOFTWARE.
  */
 
-import { type ComponentPublicInstance, computed, nextTick, onMounted, provide, ref, watch } from 'vue';
+import { type ComponentPublicInstance, computed, onMounted, provide, ref, watch } from 'vue';
 
-import { usePrefix } from '@bkui-vue/config-provider';
+// import { usePrefix } from '@bkui-vue/config-provider';
 import { useFormItem } from '@bkui-vue/shared';
 
 import type { DatePickerPanelType, SelectionModeType } from './interface';
 import { datePickerKey, EVENT_CODE, extractTime, formatDate, isAllEmptyArr, parseDate } from './utils';
 
 export function useCalendar(props, slots, emit) {
-  const { resolveClassName } = usePrefix();
+  // const { resolveClassName } = usePrefix();
   const formItem = useFormItem();
 
   const isRange = props.type.includes('range');
@@ -112,7 +112,7 @@ export function useCalendar(props, slots, emit) {
   //   pickerDropdownRef.value = el;
   // };
 
-  const handleFocus = e => {
+  const handleFocus = _e => {
     if (props.readonly) {
       return;
     }
@@ -135,7 +135,7 @@ export function useCalendar(props, slots, emit) {
     // }
   };
 
-  const handleBlur = e => {
+  const handleBlur = _e => {
     // console.error('handleBlurhandleBlurhandleBlur');
     visible.value = false;
     // if (internalFocus.value) {

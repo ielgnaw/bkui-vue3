@@ -43,6 +43,7 @@ import {
   InputBehaviorType,
   PropTypes,
   RenderType,
+  ScrollBehaviorEnum,
   SelectedType,
   SizeEnum,
   TagThemeType,
@@ -107,7 +108,7 @@ export default defineComponent({
     searchWithPinyin: PropTypes.bool.def(true), // 拼音搜索
     highlightKeyword: PropTypes.bool.def(false), // 搜索高亮
     // 滚动到当前选中的 options 的方式
-    scrollActiveOptionBehavior: PropTypes.scrollBehavior().def('smooth'),
+    scrollActiveOptionBehavior: PropTypes.scrollBehavior().def(ScrollBehaviorEnum.SMOOTH),
   },
   emits: [
     'update:modelValue',
@@ -383,7 +384,7 @@ export default defineComponent({
       const optionsDom = contentRef.value?.querySelectorAll?.('.is-selected');
       optionsDom?.[0]?.scrollIntoView({
         block: 'center',
-        behavior: props.scrollActiveOptionBehavior,
+        behavior: props.scrollActiveOptionBehavior as ScrollBehavior,
       });
     };
 

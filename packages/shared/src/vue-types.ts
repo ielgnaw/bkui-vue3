@@ -287,18 +287,42 @@ export class PropTypes extends propTypesNS {
     });
   }
 
+  // type ScrollBehavior = "auto" | "instant" | "smooth";
+
+  // static scrollBehavior() {
+  //   const behavior = ['auto', 'instant', 'smooth'] as const;
+  //   type BehaviorEnum = ElementType<typeof behavior>;
+  //   return toType<BehaviorEnum>('InfoType', {
+  //     validator: (val: BehaviorEnum) => {
+  //       if (!val || behavior.includes(val)) {
+  //         return true;
+  //       }
+  //       return false;
+  //     },
+  //   });
+  // }
   static scrollBehavior() {
-    const behavior = ['auto', 'instant', 'smooth'] as const;
-    type BehaviorEnum = ElementType<typeof behavior>;
-    return toType<BehaviorEnum>('InfoType', {
+    const defaultList = ['auto', 'instant', 'smooth'] as const;
+    type BehaviorEnum = ElementType<typeof defaultList>;
+    return toType<BehaviorEnum>('ScrollBehavior', {
       validator: (val: BehaviorEnum) => {
-        if (!val || behavior.includes(val)) {
+        if (!val || defaultList.includes(val)) {
           return true;
         }
+        console.error(
+          `invalid scrollBehavior, ${val}, the scrollBehavior must be one of 【${defaultList.join(' | ')}】`,
+        );
         return false;
       },
+      default: 'smooth',
     });
   }
+}
+
+export enum ScrollBehaviorEnum {
+  AUTO = 'auto',
+  INSTANT = 'instant',
+  SMOOTH = 'smooth',
 }
 
 export enum SelectedTypeEnum {

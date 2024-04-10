@@ -67,7 +67,7 @@ import {
   // timePickerKey
 } from '../utils';
 
-import Time from './time';
+// import Time from './time';
 
 const datePanelProps = {
   value: {
@@ -79,8 +79,11 @@ const datePanelProps = {
     validator(value) {
       const validList: PickerTypeType[] = [
         'year',
+        'yearrange',
         'quarter',
+        'quarterrange',
         'month',
+        'monthrange',
         'date',
         'daterange',
         'datetime',
@@ -448,7 +451,6 @@ export default defineComponent({
             <YearTable
               tableDate={this.panelDate as Date}
               disabledDate={this.disabledDate}
-              type={this.type}
               value={this.dates as DatePickerValueType}
               // focusedDate={this.focusedDate}
               onPick={this.panelPickerHandlers}
@@ -460,7 +462,6 @@ export default defineComponent({
             <QuarterTable
               tableDate={this.panelDate as Date}
               disabledDate={this.disabledDate}
-              type={this.type}
               value={this.dates as DatePickerValueType}
               // focusedDate={this.focusedDate}
               onPick={this.panelPickerHandlers}

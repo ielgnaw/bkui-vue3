@@ -34,7 +34,7 @@ import { getFullscreenRoot } from '@bkui-vue/shared';
 import { DatePickerPanelType } from './new-interface';
 import { datePickerKey, EVENT_CODE, /* extractTime,  */ formatDate, isAllEmptyArr, parseDate } from './utils';
 
-export function useCalendar(props, slots, emit) {
+export function useCalendar(props, _slots, emit) {
   // const { resolveClassName } = usePrefix();
   // const formItem = useFormItem();
 
