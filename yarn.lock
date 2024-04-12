@@ -1065,10 +1065,10 @@
   resolved "https://registry.yarnpkg.com/@blueking/date-picker/-/date-picker-2.0.0-beta.8.tgz#709c5d48bb2c73ee25ce2a3e5a9e204e27180c68"
   integrity sha512-1WH2BVzuLRGv5bbiQGwP9YDqbKXfJuWpRKJ7otUfqCg8Z7tMlSv7OY04lX9AhypOhW2vj9gChIXmIjwK0UXbdQ==
 
-"@blueking/log-search@~0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@blueking/log-search/-/log-search-0.0.9.tgz#776bb78008d5e5619142ba56b2387c485e943529"
-  integrity sha512-HORQgUKkIgG8z3uFeJIzXxrqxTN/ovHAfgfDleDwm639MSe3oq8roxwazfwSOl/Ex3+XLxvMQXxOnqf/pvHKGg==
+"@blueking/log-search@0.0.9-beta.1":
+  version "0.0.9-beta.1"
+  resolved "https://registry.yarnpkg.com/@blueking/log-search/-/log-search-0.0.9-beta.1.tgz#3240e983a2b0b77985c26f3483022b59ba2421a8"
+  integrity sha512-pWqLC84v6d8eJAa0AvwJrezlV7blwxfihSZ1OoGrmsAykrr3iZWRSkn54ikF8BEigUTfY/36L/bKiC2ddQ2zDA==
   dependencies:
     dayjs "^1.11.10"
     echarts "^5.4.3"
@@ -4426,10 +4426,10 @@ binary-extensions@^2.0.0:
   resolved "https://mirrors.tencent.com/npm/binary-extensions/-/binary-extensions-2.3.0.tgz#f6e14a97858d327252200242d4ccfe522c445522"
   integrity sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==
 
-bkui-vue@1.0.0:
-  version "1.0.0"
-  resolved "https://mirrors.tencent.com/npm/bkui-vue/-/bkui-vue-1.0.0.tgz#f9bd8cdc3f10698f375cd64c1085ecafc323dd7b"
-  integrity sha512-PRH9U+DAesEUdrgdj+uQrISWFeaFZZazjSrpyNteFMPwmPQMynq1ZWrdm/XfowqHXoWx2XlrjEtlgm7YMd0aig==
+bkui-vue@latest:
+  version "1.0.3-beta.33"
+  resolved "https://registry.yarnpkg.com/bkui-vue/-/bkui-vue-1.0.3-beta.33.tgz#c889e4c93017c3a76bd16869d4201b99a9a09943"
+  integrity sha512-06ceTJi7GUi2dh3udFmZDj9r7yw0SAdAuAhgU41Cm4adeKHk7DdRmTWz+wLOI/4Ia1neRrRLeIFh1qTwwMHc+A==
   dependencies:
     "@floating-ui/dom" "~1.5.0"
     "@popperjs/core" "~2.11.8"

@@ -12,25 +12,18 @@
     "noImplicitAny": false,
     "module": "esnext",
     "target": "esnext",
-    "lib": [
-      "dom",
-      "es2017",
-    ],
+    "lib": ["dom", "es2017"],
     "baseUrl": "../../packages",
     "paths": {
-      "@bkui-vue/*": [
-        "*/src"
-      ]
+      "@bkui-vue/*": ["*/src"],
+      "../icons/": ["./"]
     },
     "skipLibCheck": true,
     "allowJs": true,
     "importHelpers": true,
     "isolatedModules": true,
     "sourceMap": false,
-    "noEmitOnError": false,
+    "noEmitOnError": false
   },
-  "include": [
-    "../../packages/bkui-vue/*.ts",
-    "../../packages/index.d.ts"
-  ],
+  "include": ["../../packages/bkui-vue/*.ts", "../../packages/index.d.ts", "../../packages/icon/src/index.tsx"]
 }

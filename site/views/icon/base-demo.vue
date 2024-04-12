@@ -15,33 +15,36 @@
   </ul>
 </template>
 <script setup>
-  import * as IconModule from 'bkui-vue/lib/icon';
-  import {Message} from 'bkui-vue';
-  import ClipboardJS from 'clipboard';
-  import { onBeforeUnmount, onMounted, ref } from 'vue';
-  const Icons = Object.keys(IconModule).reduce((pre, name) => {
-    pre[name.replace(/([A-Z]+)/gm, (_, match, offset) => `${offset < 1 ? '' : '-'}${match.toLowerCase()}`)] = IconModule[name];
-    return pre;
-  }, {});
-  const activeCode = ref('');
-  let copyInstance;
-  onMounted(() => {
-    copyInstance = new ClipboardJS('.icon-list-item', {
-      text: () => activeCode.value,
-    });
-    ['success', 'error'].forEach((theme) => {
-      copyInstance.on(theme, () => BkMessage({
+import { Message } from 'bkui-vue';
+import * as IconModule from 'bkui-vue/lib/icon';
+import ClipboardJS from 'clipboard';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
+const Icons = Object.keys(IconModule).reduce((pre, name) => {
+  pre[name.replace(/([A-Z]+)/gm, (_, match, offset) => `${offset < 1 ? '' : '-'}${match.toLowerCase()}`)] =
+    IconModule[name];
+  return pre;
+}, {});
+const activeCode = ref('');
+let copyInstance;
+onMounted(() => {
+  copyInstance = new ClipboardJS('.icon-list-item', {
+    text: () => activeCode.value,
+  });
+  ['success', 'error'].forEach(theme => {
+    copyInstance.on(theme, () =>
+      Message({
         theme,
         message: theme === 'success' ? `复制成功 ${activeCode.value}` : '复制失败',
-      }));
-    });
+      }),
+    );
   });
-  onBeforeUnmount(() => {
-    copyInstance?.destroy();
-  });
-  const handleCopyIcon = (name) => {
-    activeCode.value = `<${name}/>`;
-  };
+});
+onBeforeUnmount(() => {
+  copyInstance?.destroy();
+});
+const handleCopyIcon = name => {
+  activeCode.value = `<${name}/>`;
+};
 </script>
 <style lang="less">
 .icon-list {
@@ -54,14 +57,14 @@
     width: calc(12.5% - 4px);
     height: 70px;
     margin: 10px 2px;
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease-in-out;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 
     .item-icon {
       font-size: 26px;
-      transition: all .3s ease-in-out;
+      transition: all 0.3s ease-in-out;
     }
 
     &:hover {

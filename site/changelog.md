@@ -1,6 +1,24 @@
 ## 更新日志
 
 
+### 1.0.3-beta.38
+
+* **[feat]**:
+    - feat: icon支持按需加载
+
+
+### 1.0.3-beta.37
+
+* **[feat]**:
+    - fix(table): bk-table-column增加内置uniqueid设置为ctx属性
+
+
+### 1.0.3-beta.36
+
+* **[feat]**:
+    - fix(table): bk-table-column增加内置UniqueId用于更新判定 & 修复自动排序问题 #1629
+
+
 ### 1.0.3-beta.35
 
 * **[feat]**:

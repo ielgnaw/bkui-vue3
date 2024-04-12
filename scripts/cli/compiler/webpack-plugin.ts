@@ -44,6 +44,12 @@ export default class RemoveWildcardImportsPlugin {
             if (hasStyleComponentList.includes(capitalize(componentName))) {
               newSource = `import "./${componentName}.less";\n${newSource}`;
             }
+            // icon的按需加载特殊处理
+            if (filename.includes('icon/index')) {
+              const url = resolve(PRESET_URL, './icon/src/index.jsx');
+              const source = readFileSync(url, 'utf-8');
+              newSource = source.replace(/\.\.\/icons\//gm, './');
+            }
             newSource = `import "../styles/reset.css";\n${newSource}`;
           } else if (compFilename === undefined) {
             const url = resolve(PRESET_URL, `./bkui-vue/${filename}`);

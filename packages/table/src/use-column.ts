@@ -53,7 +53,9 @@ export default (props: TablePropTypes, targetColumns: ITableColumn[]) => {
 
     if (!remove) {
       resolveColumns.forEach(col => {
-        const index = targetColumns.findIndex(tc => tc.label === col.label && tc.field === col.field);
+        const index = targetColumns.findIndex(
+          tc => tc.label === col.label && tc.field === col.field && tc.uniqueId === col.uniqueId,
+        );
         if (index >= 0) {
           Object.assign(targetColumns[index], col);
         } else {
@@ -64,7 +66,9 @@ export default (props: TablePropTypes, targetColumns: ITableColumn[]) => {
       targetColumns.sort((col1, col2) => col1.index - col2.index);
     } else {
       resolveColumns.forEach(col => {
-        const matchColIndex = targetColumns.findIndex(c => c.label === col.label && c.field === col.field);
+        const matchColIndex = targetColumns.findIndex(
+          c => c.label === col.label && c.field === col.field && c.uniqueId === col.uniqueId,
+        );
         if (matchColIndex >= 0) {
           targetColumns.splice(matchColIndex, 1);
         }

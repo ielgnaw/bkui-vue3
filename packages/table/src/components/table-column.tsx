@@ -23,6 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+import { v4 as uuidv4 } from 'uuid';
 import { defineComponent, ExtractPropTypes, inject, isVNode, reactive, ref, unref } from 'vue';
 
 import { PropTypes } from '@bkui-vue/shared';
@@ -62,6 +63,7 @@ const TableColumnProp = {
   className: RowClassFunctionStringType,
   prop: LabelFunctionStringType,
   index: PropTypes.number.def(undefined),
+  uniqueId: PropTypes.object.def({ val: '' }),
 };
 
 export type ITableColumn = Partial<ExtractPropTypes<typeof TableColumnProp>>;
@@ -98,6 +100,7 @@ export default defineComponent({
     this.updateColumnDefine(true);
   },
   mounted() {
+    this.setNodeUid();
     this.updateColumnDefine();
   },
   updated() {
@@ -115,7 +118,7 @@ export default defineComponent({
 
       this.updateColumnDefineByParent();
     },
-    copyProps(props: ITableColumn) {
+    copyProps(props: ITableColumn | { [key: string]: any }) {
       return Object.keys(props ?? {}).reduce((result, key) => {
         const target = key.replace(/-(\w)/g, (_, letter) => letter.toUpperCase());
         return Object.assign(result, { [target]: props[key] });
@@ -124,9 +127,11 @@ export default defineComponent({
     rsolveIndexedColumn() {
       // 如果是设置了Index，则先添加Index列，不做自动递归读取Column
       if (/\d+\.?\d*/.test(`${this.$props.index}`)) {
-        const resolveProp: any = Object.assign({}, this.copyProps(this.$props), {
-          field: this.$props.prop || this.$props.field,
-          render: this.$slots.default,
+        const { props } = this.$.vnode;
+        const resolveProp: any = Object.assign({}, this.copyProps(props), {
+          field: props.prop || props.field,
+          render: props.render ?? this.$slots.default,
+          uniqueId: this.getNodeUid((this.$ as any).ctx),
         });
         this.initColumns(resolveProp);
         return false;
@@ -134,13 +139,26 @@ export default defineComponent({
 
       return true;
     },
+    setNodeUid() {
+      const { ctx } = this.$ as any;
+      if (ctx.uniqueId && !ctx.uniqueId.val) {
+        ctx.uniqueId.val = uuidv4();
+      }
+
+      if (!ctx.uniqueId) {
+        Object.assign(ctx, { uniqueId: { val: uuidv4() } });
+      }
+    },
+    getNodeUid(ctx) {
+      return ctx.uniqueId?.val;
+    },
     updateColumnDefineByParent() {
       if (!this.rsolveIndexedColumn()) {
         return;
       }
       const fn = () => {
         // @ts-ignore
-        const selfVnode = (this as any)._;
+        const selfVnode = this.$;
         const getTableNode = root => {
           if (root === document.body || !root) {
             return null;
@@ -151,6 +169,10 @@ export default defineComponent({
             return parentVnode.vnode;
           }
           return getTableNode(parentVnode);
+        };
+
+        const getNodeUid = node => {
+          return this.getNodeUid(node.ctx);
         };
 
         const tableNode = getTableNode(selfVnode);
@@ -169,7 +191,8 @@ export default defineComponent({
           if (node.type?.name === 'TableColumn') {
             const resolveProp = Object.assign({ index }, this.copyProps(node.props), {
               field: node.props.prop || node.props.field,
-              render: node.children?.default,
+              render: node.props.render ?? node.children?.default,
+              uniqueId: getNodeUid(node.ctx),
             });
             sortColumns.push(unref(resolveProp));
             index = index + 1;
@@ -212,9 +235,11 @@ export default defineComponent({
       }
     },
     unmountColumn() {
+      const { props } = this.$.vnode;
       const resolveProp = Object.assign({}, this.copyProps(this.$props), {
-        field: this.$props.prop || this.$props.field,
-        render: this.$slots.default,
+        field: props.prop || props.field,
+        render: props.render ?? this.$slots.default,
+        uniqueId: this.getNodeUid((this.$ as any).ctx),
       });
       this.initColumns(resolveProp as any, true);
     },

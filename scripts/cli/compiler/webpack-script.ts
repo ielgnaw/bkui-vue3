@@ -151,6 +151,10 @@ export const webpackBuildScript = async (entryList: ITaskItem[], taskOption: ILi
       'highlight.js',
       'vue-types',
       ({ request, context }, cb) => {
+        // icon 特殊处理 更适用于按需加载 icon
+        if (request?.startsWith('../icons/')) {
+          return cb(undefined, request.replace('../icons/', './'));
+        }
         if (context && request && /\/bkui-vue$/.test(context)) {
           return cb(undefined, request.replace(prefix, './'));
         }
