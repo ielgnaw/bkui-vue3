@@ -6,10 +6,19 @@
     <bk-date-picker
       v-model="initDate"
       clearable
-      open
-      append-to-body
       :disable-date="disableDate"
       @change="handleChange"
+    />
+  </div>
+
+  <div>
+    <p style="font-size: 14px;">
+      月选择器 {{ monthValue }}
+    </p>
+    <bk-date-picker
+      v-model="initMonthDateTime"
+      type="month"
+      @change="handleMonthChange"
     />
   </div>
 </template>
@@ -22,5 +31,12 @@
   const handleChange = (val) => {
     console.warn('handleChange', val, initDate);
     dateValue.value = val;
+  };
+
+  const initMonthDateTime = ref(new Date(2024, 5));
+  const monthValue = ref('');
+  const handleMonthChange = (val) => {
+    console.warn('handleChange', val, initMonthDateTime);
+    monthValue.value = val;
   };
 </script>

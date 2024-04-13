@@ -157,12 +157,15 @@
   text-align: center;
   // border-bottom: 1px solid #dcdee5;
 
-  .@{bk-prefix}-date-picker-header-label {
-    cursor: pointer;
 
-    &:hover {
-      color: #3a84ff;
-    }
+  .@{bk-prefix}-date-picker-header-label {
+    color: #63656e;
+    font-weight: 700;
+    // cursor: pointer;
+
+    // &:hover {
+    //   color: #3a84ff;
+    // }
   }
 
   .up-to-now {
@@ -175,32 +178,81 @@
       cursor: not-allowed;
     }
   }
-  .@{bk-prefix}-date-picker-quarter-selectyear {
-    width: 60px;
+
+  .@{bk-prefix}-date-picker-selectyear-wrapper {
     display: inline-block;
-    height: 28px;
-    line-height: 28px;
-    position: relative;
-    top: -2px;
-    .angle-up {
-      display: none !important;
-    }
-    .bk-input {
-      border: none;
-      &:hover:not(.is-disabled) {
-        .bk-input--text {
-          background-color: #ebedf0;
+  }
+  .@{bk-prefix}-date-picker-year-label {
+    color: #63656e;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .@{bk-prefix}-date-picker-selectyear {
+    overflow: auto;
+    max-height: 200px;
+    background-color: #fff;
+    box-shadow: 0 0 6px #dcdee5;
+    font-size: @font-size-base;
+    .@{bk-prefix}-date-picker-selectyear-items {
+      padding: 4px 0;
+      .@{bk-prefix}-date-picker-selectyear-item {
+        position: relative;
+        display: flex;
+        height: 32px;
+        padding: 0 12px;
+        line-height: 32px;
+        color: #63656e;
+        text-align: left;
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+        align-items: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        &:hover {
+          color: #63656e;
+          background-color: #f5f7fa;
+        }
+        &.is-selected {
+          color: #3a84ff;
+          background-color: #e1ecff;
         }
       }
     }
-    .bk-input--text {
-      font-size: 14px;
-      font-weight: 700;
-      padding: 0;
-      text-align: center;
-    }
+    // width: 60px;
+    // display: inline-block;
+    // height: 28px;
+    // line-height: 28px;
+    // position: relative;
+    // top: -2px;
+    // .angle-up {
+    //   display: none !important;
+    // }
+    // .bk-input {
+    //   border: none;
+    //   &:hover:not(.is-disabled) {
+    //     .bk-input--text {
+    //       background-color: #ebedf0;
+    //     }
+    //   }
+    // }
+    // .bk-input--text {
+    //   font-size: 14px;
+    //   font-weight: 700;
+    //   padding: 0;
+    //   text-align: center;
+    // }
   }
-  .@{bk-prefix}-date-picker-quarter-selectyear-popover {
+
+  .@{bk-prefix}-date-picker-selectyear-popover {
     &.bk-popover.bk-pop2-content.bk-select-popover {
       .bk-select-content-wrapper {
         .bk-select-option {

@@ -114,7 +114,7 @@ export default defineComponent({
       const lastYear = yearCells[yearCells.length - 1].date;
       return (
         <>
-          <span>
+          <span class={this.resolveClassName('date-picker-header-label')}>
             {firstYear.getFullYear()} - {lastYear.getFullYear()}
           </span>
         </>

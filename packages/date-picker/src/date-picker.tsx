@@ -43,7 +43,7 @@ import PickerDropdown from './base/picker-dropdown';
 import { dateIcon, timeIcon } from './common';
 // import { createDefaultTrigger } from './common';
 // import { DatePickerPanelType, type SelectionModeType } from './new-interface';
-// import DatePanel from './new-panel/date';
+import DatePanel from './new-panel/date';
 import MonthPanel from './new-panel/month';
 import QuarterPanel from './new-panel/quarter';
 import YearPanel from './new-panel/year';
@@ -177,6 +177,7 @@ export default defineComponent({
               startDate={this.startDate}
               disabledDate={this.disabledDate}
               cellClass={this.cellClass}
+              opened={this.opened}
               onPick={this.onPick}
             />
           );

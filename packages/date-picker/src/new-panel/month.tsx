@@ -24,17 +24,23 @@
  * IN THE SOFTWARE.
  */
 
-import { /* type ComponentPublicInstance,  */ defineComponent, type ExtractPropTypes, PropType, ref, watch } from 'vue';
+import {
+  /* type ComponentPublicInstance,  */ defineComponent,
+  type ExtractPropTypes,
+  PropType,
+  ref,
+  Transition,
+  watch,
+} from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
+import { clickoutside } from '@bkui-vue/directives';
 import { AngleDoubleLeft, AngleDoubleRight } from '@bkui-vue/icon';
-import Select from '@bkui-vue/select';
 
 import MonthTable from '../new-base/month-table';
+import SelectYear from '../new-base/select-year';
 import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType } from '../new-interface';
 import { ALL_YEARS, iconBtnCls, PANEL_WIDTH, siblingMonth } from '../utils';
-
-const { Option } = Select;
 
 const quarterPanelProps = {
   value: {
@@ -63,30 +69,43 @@ const quarterPanelProps = {
     type: Function,
     default: () => '',
   },
-  // inputRef: {
-  //   type: Object as PropType<Element | ComponentPublicInstance | null>,
-  //   default: () => '',
-  // },
+  opened: {
+    type: Boolean,
+    default: false,
+  },
 } as const;
 
 export type QuarterPanelProps = Readonly<ExtractPropTypes<typeof quarterPanelProps>>;
 
 export default defineComponent({
-  name: 'YearPanel',
+  name: 'MonthPanel',
+  directives: {
+    clickoutside,
+  },
   props: quarterPanelProps,
   emits: ['pick'],
   setup(props, { emit }) {
+    const triggerRef = ref<HTMLElement>(null);
+    const selectYearRef = ref(null);
+    const showSelectYear = ref(false);
+
     const { resolveClassName } = usePrefix();
 
     const dates = ref((props.value as DatePickerValueType[]).slice().sort() as any);
 
-    const panelDate = ref(props.startDate || dates.value[0] || new Date());
+    const panelDate = ref(new Date());
 
     const allYears = ref(ALL_YEARS);
     const selectedYear = ref<number>(panelDate.value.getFullYear());
 
     const changeYear = dir => {
       panelDate.value = siblingMonth(panelDate.value, dir * 12);
+    };
+
+    const setPanelDate = () => {
+      dates.value = props.value;
+      const pDate = props.multiple ? dates.value[dates.value.length - 1] : props.startDate || dates.value[0];
+      panelDate.value = pDate || new Date();
     };
 
     const handlePick = value => {
@@ -104,6 +123,15 @@ export default defineComponent({
     //   console.error(123123, v, props.inputRef);
     //   props.inputRef.blur();
     // };
+    const handleShowSelectYear = () => {
+      showSelectYear.value = true;
+      selectYearRef.value?.updateDropdown();
+    };
+
+    const handleCloseSelectYear = () => {
+      showSelectYear.value = false;
+      selectYearRef.value?.destoryDropdown();
+    };
 
     watch(
       () => panelDate.value,
@@ -114,14 +142,28 @@ export default defineComponent({
 
     watch(
       () => props.value,
-      newVal => {
-        dates.value = newVal;
-        const pDate = props.multiple ? dates.value[dates.value.length - 1] : props.startDate || dates.value[0];
-        panelDate.value = pDate || new Date();
+      () => {
+        setPanelDate();
+      },
+    );
+
+    watch(
+      () => props.opened,
+      v => {
+        if (!v) {
+          handleCloseSelectYear();
+        } else {
+          setPanelDate();
+        }
       },
     );
 
     return {
+      triggerRef,
+      selectYearRef,
+
+      showSelectYear,
+
       resolveClassName,
 
       dates,
@@ -132,35 +174,35 @@ export default defineComponent({
       changeYear,
       handlePick,
       handleSelectYear,
+      handleShowSelectYear,
+      handleCloseSelectYear,
     };
   },
 
   render() {
     const renderDatePanelLabel = () => {
       return (
-        <Select
-          v-model={this.selectedYear}
-          class={this.resolveClassName('date-picker-quarter-selectyear')}
-          filterable={false}
-          clearable={false}
-          size='small'
-          behavior='simplicity'
-          popoverOptions={{
-            offset: 4,
-            boundary: 'parent',
-            extCls: this.resolveClassName('date-picker-quarter-selectyear-popover'),
-          }}
-          scrollActiveOptionBehavior='instant'
-          onChange={(year: number) => this.handleSelectYear(year)}
+        <div
+          class={this.resolveClassName('date-picker-selectyear-wrapper')}
+          v-clickoutside={this.handleCloseSelectYear}
         >
-          {this.allYears.map((d, i) => (
-            <Option
-              id={d.value}
-              key={i}
-              name={d.label}
-            />
-          ))}
-        </Select>
+          <div
+            class={this.resolveClassName('date-picker-year-label')}
+            ref='triggerRef'
+            onClick={() => this.handleShowSelectYear()}
+          >
+            {this.selectedYear}
+          </div>
+          <Transition name={this.resolveClassName('fade-down-transition')}>
+            <SelectYear
+              ref='selectYearRef'
+              triggerRef={this.triggerRef}
+              v-show={this.showSelectYear}
+              selectedYear={String(this.selectedYear)}
+              onSelectYear={(v: number) => this.handleSelectYear(v)}
+            ></SelectYear>
+          </Transition>
+        </div>
       );
     };
 

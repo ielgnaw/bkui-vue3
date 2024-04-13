@@ -72,10 +72,12 @@ const quarterPanelProps = {
 export type QuarterPanelProps = Readonly<ExtractPropTypes<typeof quarterPanelProps>>;
 
 export default defineComponent({
-  name: 'YearPanel',
+  name: 'QuarterPanel',
   props: quarterPanelProps,
   emits: ['pick'],
   setup(props, { emit }) {
+    const datePickerHeaderRef = ref(null);
+
     const { resolveClassName } = usePrefix();
 
     const dates = ref((props.value as DatePickerValueType[]).slice().sort() as any);
@@ -122,6 +124,8 @@ export default defineComponent({
     );
 
     return {
+      datePickerHeaderRef,
+
       resolveClassName,
 
       dates,
@@ -151,14 +155,16 @@ export default defineComponent({
       return (
         <Select
           v-model={this.selectedYear}
-          class={this.resolveClassName('date-picker-quarter-selectyear')}
+          class={this.resolveClassName('date-picker-selectyear')}
+          filterable={false}
           clearable={false}
           size='small'
           behavior='simplicity'
           popoverOptions={{
             offset: 4,
-            boundary: 'parent',
-            extCls: this.resolveClassName('date-picker-quarter-selectyear-popover'),
+            // boundary: 'parent',
+            // boundary: this.datePickerHeaderRef,
+            extCls: this.resolveClassName('date-picker-selectyear-popover'),
           }}
           scrollActiveOptionBehavior='instant'
           onChange={(year: number) => this.handleSelectYear(year)}
@@ -186,7 +192,10 @@ export default defineComponent({
           class={this.resolveClassName('picker-panel-body')}
           style={{ width: `${PANEL_WIDTH}px` }}
         >
-          <div class={this.resolveClassName('date-picker-header')}>
+          <div
+            class={this.resolveClassName('date-picker-header')}
+            ref='datePickerHeaderRef'
+          >
             <span
               class={iconBtnCls('prev', '-double')}
               onClick={() => this.changeYear(-1)}

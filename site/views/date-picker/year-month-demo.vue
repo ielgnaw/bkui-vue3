@@ -1,12 +1,8 @@
 <template>
-  <!-- <bk-date-picker
-      :value="initYearDateTime"
-      type="year"
-      :open="true"
-      @change="handleYearChange"
-    /> -->
-
   <!-- :cell-class="getCellClass" -->
+  <!-- :open="true" -->
+  <!-- :append-to-body="true" -->
+
   <!-- <div>
     <p style="font-size: 14px;">
       年选择器 {{ yearValue }}
@@ -17,18 +13,7 @@
       :append-to-body="false"
       @change="handleYearChange"
     />
-  </div>
-  <div>
-    <p style="font-size: 14px;">
-      季度选择器 {{ quarterValue }}
-    </p>
-    <bk-date-picker
-      v-model="initQuarterDateTime"
-      type="quarter"
-      :append-to-body="true"
-      @change="handleQuarterChange"
-    />
-  </div> -->
+  </div>-->
   <div>
     <p style="font-size: 14px;">
       月选择器 {{ monthValue }}
@@ -36,7 +21,20 @@
     <bk-date-picker
       v-model="initMonthDateTime"
       type="month"
+      open
+      append-to-body
       @change="handleMonthChange"
+    />
+  </div>
+  <div style="height: 200px" />
+  <div>
+    <p style="font-size: 14px;">
+      季度选择器 {{ quarterValue }}
+    </p>
+    <bk-date-picker
+      v-model="initQuarterDateTime"
+      type="quarter"
+      @change="handleQuarterChange"
     />
   </div>
 </template>
