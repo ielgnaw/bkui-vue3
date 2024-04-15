@@ -32,7 +32,7 @@ import { BKPopover, IBKPopover } from '@bkui-vue/shared';
 import type { Placement } from '@popperjs/core';
 
 import type { DatePickerPlacementType } from '../interface';
-import { ALL_YEARS } from '../utils';
+import { ALL_MONTHS, ALL_YEARS } from '../utils';
 
 const pickerDropdownProps = {
   placement: {
@@ -66,21 +66,26 @@ const pickerDropdownProps = {
   selectedYear: {
     type: String,
   },
+  selectedMonth: {
+    type: String,
+  },
   onClick: Function as PropType<(e: MouseEvent) => void>,
 } as const;
 
 export type PickerDropdownProps = Readonly<ExtractPropTypes<typeof pickerDropdownProps>>;
 
 export default defineComponent({
-  name: 'SelectYear',
+  name: 'SelectYearMonth',
   props: pickerDropdownProps,
-  emits: ['changeVisible', 'selectYear'],
+  emits: ['changeVisible', 'selectYear', 'selectMonth'],
   setup(props, { emit }) {
     let popoverInstance: any = Object.create(null);
     const contentRef = ref(null);
     const yearRef = ref(null);
+    const monthRef = ref(null);
 
     const allYears = ref(ALL_YEARS);
+    const allMonths = ref(ALL_MONTHS);
 
     onMounted(() => {
       updateDropdown();
@@ -137,9 +142,9 @@ export default defineComponent({
 
     const handleSelectYear = (v: number) => {
       emit('selectYear', v);
-      // nextTick(() => {
-      //   scrollActiveOptionIntoView();
-      // });
+    };
+    const handleSelectMonth = (v: number) => {
+      emit('selectMonth', v);
     };
 
     const scrollActiveOptionIntoView = () => {
@@ -148,22 +153,23 @@ export default defineComponent({
         block: 'center',
         behavior: 'instant',
       });
+
+      const monthSelectedNode = monthRef.value?.querySelectorAll?.('.is-selected');
+      monthSelectedNode?.[0]?.scrollIntoView({
+        block: 'center',
+        behavior: 'instant',
+      });
     };
 
     const { resolveClassName } = usePrefix();
 
-    // watch(
-    //   () => props.selectedYear,
-    //   () => {
-    //     scrollActiveOptionIntoView();
-    //   },
-    // );
-
     return {
       contentRef,
       yearRef,
+      monthRef,
 
       allYears,
+      allMonths,
 
       forceUpdate,
       updateDropdown,
@@ -171,24 +177,46 @@ export default defineComponent({
       resolveClassName,
 
       handleSelectYear,
+      handleSelectMonth,
     };
   },
   render() {
     return (
       <div
         ref='contentRef'
-        style={{ zIndex: 1 }}
+        style={{ zIndex: 1, boxShadow: '0 0 6px #dcdee5' }}
         onClick={this.onClick}
       >
-        <div class={this.resolveClassName('date-picker-selectyear')}>
-          <ul class={this.resolveClassName('date-picker-selectyear-items')}>
+        <div
+          ref='yearRef'
+          class={this.resolveClassName('date-picker-selectyearmonth')}
+        >
+          <ul class={this.resolveClassName('date-picker-selectyearmonth-items')}>
             {this.allYears.map(v => (
               <li
                 class={[
-                  this.resolveClassName('date-picker-selectyear-item'),
+                  this.resolveClassName('date-picker-selectyearmonth-item'),
                   this.selectedYear === String(v.value) ? 'is-selected' : '',
                 ]}
                 onClick={() => this.handleSelectYear(v.value)}
+              >
+                <span title={String(v.value)}>{v.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div
+          ref='monthRef'
+          class={this.resolveClassName('date-picker-selectyearmonth')}
+        >
+          <ul class={this.resolveClassName('date-picker-selectyearmonth-items')}>
+            {this.allMonths.map(v => (
+              <li
+                class={[
+                  this.resolveClassName('date-picker-selectyearmonth-item'),
+                  this.selectedMonth === String(v.value) ? 'is-selected' : '',
+                ]}
+                onClick={() => this.handleSelectMonth(v.value)}
               >
                 <span title={String(v.value)}>{v.label}</span>
               </li>

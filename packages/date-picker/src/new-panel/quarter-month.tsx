@@ -38,13 +38,39 @@ import { clickoutside } from '@bkui-vue/directives';
 import { AngleDoubleLeft, AngleDoubleRight } from '@bkui-vue/icon';
 
 import MonthTable from '../new-base/month-table';
+import QuarterTable from '../new-base/quarter-table';
 import SelectYear from '../new-base/select-year';
-import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType } from '../new-interface';
+import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType, PickerTypeType } from '../new-interface';
 import { ALL_YEARS, iconBtnCls, PANEL_WIDTH, siblingMonth } from '../utils';
 
-const quarterPanelProps = {
+const quarterMonthPanelProps = {
   value: {
     type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
+  },
+  type: {
+    type: String as PropType<PickerTypeType>,
+    default: 'date',
+    validator(value) {
+      const validList: PickerTypeType[] = [
+        'year',
+        'yearrange',
+        'quarter',
+        'quarterrange',
+        'month',
+        'monthrange',
+        'date',
+        'daterange',
+        'datetime',
+        'datetimerange',
+        'time',
+        'timerange',
+      ];
+      if (validList.indexOf(value) < 0) {
+        console.error(`type property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
   },
   shortcuts: {
     type: Array as PropType<DatePickerShortcutsType>,
@@ -57,10 +83,6 @@ const quarterPanelProps = {
   startDate: {
     type: Date,
   },
-  // format: {
-  //   type: String,
-  //   default: 'yyyy-MM-dd',
-  // },
   disabledDate: {
     type: Function as PropType<DisabledDateType>,
     default: () => false,
@@ -75,14 +97,14 @@ const quarterPanelProps = {
   },
 } as const;
 
-export type QuarterPanelProps = Readonly<ExtractPropTypes<typeof quarterPanelProps>>;
+export type QuarterMonthPanelProps = Readonly<ExtractPropTypes<typeof quarterMonthPanelProps>>;
 
 export default defineComponent({
-  name: 'MonthPanel',
+  name: 'QuarterMonthPanel',
   directives: {
     clickoutside,
   },
-  props: quarterPanelProps,
+  props: quarterMonthPanelProps,
   emits: ['pick'],
   setup(props, { emit }) {
     const triggerRef = ref<HTMLElement>(null);
@@ -119,10 +141,6 @@ export default defineComponent({
       panelDate.value = new Date(year, panelDate.value.getMonth(), panelDate.value.getDate());
     };
 
-    // const handleSelectToggle = (v: boolean) => {
-    //   console.error(123123, v, props.inputRef);
-    //   props.inputRef.blur();
-    // };
     const handleShowSelectYear = () => {
       showSelectYear.value = true;
       selectYearRef.value?.updateDropdown();
@@ -238,13 +256,27 @@ export default defineComponent({
           </div>
 
           <div class={this.resolveClassName('picker-panel-content')}>
-            <MonthTable
-              tableDate={this.panelDate as Date}
-              disabledDate={this.disabledDate}
-              value={this.dates as DatePickerValueType}
-              cellClass={this.cellClass}
-              onPick={this.handlePick}
-            />
+            {this.type === 'month' ? (
+              <>
+                <MonthTable
+                  tableDate={this.panelDate as Date}
+                  disabledDate={this.disabledDate}
+                  value={this.dates as DatePickerValueType}
+                  cellClass={this.cellClass}
+                  onPick={this.handlePick}
+                />
+              </>
+            ) : (
+              <>
+                <QuarterTable
+                  tableDate={this.panelDate as Date}
+                  disabledDate={this.disabledDate}
+                  value={this.dates as DatePickerValueType}
+                  cellClass={this.cellClass}
+                  onPick={this.handlePick}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>

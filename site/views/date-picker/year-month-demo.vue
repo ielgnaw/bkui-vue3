@@ -3,7 +3,7 @@
   <!-- :open="true" -->
   <!-- :append-to-body="true" -->
 
-  <!-- <div>
+  <div>
     <p style="font-size: 14px;">
       年选择器 {{ yearValue }}
     </p>
@@ -13,20 +13,7 @@
       :append-to-body="false"
       @change="handleYearChange"
     />
-  </div>-->
-  <div>
-    <p style="font-size: 14px;">
-      月选择器 {{ monthValue }}
-    </p>
-    <bk-date-picker
-      v-model="initMonthDateTime"
-      type="month"
-      open
-      append-to-body
-      @change="handleMonthChange"
-    />
   </div>
-  <div style="height: 200px" />
   <div>
     <p style="font-size: 14px;">
       季度选择器 {{ quarterValue }}
@@ -35,6 +22,16 @@
       v-model="initQuarterDateTime"
       type="quarter"
       @change="handleQuarterChange"
+    />
+  </div>
+  <div>
+    <p style="font-size: 14px;">
+      月选择器 {{ monthValue }}
+    </p>
+    <bk-date-picker
+      v-model="initMonthDateTime"
+      type="month"
+      @change="handleMonthChange"
     />
   </div>
 </template>

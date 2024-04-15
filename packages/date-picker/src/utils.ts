@@ -32,11 +32,22 @@ import { resolveClassName } from '@bkui-vue/shared';
 import fecha from './fecha';
 import type { IDatePickerCtx, ITimePickerCtx, PickerTypeType } from './interface';
 
+export const pad = str => (String(str).length > 1 ? str : `0${str}`);
+
 // 非 year 选择器中，选择年时的下拉框的年份可选数据
 export const ALL_YEARS = (() => {
   const start = 1900;
   const end = 2100;
   return new Array(end - start + 1).fill('').map((_, index) => ({ value: index + start, label: index + start }));
+})();
+
+// 非 year 选择器中，选择月时的下拉框的月份可选数据
+export const ALL_MONTHS = (() => {
+  const start = 1;
+  const end = 12;
+  return new Array(end - start + 1)
+    .fill('')
+    .map((_, index) => ({ value: pad(index + start), label: pad(index + start) }));
 })();
 
 // 单个 panel 的宽度
@@ -519,5 +530,3 @@ export const mergeDateHMS = (date, ...hms) => {
 };
 
 export const capitalize = str => str[0].toUpperCase() + str.slice(1);
-
-export const pad = str => (String(str).length > 1 ? str : `0${str}`);

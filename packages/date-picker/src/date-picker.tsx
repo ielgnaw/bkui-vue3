@@ -44,8 +44,9 @@ import { dateIcon, timeIcon } from './common';
 // import { createDefaultTrigger } from './common';
 // import { DatePickerPanelType, type SelectionModeType } from './new-interface';
 import DatePanel from './new-panel/date';
-import MonthPanel from './new-panel/month';
-import QuarterPanel from './new-panel/quarter';
+// import MonthPanel from './new-panel/month';
+// import QuarterPanel from './new-panel/quarter';
+import QuarterMonthPanel from './new-panel/quarter-month';
 import YearPanel from './new-panel/year';
 import { datePickerProps } from './new-props';
 import { useCalendar } from './new-use-calendar';
@@ -156,22 +157,9 @@ export default defineComponent({
           break;
         case 'QuarterPanel':
           panel = (
-            <QuarterPanel
+            <QuarterMonthPanel
               ref='pickerPanelRef'
-              value={this.internalValue}
-              multiple={this.multiple}
-              startDate={this.startDate}
-              disabledDate={this.disabledDate}
-              cellClass={this.cellClass}
-              onPick={this.onPick}
-              // inputRef={this.inputRef}
-            />
-          );
-          break;
-        case 'MonthPanel':
-          panel = (
-            <MonthPanel
-              ref='pickerPanelRef'
+              type={this.type}
               value={this.internalValue}
               multiple={this.multiple}
               startDate={this.startDate}
@@ -182,31 +170,43 @@ export default defineComponent({
             />
           );
           break;
-        // case 'DatePanel':
-        //   panel = (
-        //     <DatePanel
-        //       ref='pickerPanelRef'
-        //       value={this.internalValue}
-        //       multiple={this.multiple}
-        //       clearable={this.clearable}
-        //       shortcuts={this.shortcuts}
-        //       shortcutClose={this.shortcutClose}
-        //       // selectionMode={this.selectionMode}
-        //       type={this.type}
-        //       startDate={this.startDate}
-        //       focusedDate={this.focusedDate}
-        //       disabledDate={this.disabledDate}
-        //       // confirm={this.isConfirm}
-        //       showTime={this.type === 'datetime' || this.type === 'datetimerange'}
-        //       timePickerOptions={this.timePickerOptions}
-        //       onPick={this.onPick}
-        //       // onPick-clear={this.handleClear}
-        //       // onPick-success={this.onPickSuccess}
-        //       // onSelection-mode-change={this.onSelectionModeChange}
-        //       // v-slots={slots}
-        //     />
-        //   );
-        //   break;
+        case 'MonthPanel':
+          panel = (
+            <QuarterMonthPanel
+              ref='pickerPanelRef'
+              type={this.type}
+              value={this.internalValue}
+              multiple={this.multiple}
+              startDate={this.startDate}
+              disabledDate={this.disabledDate}
+              cellClass={this.cellClass}
+              opened={this.opened}
+              onPick={this.onPick}
+            />
+          );
+          break;
+        case 'DatePanel':
+          panel = (
+            <DatePanel
+              ref='pickerPanelRef'
+              value={this.internalValue}
+              multiple={this.multiple}
+              clearable={this.clearable}
+              shortcuts={this.shortcuts}
+              shortcutClose={this.shortcutClose}
+              // selectionMode={this.selectionMode}
+              type={this.type}
+              startDate={this.startDate}
+              focusedDate={this.focusedDate}
+              disabledDate={this.disabledDate}
+              // confirm={this.isConfirm}
+              showTime={this.type === 'datetime' || this.type === 'datetimerange'}
+              timePickerOptions={this.timePickerOptions}
+              opened={this.opened}
+              onPick={this.onPick}
+            />
+          );
+          break;
         default:
           break;
       }

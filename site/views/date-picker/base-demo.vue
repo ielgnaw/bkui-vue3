@@ -10,7 +10,7 @@
       @change="handleChange"
     />
   </div>
-
+  <div style="height: 300px;"></div>
   <div>
     <p style="font-size: 14px;">
       月选择器 {{ monthValue }}
@@ -18,6 +18,7 @@
     <bk-date-picker
       v-model="initMonthDateTime"
       type="month"
+      open
       @change="handleMonthChange"
     />
   </div>

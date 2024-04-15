@@ -161,11 +161,8 @@
   .@{bk-prefix}-date-picker-header-label {
     color: #63656e;
     font-weight: 700;
-    // cursor: pointer;
-
-    // &:hover {
-    //   color: #3a84ff;
-    // }
+    line-height: 44px;
+    vertical-align: text-bottom;
   }
 
   .up-to-now {
@@ -181,12 +178,21 @@
 
   .@{bk-prefix}-date-picker-selectyear-wrapper {
     display: inline-block;
+    line-height: 44px;
+    vertical-align: text-bottom;
   }
   .@{bk-prefix}-date-picker-year-label {
     color: #63656e;
     font-weight: 700;
     cursor: pointer;
     display: inline-block;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 12px;
+    border-radius: 2px;
+    &:hover {
+      background-color: #f0f1f5;
+    }
   }
 
   .@{bk-prefix}-date-picker-selectyear {
@@ -209,6 +215,7 @@
         -webkit-user-select: none;
         user-select: none;
         align-items: center;
+        justify-content: center;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -227,61 +234,48 @@
         }
       }
     }
-    // width: 60px;
-    // display: inline-block;
-    // height: 28px;
-    // line-height: 28px;
-    // position: relative;
-    // top: -2px;
-    // .angle-up {
-    //   display: none !important;
-    // }
-    // .bk-input {
-    //   border: none;
-    //   &:hover:not(.is-disabled) {
-    //     .bk-input--text {
-    //       background-color: #ebedf0;
-    //     }
-    //   }
-    // }
-    // .bk-input--text {
-    //   font-size: 14px;
-    //   font-weight: 700;
-    //   padding: 0;
-    //   text-align: center;
-    // }
   }
 
-  .@{bk-prefix}-date-picker-selectyear-popover {
-    &.bk-popover.bk-pop2-content.bk-select-popover {
-      .bk-select-content-wrapper {
-        .bk-select-option {
-          padding: 0 10px 0 12px;
-          justify-content: center;
+  .@{bk-prefix}-date-picker-selectyearmonth {
+    overflow: auto;
+    max-height: 200px;
+    background-color: #fff;
+    // box-shadow: 0 0 6px #dcdee5;
+    font-size: @font-size-base;
+    display: inline-block;
+    width: 58px;
+    .@{bk-prefix}-date-picker-selectyearmonth-items {
+      padding: 4px 0;
+      .@{bk-prefix}-date-picker-selectyearmonth-item {
+        position: relative;
+        display: flex;
+        height: 32px;
+        padding: 0 12px;
+        line-height: 32px;
+        color: #63656e;
+        text-align: left;
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        &:hover {
+          color: #63656e;
+          background-color: #f5f7fa;
+        }
+        &.is-selected {
+          color: #3a84ff;
+          background-color: #e1ecff;
         }
       }
-    }
-    .bk-select-dropdown {
-      // overflow: overlay !important;
-      &::-webkit-scrollbar {
-        width: 2px !important;
-      }
-      // &::-webkit-scrollbar-thumb {
-      //   background: #dde4eb;
-      //   border-radius: 20px;
-      //   box-shadow: inset 0 0 6px hsla(0, 0%, 80%, 0);
-      // }
-      // &:hover {
-      //   &::-webkit-scrollbar {
-      //     width: 4px !important;
-      //     height: 4px;
-      //   }
-      //   &::-webkit-scrollbar-thumb {
-      //     background: #dde4eb;
-      //     border-radius: 20px;
-      //     box-shadow: inset 0 0 6px hsla(0, 0%, 80%, 0);
-      //   }
-      // }
     }
   }
 }
