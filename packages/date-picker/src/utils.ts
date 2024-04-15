@@ -194,6 +194,10 @@ export const typeValueResolver = {
       return false;
     },
   },
+  monthrange: {
+    formatter: rangeFormatter,
+    parser: rangeParser,
+  },
   year: {
     formatter: (value, format) => dateFormat(value, format),
     parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),

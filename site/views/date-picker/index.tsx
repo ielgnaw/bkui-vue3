@@ -35,6 +35,7 @@ import BaseDemo from './base-demo.vue';
 import DemoTsx from './demo-tsx';
 import FooterSlotDemo from './footer-slot-demo.vue';
 import HeaderSlotDemo from './header-slot-demo.vue';
+import MonthRangeDemo from './month-range-demo.vue';
 import RangeDemo from './range-demo.vue';
 import ShortcutsSlotDemo from './shortcuts-slot-demo.vue';
 import TriggerSlotDemo from './trigger-slot-demo.vue';

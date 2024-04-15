@@ -270,6 +270,8 @@ export default defineComponent({
                   v-slots={slots}
                   shortcutSelectedIndex={this.shortcutSelectedIndex}
                   onPick-first={this.onPickFirst}
+
+                  // v-bind={this.ownPickerProps}
                 />
               ) : (
                 <DatePanel
