@@ -26,7 +26,7 @@
 
 <script setup>
   import { ref } from 'vue';
-  const initDate = ref(new Date());
+  const initDate = ref(new Date(2024, 5));
   const disableDate = date => date && date.valueOf() < Date.now() - 86400;
   const dateValue = ref('');
   const handleChange = (val) => {
@@ -34,7 +34,7 @@
     dateValue.value = val;
   };
 
-  const initMonthDateTime = ref(new Date(2024, 5));
+  const initMonthDateTime = ref(new Date(2024, 2));
   const monthValue = ref('');
   const handleMonthChange = (val) => {
     console.warn('handleChange', val, initMonthDateTime);

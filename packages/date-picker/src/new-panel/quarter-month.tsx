@@ -115,7 +115,7 @@ export default defineComponent({
 
     const dates = ref((props.value as DatePickerValueType[]).slice().sort() as any);
 
-    const panelDate = ref(new Date());
+    const panelDate = ref(props.startDate || dates.value[0] || new Date());
 
     const allYears = ref(ALL_YEARS);
     const selectedYear = ref<number>(panelDate.value.getFullYear());

@@ -32,6 +32,7 @@ const en = {
     step3: 'step3',
   },
   datePicker: {
+    today: 'today',
     selectDate: 'Select Date',
     selectTime: 'Select Time',
     clear: 'Clear',

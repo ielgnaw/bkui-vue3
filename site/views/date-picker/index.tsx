@@ -57,6 +57,13 @@ const menuPropsJson: IPropsTableItem[] = [
     desc: '类型',
     optional: ['date', 'daterange', 'datetime', 'datetimerange', 'month', 'year'],
   },
+  {
+    name: 'showToday',
+    type: 'Boolean',
+    default: 'true',
+    desc: '是否显示今天快捷操作栏，仅在 type 为 date 时生效',
+    optional: ['true', 'false'],
+  },
 ];
 
 export default defineComponent({

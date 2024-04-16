@@ -118,17 +118,21 @@ export const datePickerProps = {
     type: Boolean,
     default: false,
   },
-  // //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  format: String,
   editable: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   clearable: {
     type: Boolean,
     default: true,
   },
+  showToday: {
+    type: Boolean,
+    default: true,
+  },
+  // //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  format: String,
   multiple: {
     type: Boolean,
     default: false,

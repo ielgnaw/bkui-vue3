@@ -113,7 +113,7 @@ export default defineComponent({
       return rangeSelecting ? [props.rangeState.from] : props.value;
     });
 
-    const cells = computed(() => {
+    const days = computed(() => {
       const tableYear = props.tableDate.getFullYear();
       const tableMonth = props.tableDate.getMonth();
       const today = clearHours(new Date());
@@ -126,14 +126,15 @@ export default defineComponent({
       const isRange = false; /* props.type === 'range'; */
       const disableTestFn = typeof props.disabledDate === 'function' && props.disabledDate;
 
-      return calendar
-        .value(tableYear, tableMonth, cell => {
+      const ret = calendar
+        .value(tableYear, tableMonth, (cell, _lang: string) => {
           if (cell.date instanceof Date) {
             cell.date.setTime(cell.date.getTime() + cell.date.getTimezoneOffset() * 60000);
           }
 
           const time = cell.date && clearHours(cell.date);
           const dateIsInCurrentMonth = cell.date && tableMonth === cell.date.getMonth();
+
           return {
             ...cell,
             type: time === today ? 'today' : cell.type,
@@ -145,6 +146,45 @@ export default defineComponent({
           };
         })
         .cells.slice(0);
+
+      let firstPrevMonth = -1;
+      let firstNextMonth = -1;
+      ret.forEach((cell, index) => {
+        if (cell.type === 'prevMonth') {
+          // 设置过
+          if (firstPrevMonth === 1) {
+            cell.firstPrevMonth = 0;
+            firstPrevMonth = 0;
+          }
+          // 没有设置过
+          if (firstPrevMonth === -1) {
+            cell.firstPrevMonth = 1;
+            firstPrevMonth = 1;
+          }
+
+          const prev = ret[index - 1];
+          prev && (prev.lastPrevMonth = 0);
+          cell.lastPrevMonth = 1;
+        }
+
+        if (cell.type === 'nextMonth') {
+          // 设置过
+          if (firstNextMonth === 1) {
+            cell.firstNextMonth = 0;
+            firstNextMonth = 0;
+          }
+          // 没有设置过
+          if (firstNextMonth === -1) {
+            cell.firstNextMonth = 1;
+            firstNextMonth = 1;
+          }
+
+          const prev = ret[index - 1];
+          prev && (prev.lastNextMonth = 0);
+          cell.lastNextMonth = 1;
+        }
+      });
+      return ret;
     });
 
     const handleClick = cell => {
@@ -177,7 +217,11 @@ export default defineComponent({
         [resolveClassName('date-picker-cells-cell-disabled')]: cell.disabled,
         [resolveClassName('date-picker-cells-cell-today')]: cell.type === 'today',
         [resolveClassName('date-picker-cells-cell-prev-month')]: cell.type === 'prevMonth',
+        [resolveClassName('date-picker-cells-cell-prev-month-first')]: cell.firstPrevMonth === 1,
+        [resolveClassName('date-picker-cells-cell-prev-month-last')]: cell.lastPrevMonth === 1,
         [resolveClassName('date-picker-cells-cell-next-month')]: cell.type === 'nextMonth',
+        [resolveClassName('date-picker-cells-cell-next-month-first')]: cell.firstNextMonth === 1,
+        [resolveClassName('date-picker-cells-cell-next-month-last')]: cell.lastNextMonth === 1,
         [resolveClassName('date-picker-cells-cell-week-label')]: cell.type === 'weekLabel',
         [resolveClassName('date-picker-cells-cell-range')]: cell.range && !cell.start && !cell.end,
         // [`bk-date-picker-cells-focused`]: clearHours(cell.date) === clearHours(this.focusedDate)
@@ -185,7 +229,7 @@ export default defineComponent({
     ];
     return {
       headerDays,
-      cells,
+      days,
       getCellCls,
       handleClick,
       handleMouseMove,
@@ -200,7 +244,7 @@ export default defineComponent({
             <span class={this.resolveClassName('date-picker-cells-header-week')}>{day}</span>
           ))}
         </div>
-        {this.cells.map(cell => (
+        {this.days.map(cell => (
           <span
             class={this.getCellCls(cell)}
             onClick={() => this.handleClick(cell)}

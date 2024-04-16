@@ -26,7 +26,7 @@
 
 import { defineComponent, type ExtractPropTypes, PropType, ref, Transition, watch } from 'vue';
 
-import { usePrefix } from '@bkui-vue/config-provider';
+import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
 import { AngleDoubleLeft, AngleDoubleRight, AngleLeft, AngleRight } from '@bkui-vue/icon';
 
@@ -125,6 +125,10 @@ const datePanelProps = {
     type: Boolean,
     default: false,
   },
+  showToday: {
+    type: Boolean,
+    default: true,
+  },
 } as const;
 
 export type DatePanelProps = Readonly<ExtractPropTypes<typeof datePanelProps>>;
@@ -137,6 +141,7 @@ export default defineComponent({
   props: datePanelProps,
   emits: ['pick', 'pick-success', 'pick-clear', 'pick-click', 'selection-mode-change'],
   setup(props, { emit }) {
+    const t = useLocale('datePicker');
     const triggerRef = ref<HTMLElement>(null);
     const selectYearRef = ref(null);
     const showSelectYear = ref(false);
@@ -144,7 +149,7 @@ export default defineComponent({
 
     const dates = ref((props.value as DatePickerValueType[]).slice().sort() as any);
 
-    const panelDate = ref(new Date());
+    const panelDate = ref(props.startDate || dates.value[0] || new Date());
 
     const allYears = ref(ALL_YEARS);
     const selectedYear = ref<number>(panelDate.value.getFullYear());
@@ -177,7 +182,6 @@ export default defineComponent({
 
     const handleSelectMonth = (month: number) => {
       panelDate.value = new Date(panelDate.value.getFullYear(), month - 1, panelDate.value.getDate());
-      console.error(111, month, panelDate.value);
     };
 
     const handleShowSelectYear = () => {
@@ -217,6 +221,8 @@ export default defineComponent({
     );
 
     return {
+      t,
+
       triggerRef,
       selectYearRef,
 
@@ -244,11 +250,6 @@ export default defineComponent({
     const renderDatePanelLabel = () => {
       return (
         <>
-          {/* <span>
-            <span class={this.resolveClassName('date-picker-header-label')}>{this.panelDate.getFullYear()}</span>
-            &nbsp;-&nbsp;
-            <span class={this.resolveClassName('date-picker-header-label')}>{pad(this.panelDate.getMonth() + 1)}</span>
-          </span> */}
           <div
             class={this.resolveClassName('date-picker-selectyear-wrapper')}
             v-clickoutside={this.handleCloseSelectYear}
@@ -349,6 +350,16 @@ export default defineComponent({
               // focusedDate={this.focusedDate}
               onPick={this.handlePick}
             />
+            {this.type === 'date' && this.showToday ? (
+              <>
+                <div
+                  class={this.resolveClassName('picker-today-shortcut')}
+                  onClick={() => this.handlePick(new Date())}
+                >
+                  {this.t.today}
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
       </div>

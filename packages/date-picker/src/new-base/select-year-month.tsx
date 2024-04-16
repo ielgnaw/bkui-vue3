@@ -184,7 +184,7 @@ export default defineComponent({
     return (
       <div
         ref='contentRef'
-        style={{ zIndex: 1, boxShadow: '0 0 6px #dcdee5' }}
+        style={{ zIndex: 1, backgroundColor: '#fff', boxShadow: '0 0 6px #dcdee5' }}
         onClick={this.onClick}
       >
         <div

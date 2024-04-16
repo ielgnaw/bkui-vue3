@@ -240,9 +240,8 @@
     overflow: auto;
     max-height: 200px;
     background-color: #fff;
-    // box-shadow: 0 0 6px #dcdee5;
     font-size: @font-size-base;
-    display: inline-block;
+    float: left;
     width: 58px;
     .@{bk-prefix}-date-picker-selectyearmonth-items {
       padding: 4px 0;
@@ -408,6 +407,54 @@
   font-size: 12px;
 }
 
+.@{bk-prefix}-date-picker-cells-cell {
+  &:hover {
+    em {
+      background-color: #f0f1f5;
+    }
+  }
+  &.@{bk-prefix}-date-picker-cells-cell-prev-month,
+  &.@{bk-prefix}-date-picker-cells-cell-next-month {
+    em {
+      border-radius: 0;
+      background-color: #f5f7fa;
+      color: #c4c6cc;
+      &:hover {
+        background-color: #f5f7fa;
+      }
+    }
+  }
+  &.@{bk-prefix}-date-picker-cells-cell-prev-month-first,
+  &.@{bk-prefix}-date-picker-cells-cell-next-month-first {
+    em {
+      border-radius: 2px 0 0 2px;
+      // background-color: red;
+    }
+  }
+  &.@{bk-prefix}-date-picker-cells-cell-prev-month-last,
+  &.@{bk-prefix}-date-picker-cells-cell-next-month-last {
+    em {
+      border-radius: 0 2px 2px 0;
+      // background-color: green;
+    }
+  }
+}
+
+.@{bk-prefix}-picker-today-shortcut {
+  width: 100%;
+  height: 42px;
+  background-color: #fafbfd;
+  border-top: 1px solid #dcdee5;
+  border-radius: 0 0 2px 2px;
+  color: #3a84ff;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+
 
 
 
@@ -532,24 +579,9 @@
   }
 }
 
-.@{bk-prefix}-date-picker-cells-cell:hover em {
-  /* background-color: #e1ecff; */
-  background-color: #f0f1f5;
-}
-
 .@{bk-prefix}-date-picker-cells-focused em {
   color: #3a84ff;
   box-shadow: 0 0 0 1px #a3c5fd inset;
-}
-
-.@{bk-prefix}-date-picker-cells-cell-prev-month em,
-.@{bk-prefix}-date-picker-cells-cell-next-month em {
-  color: #c4c6cc;
-}
-
-.@{bk-prefix}-date-picker-cells-cell-prev-month:hover em,
-.@{bk-prefix}-date-picker-cells-cell-next-month:hover em {
-  background: transparent;
 }
 
 span.@{bk-prefix}-date-picker-cells-cell-week-label,

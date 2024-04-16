@@ -34,6 +34,7 @@ const zhCn: Language = {
     step3: '步骤3',
   },
   datePicker: {
+    today: '今天',
     selectDate: '选择日期',
     selectTime: '选择时间',
     clear: '清除',
