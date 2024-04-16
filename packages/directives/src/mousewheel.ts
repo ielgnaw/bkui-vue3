@@ -40,7 +40,6 @@ const mousewheelHandler = function (element, callback) {
 
 const mousewheel: ObjectDirective = {
   beforeMount(el, binding) {
-    console.error(el, binding);
     mousewheelHandler(el, binding.value);
   },
 };

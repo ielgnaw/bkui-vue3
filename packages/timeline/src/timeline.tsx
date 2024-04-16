@@ -32,14 +32,14 @@ import { classes, PropTypes } from '@bkui-vue/shared';
 const timelineProps = {
   list: PropTypes.arrayOf(
     PropTypes.shape({
-      tag: String,
-      content: String,
-      type: String,
-      size: String,
-      color: String,
-      icon: Function,
-      filled: Boolean,
-      border: Boolean,
+      tag: PropTypes.string,
+      content: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+      type: PropTypes.string,
+      size: PropTypes.string,
+      color: PropTypes.string,
+      icon: PropTypes.func,
+      filled: PropTypes.bool,
+      border: PropTypes.bool,
     }).isRequired,
   ),
   titleAble: PropTypes.bool.def(false),

@@ -105,7 +105,6 @@ export default defineComponent({
     const localData = computed(() => {
       const { list = [] } = filter.value as IFilterShape;
       const filterList = list.filter(l => getRegExp(searchValue.value).test(l.value));
-      console.log(' filterList: ', filterList);
       return filterList;
     });
 

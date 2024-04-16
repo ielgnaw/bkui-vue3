@@ -211,7 +211,6 @@ export default defineComponent({
           text.replace('\u00A0', '\u0020').includes(usingItem.value.keyInnerText.replace('\u00A0', '\u0020').trim());
         if (hasKeyword && outerText && usingItem.value.values?.length) {
           keyword.value = outerText;
-          console.info('outerText', outerText);
           debounceSetMenuList();
           return;
         }

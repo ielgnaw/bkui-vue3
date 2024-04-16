@@ -198,7 +198,6 @@ export default defineComponent({
     };
   },
   render() {
-    console.log('this.$sltos = ', this.$slots);
     const { resolveClassName } = usePrefix();
     const maxHeight = this.maxHeight ? { maxHeight: this.maxHeight } : {};
     const bodyClass = `${resolveClassName('modal-body')} ${this.animateType === 'slide' ? this.direction : ''}`;

@@ -335,8 +335,6 @@ export default defineComponent({
       });
     }
 
-    console.log('dialogSlot = ', dialogSlot);
-
     const className = this.resolveClassName('dialog-wrapper ');
 
     const bodyClass = `${this.scrollable ? 'scroll-able' : ''} ${this.multiInstance ? 'multi-instance' : ''} ${
