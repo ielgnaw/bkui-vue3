@@ -33,7 +33,7 @@ export interface ModalFuncProps {
   width?: string | number;
   height?: string | number;
   'ext-cls': string | string[];
-  type?: 'primary' | 'warning' | 'success' | 'danger';
+  theme?: 'primary' | 'warning' | 'success' | 'danger';
   infoType?: 'success' | 'danger' | 'warning' | 'loading';
   title?: string | (() => VNode | string) | VNode;
   subTitle?: string | (() => VNode) | VNode; // 弹窗内容

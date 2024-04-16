@@ -198,6 +198,7 @@ export default defineComponent({
     };
   },
   render() {
+    console.log('this.$sltos = ', this.$slots);
     const { resolveClassName } = usePrefix();
     const maxHeight = this.maxHeight ? { maxHeight: this.maxHeight } : {};
     const bodyClass = `${resolveClassName('modal-body')} ${this.animateType === 'slide' ? this.direction : ''}`;
@@ -232,12 +233,14 @@ export default defineComponent({
             {this.visible ? (
               <div class={bodyClass}>
                 <div class={resolveClassName('modal-header')}>{this.$slots.header?.() ?? ''}</div>
-                <div
-                  class={resolveClassName('modal-content')}
-                  style={[this.dialogType === 'show' ? 'padding-bottom: 20px' : '', { ...maxHeight }]}
-                >
-                  {this.$slots.default?.() ?? ''}
-                </div>
+                {this.$slots.default && (
+                  <div
+                    class={resolveClassName('modal-content')}
+                    style={[this.dialogType === 'show' ? 'padding-bottom: 20px' : '', { ...maxHeight }]}
+                  >
+                    {this.$slots.default()}
+                  </div>
+                )}
                 {this.dialogType === 'show' ? (
                   ''
                 ) : (

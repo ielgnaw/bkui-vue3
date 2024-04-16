@@ -24,91 +24,66 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent, ExtractPropTypes, onMounted, ref, watch } from 'vue';
+import { defineComponent, ExtractPropTypes, shallowRef, watch } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { classes, PropTypes } from '@bkui-vue/shared';
 
 const timelineProps = {
-  list: PropTypes.array.def([]),
+  list: PropTypes.arrayOf(
+    PropTypes.shape({
+      tag: String,
+      content: String,
+      type: String,
+      size: String,
+      color: String,
+      icon: Function,
+      filled: Boolean,
+      border: Boolean,
+    }).isRequired,
+  ),
   titleAble: PropTypes.bool.def(false),
-  extCls: PropTypes.string,
 };
 
-export type TimelinePropTypes = ExtractPropTypes<typeof timelineProps>;
+export type TimelinePropTypes = Readonly<ExtractPropTypes<typeof timelineProps>>;
 
 export default defineComponent({
   name: 'Timeline',
   props: timelineProps,
   emits: ['select'],
 
-  setup(props: TimelinePropTypes, { emit }) {
-    const defaultTimelines = ref([]);
+  setup(props, { emit }) {
+    const defaultTimelines = shallowRef<TimelinePropTypes['list']>([]);
 
-    const updateTimelines = timelines => {
-      const defaults = [];
-      timelines.forEach(timeline => {
-        defaults.push({
-          tag: timeline.tag,
-          content: timeline.content,
-          type: timeline.type,
-          size: timeline.size,
-          color: timeline.color,
-          icon: timeline.icon,
-          filled: timeline.filled,
-          border: timeline.border ?? true,
-        });
-      });
-      defaultTimelines.value.splice(0, defaultTimelines.value.length, ...defaults);
+    const { resolveClassName } = usePrefix();
+
+    const handleTitleSelect = item => {
+      emit('select', item);
     };
-
-    const init = () => {
-      defaultTimelines.value.splice(
-        0,
-        defaultTimelines.value.length,
-        ...[
-          {
-            tag: '步骤1',
-            content: '内容1',
-          },
-          {
-            tag: '步骤2',
-            content: '内容2',
-          },
-          {
-            tag: '步骤3',
-            content: '内容3',
-          },
-        ],
-      );
-      if (props.list?.length) {
-        updateTimelines(props.list);
-      }
-    };
-
-    const titleSelect = item => {
-      try {
-        emit('select', item);
-      } catch (e) {
-        console.warn(e);
-      }
-    };
-
-    onMounted(init);
 
     watch(
       () => props.list,
       () => {
-        updateTimelines(props.list);
+        defaultTimelines.value = props.list.map(item => ({
+          tag: item.tag,
+          content: item.content,
+          type: item.type,
+          size: item.size,
+          color: item.color,
+          icon: item.icon,
+          filled: item.filled,
+          border: item.border ?? true,
+        }));
       },
-      { deep: true },
+      {
+        immediate: true,
+        deep: true,
+      },
     );
-
-    const { resolveClassName } = usePrefix();
 
     return {
       defaultTimelines,
-      titleSelect,
+      handleTitleSelect,
       resolveClassName,
     };
   },
@@ -116,13 +91,10 @@ export default defineComponent({
   render() {
     const isIcon = timeline => {
       const { icon } = timeline;
-      if (icon) {
-        return typeof icon === 'object' || typeof icon === 'function';
-      }
-      return false;
+      return typeof icon === 'object' || typeof icon === 'function';
     };
 
-    const makeClass = item => {
+    const makeClass = (item: TimelinePropTypes['list'][number]) => {
       const timelineClsPrefix = this.resolveClassName('timeline');
       const dotColors = ['blue', 'red', 'green', 'yellow', 'gray'];
       const timelineThemeCls: string = item.type ? `${timelineClsPrefix}-${item.type}` : `${timelineClsPrefix}-default`;
@@ -138,21 +110,23 @@ export default defineComponent({
       return timelinesCls;
     };
 
-    const getContent = item =>
-      this.$slots.content ? (
-        <div class={`${this.resolveClassName('timeline-content')}`}>{this.$slots.content(item)}</div>
-      ) : (
+    const renderContent = (item: TimelinePropTypes['list'][number]) => {
+      if (this.$slots.content) {
+        return <div class={`${this.resolveClassName('timeline-content')}`}>{this.$slots.content(item)}</div>;
+      }
+      return (
         <div
           class={`${this.resolveClassName('timeline-content')}`}
           v-html={item.content}
         />
       );
+    };
 
     return (
-      <ul class={[`${this.resolveClassName('timeline')}`, this.extCls]}>
+      <ul class={this.resolveClassName('timeline')}>
         {this.defaultTimelines.map(item => (
           <li class={[`${this.resolveClassName('timeline-dot')}`, makeClass(item)]}>
-            {isIcon(item) ? (
+            {isIcon(item) && (
               <div
                 class={`${this.resolveClassName('timeline-icon')}`}
                 style={{
@@ -164,21 +138,17 @@ export default defineComponent({
                   {typeof item.icon === 'function' ? <item.icon /> : item.icon}
                 </span>
               </div>
-            ) : (
-              ''
             )}
             <div class={`${this.resolveClassName('timeline-section')}`}>
               {
                 <div
                   class={`${this.resolveClassName('timeline-title')}`}
-                  onClick={() => {
-                    this.titleSelect(item);
-                  }}
+                  onClick={() => this.handleTitleSelect(item)}
                 >
                   {this.$slots.default?.(item) ?? <span v-html={item.tag}></span>}
                 </div>
               }
-              {item.content ? getContent(item) : ''}
+              {renderContent(item)}
             </div>
           </li>
         ))}

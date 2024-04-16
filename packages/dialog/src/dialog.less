@@ -37,15 +37,15 @@
     }
 
     .@{bk-prefix}-dialog-header {
-      padding: 16px 24px 12px;
+      padding: 16px 24px 0;
       font-size: 20px;
       line-height: 1;
 
       .@{bk-prefix}-header-icon {
-        text-align: center;
+        display: flex;
+        justify-content: center;
 
         .@{bk-prefix}-info-icon {
-          display: inline-block;
           font-size: 48px;
 
           &.success {
@@ -77,6 +77,8 @@
       max-height: calc(100vh - 300px);
       min-height: 141px;
       padding: 0 24px;
+      margin-top: 16px;
+      margin-bottom: 24px;
       font-size: 14px;
       line-height: 1.5;
       color: @default-color;
@@ -92,10 +94,6 @@
       }
     }
 
-    .@{bk-prefix}-modal-body {
-      padding-bottom: 48px;
-    }
-
     &.no-footer {
       .@{bk-prefix}-modal-body {
         padding-bottom: 0;
@@ -103,12 +101,8 @@
     }
 
     .@{bk-prefix}-modal-footer {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: 48px;
-      padding: 8px 24px;
+      padding: 0 24px;
+      margin: 24px 0 ;
       background-color: @whitesmoke-color;
       border-top: 1px solid @table-border-color;
       border-radius: 2px;
@@ -129,14 +123,21 @@
 
     .@{bk-prefix}-modal-close {
       position: absolute;
-      top: 4px;
-      right: 4px;
+      top: 6px;
+      right: 6px;
+      display: flex;
+      width: 32px;
+      height: 32px;
       font-size: 18px;
-      color: @light-gray;
+      color: #979ba5;
       cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: .15s;
 
       &:hover {
-        color: @gray-color;
+        background: #f0f1f5;
       }
     }
   }

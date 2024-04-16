@@ -241,7 +241,6 @@ export default defineComponent({
           </span>
         </div>,
       ],
-      default: () => this.$slots.default?.() ?? 'default',
       footer: () => (
         <div
           class={this.resolveClassName('dialog-footer')}
@@ -329,6 +328,14 @@ export default defineComponent({
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       close: () => <Error onClick={this.handleClose} />,
     };
+
+    if (this.$slots.default) {
+      Object.assign(dialogSlot, {
+        default: () => this.$slots.default(),
+      });
+    }
+
+    console.log('dialogSlot = ', dialogSlot);
 
     const className = this.resolveClassName('dialog-wrapper ');
 
