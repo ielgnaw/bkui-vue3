@@ -30,7 +30,7 @@ import { computed, defineComponent, PropType } from 'vue';
 import { usePrefix } from '@bkui-vue/config-provider';
 
 import type { DatePickerValueType, PickerTypeType } from '../new-interface';
-import { clearHours } from '../utils';
+import { clearHours, PICKER_TYPE_LIST } from '../utils';
 
 const monthTableProps = {
   tableDate: {
@@ -48,20 +48,7 @@ const monthTableProps = {
     type: String as PropType<PickerTypeType>,
     default: 'date',
     validator(value) {
-      const validList: PickerTypeType[] = [
-        'year',
-        'yearrange',
-        'quarter',
-        'quarterrange',
-        'month',
-        'monthrange',
-        'date',
-        'daterange',
-        'datetime',
-        'datetimerange',
-        'time',
-        'timerange',
-      ];
+      const validList: PickerTypeType[] = PICKER_TYPE_LIST;
       if (validList.indexOf(value) < 0) {
         console.error(`type property is not valid: '${value}'`);
         return false;

@@ -31,7 +31,7 @@ import { computed, defineComponent, PropType } from 'vue';
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 
 import type { DatePickerValueType, DisabledDateType, PickerTypeType } from '../new-interface';
-import { clearHours, isInRange } from '../utils';
+import { clearHours, isInRange, PICKER_TYPE_LIST } from '../utils';
 
 const dateTableProps = {
   tableDate: {
@@ -47,20 +47,7 @@ const dateTableProps = {
     type: String as PropType<PickerTypeType>,
     default: 'date',
     validator(value) {
-      const validList: PickerTypeType[] = [
-        'year',
-        'yearrange',
-        'quarter',
-        'quarterrange',
-        'month',
-        'monthrange',
-        'date',
-        'daterange',
-        'datetime',
-        'datetimerange',
-        'time',
-        'timerange',
-      ];
+      const validList: PickerTypeType[] = PICKER_TYPE_LIST;
       if (validList.indexOf(value) < 0) {
         console.error(`type property is not valid: '${value}'`);
         return false;

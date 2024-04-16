@@ -74,22 +74,22 @@ export default defineComponent({
           name='DatePicker 日期选择器'
           desc='日期选择器'
         />
-        <DemoBox
+        {/* <DemoBox
           title='基础用法'
           desc='通过 v-model 或者 value 设置初始值'
           componentName='date-picker'
           demoName='base-demo'
         >
           <BaseDemo />
-        </DemoBox>
-        {/* <DemoBox
+        </DemoBox> */}
+        <DemoBox
           title='开启时间设置'
           desc='通过设置 type 属性为 datetime 来开启时间设置'
           componentName='date-picker'
           demoName='with-time-demo'
         >
           <WithTimeDemo />
-        </DemoBox> */}
+        </DemoBox>
         {/* <DemoBox
           title='开启日期时间范围'
           desc='通过设置 type 属性为 datetimerange 来开启时间设置'

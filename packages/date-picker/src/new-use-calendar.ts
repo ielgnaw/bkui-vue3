@@ -420,7 +420,12 @@ export function useCalendar(props, _slots, emit) {
       case 'month':
         ret = DatePickerPanelType.MonthPanel;
         break;
-
+      case 'date':
+        ret = DatePickerPanelType.DatePanel;
+        break;
+      case 'datetime':
+        ret = DatePickerPanelType.DateTimePanel;
+        break;
       default:
         break;
     }

@@ -34,26 +34,14 @@ import type {
   DisabledDateType,
   PickerTypeType,
 } from './new-interface';
+import { PICKER_TYPE_LIST } from './utils';
 
 export const datePickerProps = {
   type: {
     type: String as PropType<PickerTypeType>,
     default: 'date',
     validator(value) {
-      const validList: PickerTypeType[] = [
-        'year',
-        'yearrange',
-        'quarter',
-        'quarterrange',
-        'month',
-        'monthrange',
-        'date',
-        'daterange',
-        'datetime',
-        'datetimerange',
-        'time',
-        'timerange',
-      ];
+      const validList: PickerTypeType[] = PICKER_TYPE_LIST;
       if (validList.indexOf(value) < 0) {
         console.error(`type property is not valid: '${value}'`);
         return false;

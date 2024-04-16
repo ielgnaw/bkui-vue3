@@ -46,6 +46,7 @@ import {
   pad,
   // formatDateLabels,
   PANEL_WIDTH,
+  PICKER_TYPE_LIST,
   siblingMonth,
   // timePickerKey
 } from '../utils';
@@ -60,20 +61,7 @@ const datePanelProps = {
     type: String as PropType<PickerTypeType>,
     default: 'date',
     validator(value) {
-      const validList: PickerTypeType[] = [
-        'year',
-        'yearrange',
-        'quarter',
-        'quarterrange',
-        'month',
-        'monthrange',
-        'date',
-        'daterange',
-        'datetime',
-        'datetimerange',
-        'time',
-        'timerange',
-      ];
+      const validList: PickerTypeType[] = PICKER_TYPE_LIST;
       if (validList.indexOf(value) < 0) {
         console.error(`type property is not valid: '${value}'`);
         return false;
@@ -259,7 +247,7 @@ export default defineComponent({
               ref='triggerRef'
               onClick={() => this.handleShowSelectYear()}
             >
-              {this.selectedYear} - {this.selectedMonth}
+              {this.selectedYear}&nbsp;&nbsp;-&nbsp;&nbsp;{this.selectedMonth}
             </div>
             <Transition name={this.resolveClassName('fade-down-transition')}>
               <SelectYearMonth

@@ -40,10 +40,11 @@ import { clickoutside } from '@bkui-vue/directives';
 import { Close } from '@bkui-vue/icon';
 
 import PickerDropdown from './base/picker-dropdown';
-import { dateIcon, timeIcon } from './common';
+import { DateIcon, TimeIcon } from './common';
 // import { createDefaultTrigger } from './common';
 // import { DatePickerPanelType, type SelectionModeType } from './new-interface';
 import DatePanel from './new-panel/date';
+import DateTimePanel from './new-panel/date-time';
 // import MonthPanel from './new-panel/month';
 // import QuarterPanel from './new-panel/quarter';
 import QuarterMonthPanel from './new-panel/quarter-month';
@@ -98,7 +99,7 @@ export default defineComponent({
             class={['icon-wrapper', this.disabled ? 'disabled' : '']}
             onClick={this.handleIconClick}
           >
-            {this.type === 'time' || this.type === 'timerange' ? timeIcon : dateIcon}
+            {this.type === 'time' || this.type === 'timerange' ? <TimeIcon /> : <DateIcon />}
           </span>
           {/* {this.displayValue}--{this.showClose}-- */}
           <input
@@ -140,10 +141,10 @@ export default defineComponent({
     };
 
     const renderPanel = () => {
-      let panel: VNode = null;
+      let view: VNode = null;
       switch (this.panel) {
         case 'YearPanel':
-          panel = (
+          view = (
             <YearPanel
               ref='pickerPanelRef'
               value={this.internalValue}
@@ -156,7 +157,7 @@ export default defineComponent({
           );
           break;
         case 'QuarterPanel':
-          panel = (
+          view = (
             <QuarterMonthPanel
               ref='pickerPanelRef'
               type={this.type}
@@ -171,7 +172,7 @@ export default defineComponent({
           );
           break;
         case 'MonthPanel':
-          panel = (
+          view = (
             <QuarterMonthPanel
               ref='pickerPanelRef'
               type={this.type}
@@ -186,8 +187,29 @@ export default defineComponent({
           );
           break;
         case 'DatePanel':
-          panel = (
+          view = (
             <DatePanel
+              ref='pickerPanelRef'
+              value={this.internalValue}
+              multiple={this.multiple}
+              clearable={this.clearable}
+              shortcuts={this.shortcuts}
+              shortcutClose={this.shortcutClose}
+              type={this.type}
+              startDate={this.startDate}
+              focusedDate={this.focusedDate}
+              disabledDate={this.disabledDate}
+              showTime={this.type === 'datetime' || this.type === 'datetimerange'}
+              timePickerOptions={this.timePickerOptions}
+              opened={this.opened}
+              showToday={this.showToday}
+              onPick={this.onPick}
+            />
+          );
+          break;
+        case 'DateTimePanel':
+          view = (
+            <DateTimePanel
               ref='pickerPanelRef'
               value={this.internalValue}
               multiple={this.multiple}
@@ -209,7 +231,7 @@ export default defineComponent({
         default:
           break;
       }
-      return panel;
+      return view;
     };
     return (
       <div

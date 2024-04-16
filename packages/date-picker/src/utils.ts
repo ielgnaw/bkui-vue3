@@ -30,9 +30,24 @@ import type { InjectionKey } from 'vue';
 import { resolveClassName } from '@bkui-vue/shared';
 
 import fecha from './fecha';
-import type { IDatePickerCtx, ITimePickerCtx, PickerTypeType } from './interface';
+import type { IDatePickerCtx, ITimePickerCtx, PickerTypeType } from './new-interface';
 
 export const pad = str => (String(str).length > 1 ? str : `0${str}`);
+
+export const PICKER_TYPE_LIST: PickerTypeType[] = [
+  'year',
+  'yearrange',
+  'quarter',
+  'quarterrange',
+  'month',
+  'monthrange',
+  'date',
+  'daterange',
+  'datetime',
+  'datetimerange',
+  'time',
+  'timerange',
+];
 
 // 非 year 选择器中，选择年时的下拉框的年份可选数据
 export const ALL_YEARS = (() => {
@@ -310,17 +325,19 @@ export const extractTime = (date: Date) => {
   }
   return [date.getHours(), date.getMinutes(), date.getSeconds()];
 };
-
 export const DEFAULT_FORMATS: Record<PickerTypeType, string> = {
-  date: 'yyyy-MM-dd',
-  month: 'yyyy-MM',
-  quarter: 'yyyy-QQQ',
   year: 'yyyy',
+  yearrange: 'yyyy',
+  quarter: 'yyyy-QQQ',
+  quarterrange: 'yyyy-QQQ',
+  month: 'yyyy-MM',
+  monthrange: 'yyyy-MM',
+  date: 'yyyy-MM-dd',
+  daterange: 'yyyy-MM-dd',
   datetime: 'yyyy-MM-dd HH:mm:ss',
+  datetimerange: 'yyyy-MM-dd HH:mm:ss',
   time: 'HH:mm:ss',
   timerange: 'HH:mm:ss',
-  daterange: 'yyyy-MM-dd',
-  datetimerange: 'yyyy-MM-dd HH:mm:ss',
 };
 
 export const parseDate = (val, type, multiple, format) => {

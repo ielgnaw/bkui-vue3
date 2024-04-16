@@ -24,26 +24,37 @@
  * IN THE SOFTWARE.
  */
 
-import {
-  /* type ComponentPublicInstance,  */ defineComponent,
-  type ExtractPropTypes,
-  PropType,
-  ref,
-  Transition,
-  watch,
-} from 'vue';
+import { defineComponent, type ExtractPropTypes, PropType, ref, Transition, watch } from 'vue';
 
-import { usePrefix } from '@bkui-vue/config-provider';
+import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
-import { AngleDoubleLeft, AngleDoubleRight } from '@bkui-vue/icon';
+import { AngleDoubleLeft, AngleDoubleRight, AngleLeft, AngleRight } from '@bkui-vue/icon';
 
-import MonthTable from '../new-base/month-table';
-import QuarterTable from '../new-base/quarter-table';
-import SelectYear from '../new-base/select-year';
-import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType, PickerTypeType } from '../new-interface';
-import { ALL_YEARS, iconBtnCls, PANEL_WIDTH, PICKER_TYPE_LIST, siblingMonth } from '../utils';
+import { DateIcon, TimeIcon } from '../common';
+import DateTable from '../new-base/date-table';
+import SelectYearMonth from '../new-base/select-year-month';
+// import Confirm from '../base/confirm';
+import type {
+  DatePickerShortcutsType,
+  DatePickerValueType,
+  DisabledDateType,
+  PickerTypeType,
+  // SelectionModeType,
+} from '../new-interface';
+import {
+  ALL_YEARS,
+  iconBtnCls,
+  pad,
+  // formatDateLabels,
+  PANEL_WIDTH,
+  PICKER_TYPE_LIST,
+  siblingMonth,
+  // timePickerKey
+} from '../utils';
 
-const quarterMonthPanelProps = {
+// import Time from './time';
+
+const datePanelProps = {
   value: {
     type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
   },
@@ -67,37 +78,62 @@ const quarterMonthPanelProps = {
     type: Boolean,
     default: false,
   },
+  clearable: {
+    type: Boolean,
+    default: true,
+  },
+  shortcutClose: {
+    type: Boolean,
+    default: false,
+  },
   startDate: {
     type: Date,
   },
+  focusedDate: {
+    type: Date,
+    required: true,
+  },
+  confirm: {
+    type: Boolean,
+    default: false,
+  },
+  showTime: {
+    type: Boolean,
+    default: false,
+  },
   disabledDate: {
+    // type: Function,
     type: Function as PropType<DisabledDateType>,
     default: () => false,
   },
-  cellClass: {
-    type: Function,
-    default: () => '',
+  timePickerOptions: {
+    type: Object as PropType<Record<string, any>>,
+    default: () => ({}),
   },
   opened: {
     type: Boolean,
     default: false,
   },
+  showToday: {
+    type: Boolean,
+    default: true,
+  },
 } as const;
 
-export type QuarterMonthPanelProps = Readonly<ExtractPropTypes<typeof quarterMonthPanelProps>>;
+export type DatePanelProps = Readonly<ExtractPropTypes<typeof datePanelProps>>;
 
 export default defineComponent({
-  name: 'QuarterMonthPanel',
+  name: 'DateTimePanel',
   directives: {
     clickoutside,
   },
-  props: quarterMonthPanelProps,
-  emits: ['pick'],
+  props: datePanelProps,
+  emits: ['pick', 'pick-success', 'pick-clear', 'pick-click', 'selection-mode-change'],
   setup(props, { emit }) {
+    const t = useLocale('datePicker');
     const triggerRef = ref<HTMLElement>(null);
     const selectYearRef = ref(null);
     const showSelectYear = ref(false);
-
     const { resolveClassName } = usePrefix();
 
     const dates = ref((props.value as DatePickerValueType[]).slice().sort() as any);
@@ -106,9 +142,14 @@ export default defineComponent({
 
     const allYears = ref(ALL_YEARS);
     const selectedYear = ref<number>(panelDate.value.getFullYear());
+    const selectedMonth = ref<string>(pad(panelDate.value.getMonth() + 1));
 
     const changeYear = dir => {
       panelDate.value = siblingMonth(panelDate.value, dir * 12);
+    };
+
+    const changeMonth = dir => {
+      panelDate.value = siblingMonth(panelDate.value, dir);
     };
 
     const setPanelDate = () => {
@@ -128,6 +169,10 @@ export default defineComponent({
       panelDate.value = new Date(year, panelDate.value.getMonth(), panelDate.value.getDate());
     };
 
+    const handleSelectMonth = (month: number) => {
+      panelDate.value = new Date(panelDate.value.getFullYear(), month - 1, panelDate.value.getDate());
+    };
+
     const handleShowSelectYear = () => {
       showSelectYear.value = true;
       selectYearRef.value?.updateDropdown();
@@ -142,6 +187,7 @@ export default defineComponent({
       () => panelDate.value,
       (v: Date) => {
         selectedYear.value = v.getFullYear();
+        selectedMonth.value = pad(v.getMonth() + 1);
       },
     );
 
@@ -164,6 +210,8 @@ export default defineComponent({
     );
 
     return {
+      t,
+
       triggerRef,
       selectYearRef,
 
@@ -174,11 +222,14 @@ export default defineComponent({
       dates,
       allYears,
       selectedYear,
+      selectedMonth,
       panelDate,
 
       changeYear,
+      changeMonth,
       handlePick,
       handleSelectYear,
+      handleSelectMonth,
       handleShowSelectYear,
       handleCloseSelectYear,
     };
@@ -187,27 +238,31 @@ export default defineComponent({
   render() {
     const renderDatePanelLabel = () => {
       return (
-        <div
-          class={this.resolveClassName('date-picker-selectyear-wrapper')}
-          v-clickoutside={this.handleCloseSelectYear}
-        >
+        <>
           <div
-            class={this.resolveClassName('date-picker-year-label')}
-            ref='triggerRef'
-            onClick={() => this.handleShowSelectYear()}
+            class={this.resolveClassName('date-picker-selectyear-wrapper')}
+            v-clickoutside={this.handleCloseSelectYear}
           >
-            {this.selectedYear}
+            <div
+              class={this.resolveClassName('date-picker-year-label')}
+              ref='triggerRef'
+              onClick={() => this.handleShowSelectYear()}
+            >
+              {this.selectedYear}&nbsp;&nbsp;-&nbsp;&nbsp;{this.selectedMonth}
+            </div>
+            <Transition name={this.resolveClassName('fade-down-transition')}>
+              <SelectYearMonth
+                ref='selectYearRef'
+                triggerRef={this.triggerRef}
+                v-show={this.showSelectYear}
+                selectedYear={String(this.selectedYear)}
+                selectedMonth={String(this.selectedMonth)}
+                onSelectYear={(v: number) => this.handleSelectYear(v)}
+                onSelectMonth={(v: number) => this.handleSelectMonth(v)}
+              ></SelectYearMonth>
+            </Transition>
           </div>
-          <Transition name={this.resolveClassName('fade-down-transition')}>
-            <SelectYear
-              ref='selectYearRef'
-              triggerRef={this.triggerRef}
-              v-show={this.showSelectYear}
-              selectedYear={String(this.selectedYear)}
-              onSelectYear={(v: number) => this.handleSelectYear(v)}
-            ></SelectYear>
-          </Transition>
-        </div>
+        </>
       );
     };
 
@@ -222,6 +277,23 @@ export default defineComponent({
           class={this.resolveClassName('picker-panel-body')}
           style={{ width: `${PANEL_WIDTH}px` }}
         >
+          <div class={this.resolveClassName('picker-date-time-tab')}>
+            <div class='date active'>
+              <div class='date-time-tab-inner'>
+                <DateIcon
+                  class='date-time-tab-icon'
+                  fillColor='#63656e'
+                />
+                <span class='date-time-tab-label'>2019-01-19</span>
+              </div>
+            </div>
+            <div class='time'>
+              <div class='date-time-tab-inner'>
+                <TimeIcon class='date-time-tab-icon' />
+                <span class='date-time-tab-label'>00:00:00</span>
+              </div>
+            </div>
+          </div>
           <div class={this.resolveClassName('date-picker-header')}>
             <span
               class={iconBtnCls('prev', '-double')}
@@ -230,6 +302,12 @@ export default defineComponent({
               <AngleDoubleLeft
                 style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}
               ></AngleDoubleLeft>
+            </span>
+            <span
+              class={iconBtnCls('prev')}
+              onClick={() => this.changeMonth(-1)}
+            >
+              <AngleLeft style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}></AngleLeft>
             </span>
             {renderDatePanelLabel()}
             <span
@@ -240,30 +318,33 @@ export default defineComponent({
                 style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}
               ></AngleDoubleRight>
             </span>
+            <span
+              class={iconBtnCls('next')}
+              onClick={() => this.changeMonth(+1)}
+            >
+              <AngleRight style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}></AngleRight>
+            </span>
           </div>
 
           <div class={this.resolveClassName('picker-panel-content')}>
-            {this.type === 'month' ? (
+            <DateTable
+              tableDate={this.panelDate as Date}
+              disabledDate={this.disabledDate}
+              type={this.type}
+              value={this.dates as DatePickerValueType}
+              // focusedDate={this.focusedDate}
+              onPick={this.handlePick}
+            />
+            {this.type === 'date' && this.showToday ? (
               <>
-                <MonthTable
-                  tableDate={this.panelDate as Date}
-                  disabledDate={this.disabledDate}
-                  value={this.dates as DatePickerValueType}
-                  cellClass={this.cellClass}
-                  onPick={this.handlePick}
-                />
+                <div
+                  class={this.resolveClassName('picker-today-shortcut')}
+                  onClick={() => this.handlePick(new Date())}
+                >
+                  {this.t.today}
+                </div>
               </>
-            ) : (
-              <>
-                <QuarterTable
-                  tableDate={this.panelDate as Date}
-                  disabledDate={this.disabledDate}
-                  value={this.dates as DatePickerValueType}
-                  cellClass={this.cellClass}
-                  onPick={this.handlePick}
-                />
-              </>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
