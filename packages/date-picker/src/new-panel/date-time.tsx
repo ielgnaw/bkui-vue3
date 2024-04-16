@@ -114,10 +114,6 @@ const datePanelProps = {
     type: Boolean,
     default: false,
   },
-  showToday: {
-    type: Boolean,
-    default: true,
-  },
 } as const;
 
 export type DatePanelProps = Readonly<ExtractPropTypes<typeof datePanelProps>>;
@@ -131,10 +127,13 @@ export default defineComponent({
   emits: ['pick', 'pick-success', 'pick-clear', 'pick-click', 'selection-mode-change'],
   setup(props, { emit }) {
     const t = useLocale('datePicker');
+    const { resolveClassName } = usePrefix();
     const triggerRef = ref<HTMLElement>(null);
+    const dateWrapperRef = ref<HTMLElement>(null);
+    const timeWrapperRef = ref<HTMLElement>(null);
     const selectYearRef = ref(null);
     const showSelectYear = ref(false);
-    const { resolveClassName } = usePrefix();
+    const dateTimeActive = ref('date');
 
     const dates = ref((props.value as DatePickerValueType[]).slice().sort() as any);
 
@@ -183,6 +182,12 @@ export default defineComponent({
       selectYearRef.value?.destoryDropdown();
     };
 
+    const handleToggleDateTime = (idx: string) => {
+      dateTimeActive.value = idx;
+      dateWrapperRef.value.style.transform = `translateX(${idx === 'date' ? 0 : '-100%'})`;
+      timeWrapperRef.value.style.transform = `translateX(${idx === 'date' ? '100%' : 0})`;
+    };
+
     watch(
       () => panelDate.value,
       (v: Date) => {
@@ -211,14 +216,15 @@ export default defineComponent({
 
     return {
       t,
+      resolveClassName,
 
       triggerRef,
       selectYearRef,
+      dateWrapperRef,
+      timeWrapperRef,
 
       showSelectYear,
-
-      resolveClassName,
-
+      dateTimeActive,
       dates,
       allYears,
       selectedYear,
@@ -232,6 +238,7 @@ export default defineComponent({
       handleSelectMonth,
       handleShowSelectYear,
       handleCloseSelectYear,
+      handleToggleDateTime,
     };
   },
 
@@ -278,8 +285,11 @@ export default defineComponent({
           style={{ width: `${PANEL_WIDTH}px` }}
         >
           <div class={this.resolveClassName('picker-date-time-tab')}>
-            <div class='date active'>
-              <div class='date-time-tab-inner'>
+            <div class={['date', this.dateTimeActive === 'date' ? 'active' : '']}>
+              <div
+                class='date-time-tab-inner'
+                onClick={() => this.handleToggleDateTime('date')}
+              >
                 <DateIcon
                   class='date-time-tab-icon'
                   fillColor='#63656e'
@@ -287,64 +297,67 @@ export default defineComponent({
                 <span class='date-time-tab-label'>2019-01-19</span>
               </div>
             </div>
-            <div class='time'>
-              <div class='date-time-tab-inner'>
+            <div class={['time', this.dateTimeActive === 'time' ? 'active' : '']}>
+              <div
+                class='date-time-tab-inner'
+                onClick={() => this.handleToggleDateTime('time')}
+              >
                 <TimeIcon class='date-time-tab-icon' />
                 <span class='date-time-tab-label'>00:00:00</span>
               </div>
             </div>
           </div>
-          <div class={this.resolveClassName('date-picker-header')}>
-            <span
-              class={iconBtnCls('prev', '-double')}
-              onClick={() => this.changeYear(-1)}
-            >
-              <AngleDoubleLeft
-                style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}
-              ></AngleDoubleLeft>
-            </span>
-            <span
-              class={iconBtnCls('prev')}
-              onClick={() => this.changeMonth(-1)}
-            >
-              <AngleLeft style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}></AngleLeft>
-            </span>
-            {renderDatePanelLabel()}
-            <span
-              class={iconBtnCls('next', '-double')}
-              onClick={() => this.changeYear(+1)}
-            >
-              <AngleDoubleRight
-                style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}
-              ></AngleDoubleRight>
-            </span>
-            <span
-              class={iconBtnCls('next')}
-              onClick={() => this.changeMonth(+1)}
-            >
-              <AngleRight style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}></AngleRight>
-            </span>
+          <div
+            ref='dateWrapperRef'
+            class={this.resolveClassName('date-picker-date-wrapper')}
+          >
+            <div class={this.resolveClassName('date-picker-header')}>
+              <span
+                class={iconBtnCls('prev', '-double')}
+                onClick={() => this.changeYear(-1)}
+              >
+                <AngleDoubleLeft
+                  style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}
+                ></AngleDoubleLeft>
+              </span>
+              <span
+                class={iconBtnCls('prev')}
+                onClick={() => this.changeMonth(-1)}
+              >
+                <AngleLeft style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}></AngleLeft>
+              </span>
+              {renderDatePanelLabel()}
+              <span
+                class={iconBtnCls('next', '-double')}
+                onClick={() => this.changeYear(+1)}
+              >
+                <AngleDoubleRight
+                  style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}
+                ></AngleDoubleRight>
+              </span>
+              <span
+                class={iconBtnCls('next')}
+                onClick={() => this.changeMonth(+1)}
+              >
+                <AngleRight style={{ fontSize: '20px', lineHeight: 1, verticalAlign: 'text-bottom' }}></AngleRight>
+              </span>
+            </div>
+            <div class={this.resolveClassName('picker-panel-content')}>
+              <DateTable
+                tableDate={this.panelDate as Date}
+                disabledDate={this.disabledDate}
+                type={this.type}
+                value={this.dates as DatePickerValueType}
+                // focusedDate={this.focusedDate}
+                onPick={this.handlePick}
+              />
+            </div>
           </div>
-
-          <div class={this.resolveClassName('picker-panel-content')}>
-            <DateTable
-              tableDate={this.panelDate as Date}
-              disabledDate={this.disabledDate}
-              type={this.type}
-              value={this.dates as DatePickerValueType}
-              // focusedDate={this.focusedDate}
-              onPick={this.handlePick}
-            />
-            {this.type === 'date' && this.showToday ? (
-              <>
-                <div
-                  class={this.resolveClassName('picker-today-shortcut')}
-                  onClick={() => this.handlePick(new Date())}
-                >
-                  {this.t.today}
-                </div>
-              </>
-            ) : null}
+          <div
+            ref='timeWrapperRef'
+            class={this.resolveClassName('date-picker-time-wrapper')}
+          >
+            <div style='position: absolute'>assadasd</div>
           </div>
         </div>
       </div>

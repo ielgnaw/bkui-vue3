@@ -223,7 +223,6 @@ export default defineComponent({
               showTime={this.type === 'datetime' || this.type === 'datetimerange'}
               timePickerOptions={this.timePickerOptions}
               opened={this.opened}
-              showToday={this.showToday}
               onPick={this.onPick}
             />
           );

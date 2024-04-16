@@ -501,6 +501,17 @@
   }
 }
 
+.@{bk-prefix}-date-picker-date-wrapper,
+.@{bk-prefix}-date-picker-time-wrapper {
+  transition: transform 0.3s ease-out;
+}
+.@{bk-prefix}-date-picker-time-wrapper {
+  width: 248px;
+  height: 200px;
+  transform: translateX(100%);
+}
+
+
 
 
 
@@ -582,6 +593,7 @@
 
 .@{bk-prefix}-picker-panel-body {
   float: left;
+  overflow: hidden;
 }
 
 .@{bk-prefix}-picker-confirm {
