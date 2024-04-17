@@ -136,6 +136,9 @@ export const isFullScreenContainsElement = (target: HTMLElement) => {
  * @returns
  */
 export const getFullscreenRoot = (selector?: HTMLElement | string) => {
+  if (!selector) {
+    return 'body';
+  }
   if (isElement(selector)) {
     if (isFullScreenContainsElement(selector as HTMLElement)) {
       return selector;
@@ -155,5 +158,5 @@ export const getFullscreenRoot = (selector?: HTMLElement | string) => {
     return document.fullscreenElement;
   }
 
-  return document.body;
+  return isElement(document.body) ? document.body : 'body';
 };
