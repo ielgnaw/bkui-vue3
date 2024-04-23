@@ -4426,10 +4426,10 @@ binary-extensions@^2.0.0:
   resolved "https://mirrors.tencent.com/npm/binary-extensions/-/binary-extensions-2.3.0.tgz#f6e14a97858d327252200242d4ccfe522c445522"
   integrity sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==
 
-bk-smooth-scrollbar@0.0.5:
-  version "0.0.5"
-  resolved "https://mirrors.tencent.com/npm/bk-smooth-scrollbar/-/bk-smooth-scrollbar-0.0.5.tgz#7dd64116e5098742243954ec1d9c1e2f76832fa5"
-  integrity sha512-u9XsXi6lMZJaICnycH1TouaR2kaSqjBToXpA0FYpAKPc+KNnfomQW4Isux+NyLNja3DeKOBrT2RG2NAPN65+TQ==
+bk-smooth-scrollbar@0.0.7-beta-2:
+  version "0.0.7-beta-2"
+  resolved "https://registry.yarnpkg.com/bk-smooth-scrollbar/-/bk-smooth-scrollbar-0.0.7-beta-2.tgz#ac12ca1a39a3349cad2c756535ba3c9ed281c9eb"
+  integrity sha512-OfFd0Uf69jfXNsD5CLyObMv0tK9OCgvKjjAOkI8eiPftIgkrmIOKPZHFpjoeXB73KwE41/pHOJbYe7OpfCEGAw==
   dependencies:
     core-js "^3.6.4"
     tslib "^2.6.2"

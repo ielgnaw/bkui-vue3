@@ -1,5 +1,10 @@
 ## 更新日志
 
+### 1.0.3-beta.47.scrollbar.1
+
+* **[feat]**:
+    feat: 增加scrollbar配置
+
 
 ### 1.0.3-beta.43
 
