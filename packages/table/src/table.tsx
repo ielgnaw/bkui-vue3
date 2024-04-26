@@ -25,7 +25,7 @@
  */
 
 import {
-  computed,
+  // computed,
   defineComponent,
   nextTick,
   provide,
@@ -84,7 +84,7 @@ export default defineComponent({
       wrapperStyle,
       contentStyle,
       headStyle,
-      hasScrollYRef,
+      // hasScrollYRef,
       hasFooter,
       footerStyle,
       tableBodyClass,
@@ -108,9 +108,9 @@ export default defineComponent({
 
     const { resolveClassName } = usePrefix();
 
-    const styleRef = computed(() => ({
-      hasScrollY: hasScrollYRef.value,
-    }));
+    // const styleRef = computed(() => ({
+    //   hasScrollY: hasScrollYRef.value,
+    // }));
 
     useObserverResize(root, () => {
       nextTick(() => {
@@ -122,7 +122,7 @@ export default defineComponent({
       props,
       ctx as SetupContext<any>,
       tableSchema,
-      styleRef,
+      // styleRef,
       head,
       root,
       resetTableHeight,
