@@ -23,26 +23,46 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import Scrollbar from 'bk-smooth-scrollbar';
+import { usePrefix } from 'bkui-vue';
 import { Ref } from 'vue';
 
+import BkSimpleBar from './bk-scrollbar';
 import { VirtualRenderProps } from './props';
 
 export default (target: Ref<HTMLElement>, props: VirtualRenderProps) => {
-  let instance = null;
-  const scrollbar = Scrollbar.SmoothScrollbar;
+  let instance: BkSimpleBar = null;
+  const { resolveClassName } = usePrefix();
+  const classNames = {
+    contentEl: resolveClassName('scrollbar-content-el'),
+    wrapper: resolveClassName('scrollbar-wrapper'),
+    scrollbar: resolveClassName('scrollbar'),
+    track: resolveClassName('scrollbar-track'),
+    visible: resolveClassName('scrollbar-visible'),
+    horizontal: resolveClassName('scrollbar-horizontal'),
+    vertical: resolveClassName('scrollbar-vertical'),
+    hover: resolveClassName('scrollbar-hover'),
+    dragging: resolveClassName('scrollbar-dragging'),
+    scrolling: resolveClassName('scrollbar-scrolling'),
+    scrollable: resolveClassName('scrollbar-scrollable'),
+    mouseEntered: resolveClassName('scrollbar-mouse-entered'),
+  };
 
-  const init = (scrollFn?) => {
-    instance = scrollbar.init(target.value, {
-      delegateTo: target.value,
-      keepStruct: props.scrollbar?.keepStruct ?? false,
+  const init = (scrollFn?, delegateXContent?, delegateYContent?) => {
+    instance = new BkSimpleBar(target.value, {
+      classNames,
+      wrapperNode: target.value,
+      useSystemScrollYBehavior: !props.enabled,
+      useSystemScrollXBehavior: true,
+      delegateXContent,
+      delegateYContent,
+      onScrollCallback: scrollFn,
     });
-    instance.addListener(scrollFn);
+    // instance.getScrollElement().addEventListener('scroll', scrollFn);
   };
 
   const scrollTo = (x, y) => {
     if (props.scrollbar?.enabled) {
-      instance.scrollTo(x, y, 100, { keepStruct: props.scrollbar?.keepStruct ?? false });
+      // instance.s.scrollTo(x, y, 100, { keepStruct: props.scrollbar?.keepStruct ?? false });
       return;
     }
 
@@ -53,5 +73,6 @@ export default (target: Ref<HTMLElement>, props: VirtualRenderProps) => {
     init,
     instance,
     scrollTo,
+    classNames,
   };
 };

@@ -29,15 +29,15 @@ import { VirtualRenderProps } from './props';
 import useFixTop from './use-fix-top';
 import useScrollbar from './use-scrollbar';
 import { VisibleRender } from './v-virtual-render';
+
 export default (props: VirtualRenderProps, ctx) => {
   const { renderAs, contentAs } = props;
   const refRoot = ref(null);
 
-  const { init, scrollTo } = useScrollbar(refRoot, props);
+  const { init, scrollTo, classNames } = useScrollbar(refRoot, props);
   const contentStyle = reactive({ x: 0, y: 0 });
   const computedStyle = computed(() => ({
     ...props.contentStyle,
-    transform: `translate3d(${-contentStyle.x}px, ${-contentStyle.y}px, 0)`,
   }));
 
   /** 指令触发Scroll事件，计算当前startIndex & endIndex & scrollTop & translateY */
@@ -91,13 +91,29 @@ export default (props: VirtualRenderProps, ctx) => {
     renderInstance?.uninstall();
   });
 
+  const wrapperClassNames = computed(() => {
+    if (props.scrollbar.enabled) {
+      return [props.className, classNames.wrapper];
+    }
+
+    return [props.className];
+  });
+
+  const contentClassNames = computed(() => {
+    if (props.scrollbar.enabled) {
+      return [props.contentClassName, classNames.contentEl];
+    }
+
+    return [props.contentClassName];
+  });
+
   return {
     rendAsTag: () =>
       h(
         // @ts-ignore:next-line
         renderAs,
         {
-          class: props.className,
+          class: wrapperClassNames.value,
           style: wrapperStyle.value,
           ref: refRoot,
         },
@@ -106,7 +122,7 @@ export default (props: VirtualRenderProps, ctx) => {
           h(
             contentAs,
             {
-              class: props.contentClassName,
+              class: contentClassNames.value,
               style: computedStyle.value,
             },
             [

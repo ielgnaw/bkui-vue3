@@ -90,10 +90,11 @@ export default defineComponent({
       handleScrollCallback,
       pagination,
       throttleDelay: props.throttleDelay,
+      scrollbar: props.scrollbar,
     }));
 
     const refRoot = ref(null);
-    const { init, scrollTo } = useScrollbar(refRoot, props);
+    const { init, scrollTo, classNames } = useScrollbar(refRoot, props);
 
     const refVirtualSection = ref(null);
     let instance = null;
@@ -136,7 +137,7 @@ export default defineComponent({
       instance = new VisibleRender(binding, refRoot.value);
 
       if (props.scrollbar?.enabled) {
-        init(instance.executeThrottledRender.bind(instance));
+        init(instance.executeThrottledRender.bind(instance), null, refVirtualSection.value);
         instance.executeThrottledRender.call(instance, { offset: { x: 0, y: 0 } });
         return;
       }
@@ -201,20 +202,8 @@ export default defineComponent({
       return (props.list || []).map((item: any, index) => ({ ...item, $index: index }));
     });
 
-    const getOffsetTop = () => {
-      if (props.scrollbar?.enabled && props.scrollbar?.keepStruct) {
-        return 0;
-      }
-
-      return pagination.scrollTop + props.scrollOffsetTop;
-    };
-
-    const getTransform = () => {
-      return `translate3d(-${pagination.translateX}px,${getOffsetTop() - pagination.translateY}px, 0)`;
-    };
-
     /** 展示列表内容区域样式 */
-    const innerContentStyle = computed(() => (props.scrollPosition === 'content' ? { transform: getTransform() } : {}));
+    const innerContentStyle = computed(() => (props.scrollPosition === 'content' ? {} : {}));
 
     /** 虚拟渲染外层容器样式 */
     const wrapperStyle = computed(() => {
@@ -243,8 +232,7 @@ export default defineComponent({
     /** 外层样式列表 */
     const wrapperClass = computed(() => [
       resolveClassName('virtual-render'),
-      props.scrollXName,
-      props.scrollYName,
+
       ...resolvePropClassName(props.className),
       props.scrollPosition === 'container' ? resolveClassName('virtual-content') : '',
     ]);
@@ -292,7 +280,7 @@ export default defineComponent({
         renderAs || 'div',
         {
           ref: refRoot,
-          class: wrapperClass.value,
+          class: [...wrapperClass.value, classNames.wrapper],
           style: wrapperStyle.value,
         },
         [
@@ -300,7 +288,7 @@ export default defineComponent({
           h(
             contentAs || 'div',
             {
-              class: innerClass.value,
+              class: [...innerClass.value, classNames.contentEl],
               style: {
                 ...innerContentStyle.value,
                 ...props.contentStyle,

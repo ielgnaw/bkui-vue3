@@ -150,9 +150,11 @@ export class VisibleRender {
   }
 
   private getEvent = (event: Event | any) => {
-    const { scrollbar = { enabled: false, keepStruct: true } } = this.binding.value;
+    const { scrollbar = { enabled: false } } = this.binding.value;
     if (scrollbar.enabled) {
-      return event;
+      return {
+        offset: event.offset ?? event,
+      };
     }
 
     if (event?.offset) {

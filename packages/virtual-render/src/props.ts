@@ -35,7 +35,6 @@ const EventProps = {
 
 export type IScrollbarOption = {
   enabled: boolean;
-  keepStruct: boolean;
 };
 
 export const virtualRenderProps = {
@@ -158,7 +157,6 @@ export const virtualRenderProps = {
   scrollbar: toType<IScrollbarOption>('IScrollbarOption', {
     default: {
       enabled: false,
-      keepStruct: true,
     },
   }),
 

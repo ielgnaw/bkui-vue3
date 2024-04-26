@@ -82,8 +82,7 @@
           },
         ],
         scrollbar: {
-          enabled: false,
-          keepStruct: false,
+          enabled: true,
         },
       };
     },
@@ -97,7 +96,7 @@
           padding: '2px 10px',
           height: `${lineHeight}px`,
           lineHeight: `${lineHeight}px`,
-          display: 'inline-block',
+          display: 'block',
           width: '200px',
         };
       },
@@ -108,6 +107,7 @@
           height: `${lineHeight}px`,
           lineHeight: `${lineHeight}px`,
           borderBottom: 'solid 1px #ddd',
+          display: 'inline-flex',
         };
       },
       handleRandomRows() {

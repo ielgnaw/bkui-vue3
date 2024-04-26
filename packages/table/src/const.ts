@@ -95,7 +95,7 @@ export const COLUMN_ATTRIBUTE = {
 /**
  * Y 轴滚动条宽度
  */
-export const SCROLLY_WIDTH = 6;
+export const SCROLLY_WIDTH = 0;
 
 /**
  * 默认行高

@@ -60,7 +60,6 @@ export default (
   props: TablePropTypes,
   context: SetupContext<any>,
   tableResp: ITableResponse,
-  styleRef,
   head,
   root,
   resetTableHeight,
@@ -208,7 +207,7 @@ export default (
       backgroundColor: props.thead.color,
     };
 
-    const { resolveFixedColumnStyle } = useFixedColumn(props, tableResp, head);
+    // const { resolveFixedColumnStyle } = useFixedColumn(props, tableResp, head);
 
     return (
       <>
@@ -217,7 +216,7 @@ export default (
             <tr>
               {filterColGroups.value.map((column, index: number) => {
                 const { getTH } = useHeadCell(props, context, column, tableResp);
-                const headStyle = Object.assign({}, resolveFixedColumnStyle(column, styleRef.value.hasScrollY), {
+                const headStyle = Object.assign({}, resolveFixedColumnStyle(column), {
                   '--background-color': DEF_COLOR[props.thead?.color ?? IHeadColor.DEF1],
                 });
 
@@ -309,6 +308,7 @@ export default (
       ...formatPropAsArray(props.rowStyle, [row, rowIndex]),
       {
         '--row-height': `${getRowHeight(row, rowIndex)}px`,
+        '--scroll-x': `${tableResp.formatData.layout.translateX}px`,
       },
     ];
 
@@ -318,6 +318,7 @@ export default (
       rowIndex % 2 === 1 && props.stripe ? 'stripe-row' : '',
     ];
     const rowId = tableResp.getRowAttribute(row, TABLE_ROW_ATTRIBUTE.ROW_UID);
+
     return [
       <TableRow key={rowId}>
         <tr

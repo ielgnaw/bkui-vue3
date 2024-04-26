@@ -1,0 +1,93 @@
+@import '@bkui-vue/styles/themes/themes.less';
+
+.@{bk-prefix}-scrollbar-wrapper {
+  position: relative;
+  overflow: hidden;
+
+  .@{bk-prefix}-scroll-content-el {
+    display: inline-flex;
+    flex-direction: column;
+  }
+
+  .@{bk-prefix}-scrollbar-track {
+    z-index: 1;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+
+    &.@{bk-prefix}-scrollbar-hover {
+      background-color: #F0F1F5;
+      cursor: pointer;
+
+      .@{bk-prefix}-scrollbar {
+        &::before {
+          background-color: #979BA5;
+        }
+      }
+    }
+
+    &.@{bk-prefix}-scrollbar-vertical {
+      top: 0;
+      width: 11px;
+      transform: translate(var(--scroll-offset-x), var(--scroll-offset-y));
+    }
+
+    &.@{bk-prefix}-scrollbar-horizontal {
+      left: 0;
+      height: 11px;
+      transform: translate(var(--scroll-offset-x), var(--scroll-offset-y));
+
+      &.@{bk-prefix}-scrollbar {
+        right: auto;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        min-height: 0;
+        min-width: 10px;
+        width: auto;
+      }
+    }
+  }
+
+
+  .@{bk-prefix}-scrollbar-dragging {
+    pointer-events: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+
+  .@{bk-prefix}-scrollbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    min-height: 10px;
+
+    &::before {
+      position: absolute;
+      content: '';
+      background: #DcDEE5;
+      border-radius: 7px;
+      left: 2px;
+      right: 2px;
+      top: 2px;
+      bottom: 2px;
+      opacity: 0;
+      transition: opacity 0.2s 0.5s linear;
+    }
+
+    &.@{bk-prefix}-scrollbar-visible {
+      &::before {
+        opacity: 0.5;
+        transition-delay: 0s;
+        transition-duration: 0s;
+      }
+    }
+  }
+}
