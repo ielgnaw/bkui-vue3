@@ -24,7 +24,6 @@
  * IN THE SOFTWARE.
  */
 
-import { usePrefix } from '@bkui-vue/config-provider';
 import { Ref } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
