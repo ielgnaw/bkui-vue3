@@ -237,7 +237,7 @@ const propsJson: IPropsTableItem[] = [
     name: 'popoverOptions',
     type: 'object',
     default: '',
-    desc: '下拉框popover配置，参考Popover组件',
+    desc: '下拉框popover配置，参考Popover组件（如果在Popover里面使用select，建议配置成为：{ boundary: "parent" }）',
     optional: [],
   },
   {
@@ -308,6 +308,13 @@ const propsJson: IPropsTableItem[] = [
     type: 'boolean',
     default: 'false',
     desc: '是否自动聚焦当前下拉框',
+    optional: ['true', 'false'],
+  },
+  {
+    name: 'disableFocusBehavior',
+    type: 'boolean',
+    default: 'false',
+    desc: '是否禁用自动聚焦行为（每次点击options或者展示select会自动聚焦到搜索框，可关闭此属性禁用聚焦）',
     optional: ['true', 'false'],
   },
   {

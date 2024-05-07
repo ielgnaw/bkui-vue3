@@ -46,7 +46,6 @@ import { Column, Settings as ISettings, TablePropTypes } from './props';
 import { ITableResponse } from './use-attributes';
 import {
   formatPropAsArray,
-  getRowKeyNull,
   getRowText,
   isRowSelectEnable,
   resolveCellSpan,
@@ -325,7 +324,8 @@ export default (
           // @ts-ignore
           style={rowStyle}
           class={rowClass}
-          key={getRowKeyNull(row, props, rowIndex)}
+          data-row-id={rowId}
+          key={rowId}
           data-row-index={rowIndex}
           onClick={e => handleRowClick(e, row, rowIndex, rows)}
           onDblclick={e => handleRowDblClick(e, row, rowIndex, rows)}

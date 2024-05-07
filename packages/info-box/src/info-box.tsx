@@ -148,6 +148,7 @@ const InfoBox = (config: Partial<ModalFuncProps>) => {
             ...modalFuncProps.value,
             isShow: isShow.value,
             transfer: false,
+            quickClose: false,
             onClosed,
             onConfirm,
             onHidden,

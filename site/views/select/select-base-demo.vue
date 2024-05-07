@@ -21,6 +21,7 @@
       style="margin-left: 10px;"
       filterable
       multiple
+      disable-focus-behavior
       :list="datasourceList"
     />
   </div>

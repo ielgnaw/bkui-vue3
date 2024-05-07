@@ -1,5 +1,107 @@
 ## 更新日志
 
+### 1.0.3-beta.61
+
+* **[feat]**:
+    - feature(select): 简化样式 支持tag模式
+
+
+### 1.0.3-beta.60
+
+* **[feat]**:
+    - feat(upload): 添加selectChange属性
+
+
+### 1.0.3-beta.59
+
+* **[feat]**:
+    - feat(search-select): 新版search select组件
+
+
+### 1.0.3-beta.58
+
+* **[feat]**:
+    - feature(select): 自动聚焦支持关闭
+
+
+### 1.0.3-beta.56
+
+* **[feat]**:
+    - feat(search-select): 新版search select组件
+
+
+### 1.0.3-beta.55
+
+* **[feat]**:
+    - feat(search-select): 优化search select组件交互
+
+
+### 1.0.3-beta.54
+
+* **[feat]**:
+    - bugfix(dialog): 样式修复
+
+
+### 1.0.3-beta.53
+
+* **[feat]**:
+    - bugfix(dialog): 样式修复
+
+
+### 1.0.3-beta.52
+
+* **[feat]**:
+    - fix(datepicker): datepicker monthrange 支持 disabled-date
+
+
+### 1.0.3-beta.51
+
+* **[feat]**:
+    - fix(datepicker): datepicker monthrange 支持 disabled-date
+
+
+### 1.0.3-beta.50
+
+* **[feat]**:
+    - fix(timeline): 修复样式没有构建加载问题 #1724
+
+
+### 1.0.3-beta.49
+
+* **[feat]**:
+    - bugfix(dialog): 样式修复
+
+
+### 1.0.3-beta.48
+
+* **[feat]**:
+    - bugfix(pop-confirm): 与Select组件一起使用时，Change事件会导致整个pop-confirm一起关闭
+    - bugfix(dialog): 样式修复
+
+
+### 1.0.3-beta.47
+
+* **[feat]**:
+    - feat(table & modal): table row-key计算逻辑调整 & modal unmounted处理逻辑调整 & modal hidden delay设置 & table column node context获取逻辑判定
+
+
+### 1.0.3-beta.46
+
+* **[feat]**:
+    - bugfix(dialog): 样式修复
+
+
+### 1.0.3-beta.45
+
+* **[feat]**:
+    - feat(Timeline):Timeline组件的tag、content属性应支持VNode
+
+
+### 1.0.3-beta.43
+
+* **[feat]**:
+    - feat(table & modal): table row-key计算逻辑调整 & modal unmounted处理逻辑调整 & modal hidden delay设置 & table column node context获取逻辑判定
+
 
 ### 1.0.3-beta.42
 

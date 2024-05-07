@@ -139,6 +139,9 @@ export default {
     default: '',
   },
   customRequest: Function as PropType<UploadRequestHandler>,
+  selectChange: {
+    type: Function as PropType<(event: Event) => boolean | void>,
+  },
   beforeUpload: {
     type: Function as PropType<(file: UploadRawFile) => Promise<boolean> | boolean>,
   },

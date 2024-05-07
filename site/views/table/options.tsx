@@ -59,7 +59,7 @@ export const DATA_TABLE = [
     ],
   },
   {
-    ip: '192.168.0.2',
+    ip: '192.168.0.26',
     source: '微信',
     status: '正常',
     priority: 3,
@@ -68,7 +68,7 @@ export const DATA_TABLE = [
     percent: '10.01%',
   },
   {
-    ip: '192.168.0.3',
+    ip: '192.168.0.37',
     source: 'QQ',
     status: '创建中',
     priority: 2,
@@ -77,7 +77,7 @@ export const DATA_TABLE = [
     percent: '50%',
   },
   {
-    ip: '192.168.0.3',
+    ip: '192.168.0.38',
     source: 'QQ',
     status: '创建中',
     priority: 6,
@@ -86,7 +86,7 @@ export const DATA_TABLE = [
     percent: '1%',
   },
   {
-    ip: '192.168.0.3',
+    ip: '192.168.0.39',
     source: 'QQ',
     status: '创建中',
     priority: 5,

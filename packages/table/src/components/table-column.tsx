@@ -131,7 +131,7 @@ export default defineComponent({
         const resolveProp: any = Object.assign({}, this.copyProps(props), {
           field: props.prop || props.field,
           render: props.render ?? this.$slots.default,
-          uniqueId: this.getNodeUid((this.$ as any).ctx),
+          uniqueId: this.getNodeCtxUid((this.$ as any).ctx),
         });
         this.initColumns(resolveProp);
         return false;
@@ -141,6 +141,11 @@ export default defineComponent({
     },
     setNodeUid() {
       const { ctx } = this.$ as any;
+
+      if (!ctx) {
+        return;
+      }
+
       if (ctx.uniqueId && !ctx.uniqueId.val) {
         ctx.uniqueId.val = uuidv4();
       }
@@ -149,8 +154,8 @@ export default defineComponent({
         Object.assign(ctx, { uniqueId: { val: uuidv4() } });
       }
     },
-    getNodeUid(ctx) {
-      return ctx.uniqueId?.val;
+    getNodeCtxUid(ctx) {
+      return ctx?.uniqueId?.val;
     },
     updateColumnDefineByParent() {
       if (!this.rsolveIndexedColumn()) {
@@ -172,7 +177,7 @@ export default defineComponent({
         };
 
         const getNodeUid = node => {
-          return this.getNodeUid(node.ctx);
+          return this.getNodeCtxUid(node.ctx);
         };
 
         const tableNode = getTableNode(selfVnode);
@@ -192,7 +197,7 @@ export default defineComponent({
             const resolveProp = Object.assign({ index }, this.copyProps(node.props), {
               field: node.props.prop || node.props.field,
               render: node.props.render ?? node.children?.default,
-              uniqueId: getNodeUid(node.ctx),
+              uniqueId: getNodeUid(node),
             });
             sortColumns.push(unref(resolveProp));
             index = index + 1;
@@ -239,7 +244,7 @@ export default defineComponent({
       const resolveProp = Object.assign({}, this.copyProps(this.$props), {
         field: props.prop || props.field,
         render: props.render ?? this.$slots.default,
-        uniqueId: this.getNodeUid((this.$ as any).ctx),
+        uniqueId: this.getNodeCtxUid((this.$ as any).ctx),
       });
       this.initColumns(resolveProp as any, true);
     },

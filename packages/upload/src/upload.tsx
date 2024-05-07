@@ -70,6 +70,7 @@ export default defineComponent({
       multiple: props.multiple,
       disabled: props.disabled,
       accept: props.accept,
+      selectChange: props.selectChange,
     }));
 
     function onRemove(file: UploadFile, fileList: UploadFiles) {
@@ -88,9 +89,14 @@ export default defineComponent({
       }
 
       // limit检查
-      if (props.limit && fileList.value.length + files.length > props.limit) {
+      if (props.limit > 1 && fileList.value.length + files.length > props.limit) {
         emit('exceed', files, fileList.value);
         return;
+      }
+
+      // 限制1个时使用替换方式，将之前的列表清空
+      if (!props.multiple && props.limit === 1) {
+        fileList.value = [];
       }
 
       let sendFiles = files;

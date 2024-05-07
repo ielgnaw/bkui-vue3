@@ -82,7 +82,7 @@ export const hasStyleComponentList = [
   'Cascader',
   'Slider',
   'ResizeLayout',
-  'TimeLine',
+  'Timeline',
   'Process',
   'Upload',
   'CodeDiff',

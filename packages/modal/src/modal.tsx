@@ -24,7 +24,16 @@
  * IN THE SOFTWARE.
  */
 
-import { computed, defineComponent, type ExtractPropTypes, nextTick, ref, Transition, watch } from 'vue';
+import {
+  computed,
+  defineComponent,
+  type ExtractPropTypes,
+  nextTick,
+  onBeforeUnmount,
+  ref,
+  Transition,
+  watch,
+} from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { bkZIndexManager, getFullscreenRoot, isElement, isPromise, mask } from '@bkui-vue/shared';
@@ -43,6 +52,7 @@ export default defineComponent({
   setup(props, ctx) {
     const refRoot = ref<HTMLElement>();
     const refMask = ref<HTMLElement>();
+    const resizeTargetRef = ref<HTMLElement>();
     const teleportTo = ref<string | HTMLElement>('body');
     const visible = ref(false);
     const zIndex = ref(props.zIndex);
@@ -50,7 +60,7 @@ export default defineComponent({
     const backgroundColor = ref('rgba(0,0,0,0.6)');
     let closeTimer;
 
-    const { contentStyles, isContentScroll } = useContentResize(refRoot, props);
+    const { contentStyles, isContentScroll } = useContentResize(refRoot, resizeTargetRef, props);
 
     const modalWrapperStyles = computed(() => {
       const baseStyles = {
@@ -79,6 +89,7 @@ export default defineComponent({
     };
 
     const { resolveClassName } = usePrefix();
+
     const resolveClosetModal = () => {
       resolveTransfer();
       if (enableTeleport.value) {
@@ -104,6 +115,23 @@ export default defineComponent({
       }
     };
 
+    const close = () => {
+      if (visible.value) {
+        visible.value = false;
+        mask.hideMask({
+          el: refRoot.value,
+          mask: refMask.value,
+          showMask: props.showMask,
+          backgroundColor: backgroundColor.value,
+        });
+
+        ctx.emit('hidden');
+        if (enableTeleport.value) {
+          refRoot.value?.remove();
+        }
+      }
+    };
+
     const closeModal = () => {
       mask.hideMask({
         el: refRoot.value,
@@ -118,7 +146,7 @@ export default defineComponent({
         if (enableTeleport.value) {
           refRoot.value?.remove();
         }
-      }, 250);
+      }, props.hiddenDelay);
     };
 
     watch(
@@ -183,6 +211,10 @@ export default defineComponent({
       }
     };
 
+    onBeforeUnmount(() => {
+      close();
+    });
+
     return {
       zIndex,
       visible,
@@ -193,6 +225,8 @@ export default defineComponent({
       refRoot,
       refMask,
       resolveClassName,
+      close,
+      resizeTargetRef,
     };
   },
   render() {
@@ -201,8 +235,7 @@ export default defineComponent({
         ref='refRoot'
         class={{
           [this.resolveClassName('modal-ctx')]: true,
-          '--show': this.visible,
-          '--hide': !this.visible,
+          'is-show': this.visible,
         }}
         style={{ zIndex: this.zIndex }}
       >
@@ -236,7 +269,13 @@ export default defineComponent({
                   class={this.resolveClassName('modal-content')}
                   style={this.contentStyles}
                 >
-                  <div>{this.$slots.default?.()}</div>
+                  <div style='position: relative; display: inline-block; width: 100%;'>
+                    {this.$slots.default?.()}
+                    <div
+                      ref='resizeTargetRef'
+                      style='position: absolute; top: 0; bottom: 0;'
+                    />
+                  </div>
                 </div>
                 <div
                   class={{

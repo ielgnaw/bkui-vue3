@@ -64,7 +64,8 @@ export default defineComponent({
   },
   emits: ['delete'],
   setup(_props, { emit }) {
-    const inputRef = ref<typeof SearchSelectInput>(null);
+    const inputRef = ref<InstanceType<typeof SearchSelectInput>>(null);
+    const selectedInputRef = ref<HTMLDivElement>(null);
     const { onEditClick, onEditEnter, onEditBlur, editKey } = useSearchSelectInject();
     function handleDeleteSelected(index: number) {
       emit('delete', index);
@@ -83,8 +84,8 @@ export default defineComponent({
       if (isFocus) return;
       onEditBlur();
     }
-    function handleInputOutside() {
-      return true;
+    function handleInputOutside(target: Node) {
+      return !selectedInputRef.value?.contains(target);
     }
     function copySeletedItem(item: SelectedItem): SelectedItem {
       const newItem = new SelectedItem(item.searchItem, item.type);
@@ -94,6 +95,7 @@ export default defineComponent({
     }
     return {
       inputRef,
+      selectedInputRef,
       editKey,
       copySeletedItem,
       handleDeleteSelected,
@@ -109,6 +111,7 @@ export default defineComponent({
         <div
           class='selected-input'
           key={this.editKey.toString()}
+          ref='selectedInputRef'
         >
           <SearchSelectInput
             ref='inputRef'

@@ -3,13 +3,18 @@
     <bk-button @click="handleOpenSlider">
       默认配置
     </bk-button>
+
     <bk-sideslider
       v-model:isShow="isShow"
       title="我是标题"
       quick-close
       :before-close="beforeClose"
       transfer
-    />
+    >
+      <bk-button @click="handleClose">
+        关闭侧栏
+      </bk-button>
+    </bk-sideslider>
   </div>
 </template>
 
@@ -35,8 +40,14 @@
           },
         });
       };
+
+      const handleClose = () => {
+        isShow.value = false;
+      };
+
       return {
         handleOpenSlider,
+        handleClose,
         beforeClose,
         isShow,
       };

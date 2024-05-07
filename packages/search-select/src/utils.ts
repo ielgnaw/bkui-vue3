@@ -24,7 +24,9 @@
  * IN THE SOFTWARE.
  */
 
-import { inject, InjectionKey, provide, Ref, VNode } from 'vue';
+import { ComputedRef, inject, InjectionKey, provide, Ref, VNode } from 'vue';
+
+import { random } from '@bkui-vue/shared';
 /**
  * @description: 获取menu list方法
  * @param {ISearchItem} item 已选择的key字段 为空则代表当前并未选择key字段
@@ -34,6 +36,10 @@ import { inject, InjectionKey, provide, Ref, VNode } from 'vue';
 export enum ValueBehavior {
   ALL = 'all',
   NEEDKEY = 'need-key',
+}
+export enum DeleteBehavior {
+  CHAR = 'delete-char',
+  VALUE = 'delete-value',
 }
 export type GetMenuListFunc = (item: ISearchItem, keyword: string) => Promise<ISearchItem[]>;
 export type ValidateValuesFunc = (item: ISearchItem, values: ICommonItem[]) => Promise<string | true>;
@@ -50,6 +56,8 @@ export interface ISearchSelectProvider {
   onEditBlur: () => void;
   onValidate: (str: string) => void;
   editKey: Ref<String>;
+  searchData: ComputedRef<ISearchItem[]>;
+  isClickOutside: (target: Node) => boolean;
 }
 export const SEARCH_SLECT_PROVIDER_KEY: InjectionKey<ISearchSelectProvider> = Symbol('SEARCH_SLECT_PROVIDER_KEY');
 export const useSearchSelectProvider = (data: ISearchSelectProvider) => {
@@ -75,6 +83,8 @@ export interface ISearchValue extends Omit<ICommonItem, 'disabled' | 'value'> {
   type?: SearchItemType;
   values?: Omit<ICommonItem, 'disabled' | 'logical'>[];
 }
+export const ValueSplitRegex = /(\||,|、|\/|\r\n|\n)/gm;
+export const ValueSplitTestRegex = /^(\||,|、|\/|\r\n|\n)$/;
 
 export interface ISearchItem {
   id: string;
@@ -120,6 +130,7 @@ export class SelectedItem {
   values: ICommonItem[] = [];
   condition: string;
   logical: SearchLogical;
+  nameRenderkey = random(4);
   constructor(
     public searchItem: ISearchItem,
     public type: SearchItemType = 'default',
@@ -127,6 +138,7 @@ export class SelectedItem {
     this.id = searchItem.id;
     this.name = searchItem.name;
     this.logical = searchItem.logical || SearchLogical.OR;
+    this.type = type;
   }
   get multiple() {
     return !!this.searchItem.multiple;
@@ -163,6 +175,7 @@ export class SelectedItem {
     return ['text', 'condition'].includes(this.type);
   }
   addValue(item: ICommonItem) {
+    this.nameRenderkey = random(4);
     if (this.multiple) {
       const index = this.values.findIndex(val => val.id === item.id);
       if (index > -1) {
@@ -173,6 +186,46 @@ export class SelectedItem {
       return;
     }
     this.values = [item];
+  }
+  str2Values(str: string): ICommonItem[] {
+    const list = str
+      ?.split(this.logical)
+      .map(v => v.trim())
+      .filter(v => v);
+    if (!list?.length) return [];
+    const findChildByName = (name: string) => this.children.find(item => item.name === name);
+    if (!this.multiple) {
+      const val = list.join(` ${this.logical} `).trim();
+      const item = findChildByName(val);
+      return [
+        {
+          id: item ? item.id : val,
+          name: item ? item.name : val,
+          disabled: !!item?.disabled,
+        },
+      ];
+    }
+    // 对于多选情况，处理整个列表
+    return list.map(val => {
+      const existing = this.values.find(item => item.name === val);
+      if (existing) return existing;
+      const item = findChildByName(val);
+      return {
+        id: item ? item.id : val,
+        name: item ? item.name : val,
+        disabled: !!item?.disabled,
+      };
+    });
+  }
+  addValues(str: string, mergeValues = true) {
+    const valuesFromStr = str.split(ValueSplitRegex).filter(v => v.trim() && !ValueSplitTestRegex.test(v));
+    const currentValues = mergeValues ? this.values.map(item => item.name) : [];
+    const combinedValues = [...valuesFromStr, ...currentValues];
+    const logicalString = combinedValues.filter(v => v.trim()).join(this.logical);
+    this.values = this.str2Values(logicalString);
+  }
+  getValue(str: string) {
+    return this.values.find(item => item.id === str) || this.values.find(item => item.name === str);
   }
   toValue(): ISearchValue {
     const value: ISearchValue = {

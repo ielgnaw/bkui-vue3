@@ -316,7 +316,7 @@ export const getRowKeyNull = (item: any, props: TablePropTypes, index: number) =
       return `__ROW_INDEX_${index}`;
     }
 
-    return objGet(item, props.rowKey);
+    return props.rowKey;
   }
 
   if (typeof props.rowKey === 'function') {
@@ -496,7 +496,7 @@ export const isRowSelectEnable = (
 export const getRowId = (row, defVal, props) => {
   const key = getRowKey(row, props, defVal);
   if (key !== undefined && row[key] !== undefined) {
-    return row[key];
+    return objGet(row, key);
   }
 
   return defVal;

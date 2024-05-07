@@ -80,4 +80,5 @@ export const propsMixin = {
   bodyClass: PropTypes.string || PropTypes.array,
   left: PropTypes.string,
   top: PropTypes.string,
+  hiddenDelay: PropTypes.number.def(200),
 };

@@ -32,6 +32,7 @@ import PropsBox from '../../components/props-box';
 import { IPropsTableItem } from '../../typings';
 
 import BaseDemo from './base-demo.vue';
+import ComprehensiveUseDemo from './comprehensive-use.vue';
 import MenuDemo from './menu-demo.vue';
 import PlaceholderDemo from './placeholder-demo.vue';
 import RemoteDemo from './remote-demo.vue';
@@ -100,6 +101,13 @@ const propsJson: IPropsTableItem[] = [
     default: 'all',
     desc: '配置纯文本是否可以生成value (all: 可以，need-key: 需要key值)',
     optional: ['all', 'need-key'],
+  },
+  {
+    name: 'comprehensive-use',
+    type: 'String',
+    default: 'delete-value',
+    desc: '配置按下delete键时是否删除整个value 配置为 delete-char 则删除当前字符 delete-value 则删除当前光标所在的整个value字符',
+    optional: ['delete-char', 'delete-value'],
   },
   {
     name: 'placeholder',
@@ -288,9 +296,19 @@ export default defineComponent({
           subtitle='改变配置 valueBehevior 值为 need-key  来做到存文本不可生成 value tag'
           desc='valueBehevior 行为'
           componentName='search-select'
-          demoName='menu-demo'
+          demoName='value-behavior'
         >
           <ValueBehaviorDemo />
+        </DemoBox>
+
+        <DemoBox
+          title='综合使用'
+          subtitle='综合使用示例'
+          desc='综合使用示例'
+          componentName='search-select'
+          demoName='comprehensive-use'
+        >
+          <ComprehensiveUseDemo />
         </DemoBox>
         <PropsBox propsData={propsJson} />
         <PropsBox

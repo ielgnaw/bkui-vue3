@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { computed, defineComponent, PropType, Ref, ref, watch, watchEffect } from 'vue';
+import { computed, defineComponent, nextTick, PropType, Ref, ref, watch } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
@@ -44,6 +44,8 @@ import {
   useSearchSelectInject,
   ValidateValuesFunc,
   ValueBehavior,
+  ValueSplitRegex,
+  ValueSplitTestRegex,
 } from './utils';
 export default defineComponent({
   name: 'SearchSelectInput',
@@ -93,8 +95,7 @@ export default defineComponent({
     const remoteMenuList = ref<ICommonItem[]>([]);
     const menuList: Ref<ISearchItem[]> = ref([]);
 
-    const { editKey, onValidate } = useSearchSelectInject();
-
+    const { editKey, onValidate, searchData } = useSearchSelectInject();
     const valueLoagic = computed(() => usingItem.value?.logical || SearchLogical.OR);
 
     watch(editKey, () => {
@@ -104,23 +105,21 @@ export default defineComponent({
     });
 
     // effects
-    watchEffect(
-      () => {
-        if (!keyword.value) {
-          setInputText();
-        }
-      },
-      { flush: 'pre' },
-    );
+    // watchEffect(
+    //   () => {
+    //     if (!keyword.value) {
+    //       setInputText();
+    //     }
+    //   },
+    //   { flush: 'pre' },
+    // );
 
     watch([menuList, showPopover], () => {
-      if (menuList.value?.some(item => !item.disabled) && showPopover.value) {
+      const shouldBindEvent = showPopover.value && menuList.value?.some(item => !item.disabled);
+      if (shouldBindEvent) {
         if (!isBindEvent) {
-          if (props.valueBehavior === ValueBehavior.NEEDKEY) {
-            menuHoverId.value = menuList.value.find(item => !item.disabled).id;
-          } else {
-            menuHoverId.value = '';
-          }
+          menuHoverId.value =
+            props.valueBehavior === ValueBehavior.NEEDKEY ? menuList.value.find(item => !item.disabled)?.id || '' : '';
           isBindEvent = true;
           document.addEventListener('keydown', handleDocumentKeydown);
         }
@@ -150,83 +149,91 @@ export default defineComponent({
       e.preventDefault();
       inputRef.value?.blur();
       const len = menuList.value.length;
-      let i = len;
       let index = menuList.value.findIndex(set => set.id === menuHoverId.value);
-      while (i >= 0) {
-        index = e.code === 'ArrowDown' ? index + 1 : index - 1;
-        // eslint-disable-next-line no-nested-ternary
-        index = index > len - 1 ? 0 : index < 0 ? len - 1 : index;
+      for (let tries = 0; tries < len; tries++) {
+        index = (index + (e.code === 'ArrowDown' ? 1 : -1) + len) % len;
         const item = menuList.value[index];
         if (item && !item.disabled) {
-          i = -1;
           const dom = document.getElementById(item.id);
           dom?.focus();
           menuHoverId.value = item.id;
-          return;
+          break;
         }
-        i -= 1;
       }
     }
     function documentEnterEvent(e: KeyboardEvent) {
-      if (isBindEvent) {
-        e.preventDefault();
-        const item = menuList.value.find(item => item.id === menuHoverId.value);
-        item && handleSelectItem(item);
-      }
+      if (!isBindEvent) return;
+      e.preventDefault();
+      const item = menuList.value.find(item => item.id === menuHoverId.value);
+      item && handleSelectItem(item);
     }
     function handleClickOutside(e: MouseEvent) {
       if (!popoverRef.value?.contains(e.target as Node) && props.clickOutside?.(e.target, popoverRef.value)) {
-        if (usingItem.value?.values?.length && usingItem.value?.multiple) {
-          keyword.value = '';
-          handleKeyEnter();
+        if (props.mode === SearchInputMode.EDIT || usingItem.value) {
+          usingItem.value && handleKeyEnter().then(v => v && clearInput());
+          if (!usingItem.value) {
+            emit('focus', false);
+          }
           return;
         }
-        showPopover.value = false;
         isFocus.value = false;
+        showPopover.value = false;
         emit('focus', isFocus.value);
       }
     }
-    function handleInputFocus(e: FocusEvent) {
-      setInputFocus();
-      e && setMenuList();
+    function handleInputFocus() {
+      showNoSelectValueError.value = false;
+      if (props.mode === SearchInputMode.EDIT && usingItem.value && !isFocus.value) {
+        const nodeList = Array.from(
+          inputRef.value.querySelectorAll(
+            `[data-type="${usingItem.value.values.length ? 'value' : usingItem.value.type}"]`,
+          ),
+        );
+        if (!nodeList.length) return;
+        const range = document.createRange();
+        const selection = window.getSelection();
+        range.selectNodeContents(nodeList.at(-1));
+        selection?.removeAllRanges();
+        selection.addRange(range); // 注意这里会触发focu事件
+        setInputFocus(true, false);
+        return;
+      }
+      setMenuList();
+      setInputFocus(false, !isFocus.value);
     }
-    function handleInputChange(event: Event) {
-      clearInput();
-      let text = (event.target as HTMLDivElement).innerText;
-      if (/(\r|\n)/gm.test(text) || /\s{2}/gm.test(text)) {
-        event.preventDefault();
-        text = text.replace(/(\r|\n)/gm, ` ${valueLoagic.value} `).replace(/\s{2}/gm, '');
-        inputRef.value.innerText = text;
-        setInputFocus();
-        keyword.value = text.replace(usingItem.value?.keyInnerText || '', '').trim();
-        debounceSetMenuList();
-      } else if (!keyword.value && text.length < (usingItem.value?.inputInnerText?.length || 1)) {
-        const outerText = text
-          .replace('\u00A0', '\u0020')
-          .replace(usingItem.value?.keyInnerText.replace('\u00A0', '\u0020').trim() || '', '')
-          .trim();
-        const hasKeyword =
-          text &&
-          usingItem.value?.keyInnerText &&
-          text.replace('\u00A0', '\u0020').includes(usingItem.value.keyInnerText.replace('\u00A0', '\u0020').trim());
-        if (hasKeyword && outerText && usingItem.value.values?.length) {
-          keyword.value = outerText;
-          debounceSetMenuList();
+    function handleInputPaste(event: ClipboardEvent) {
+      event.preventDefault();
+      const formattedText = event.clipboardData.getData('text').trim();
+      if (!usingItem.value) {
+        const formateItem = str2SeletedItem(formattedText);
+        if (formateItem) {
+          usingItem.value = formateItem;
+          setInputFocus(true, true);
           return;
         }
-        if (outerText || !text?.length) {
-          usingItem.value = null;
-        }
-        keyword.value = outerText ? text : '';
-        debounceSetMenuList();
-      } else if (!usingItem.value?.values?.length) {
-        keyword.value = text
-          .replace('\u00A0', '\u0020')
-          .replace(usingItem.value?.keyInnerText.replace('\u00A0', '\u0020') || '', '')
-          .trim();
+        keyword.value = formattedText
+          .split(ValueSplitRegex)
+          .filter(v => v.trim() && !ValueSplitTestRegex.test(v))
+          .join(` ${valueLoagic.value} `);
+        inputRef.value.innerText = keyword.value;
         setInputFocus();
         debounceSetMenuList();
+        return;
       }
+      usingItem.value.addValues(formattedText);
+      debounceSetMenuList();
+    }
+    function handleInputChange(event: Event) {
+      const text = (event.target as HTMLDivElement).innerText.trim();
+      if (!usingItem.value) {
+        keyword.value = text;
+        debounceSetMenuList();
+        return;
+      }
+      keyword.value = usingItem.value.isSpecialType()
+        ? text
+        : text.replace(usingItem.value.name, '').replace(':', '').trim();
+      debounceSetMenuList();
     }
     function handleInputKeyup(event: KeyboardEvent) {
       switch (event.code) {
@@ -237,10 +244,10 @@ export default defineComponent({
             menuList.value.some(item => item.id === menuHoverId.value)
           )
             return;
-          handleKeyEnter(event);
+          handleKeyEnter(event).then(v => v && clearInput());
           break;
         case 'Backspace':
-          handleKeyBackspace();
+          handleKeyBackspace(event);
         default:
           showNoSelectValueError.value = false;
           break;
@@ -248,81 +255,52 @@ export default defineComponent({
     }
     async function handleKeyEnter(event?: KeyboardEvent) {
       event?.preventDefault();
-      // resolve 中文输入时直接按下enter的错误表现
-      await new Promise(r => setTimeout(r, 0));
+      // 异步延迟解决确保响应时机问题
+      await new Promise(resolve => setTimeout(resolve, 0));
       if (!usingItem.value) {
-        if (!keyword.value || props.valueBehavior === ValueBehavior.NEEDKEY) return;
-        const value = {
-          id: keyword.value,
-          name: keyword.value,
-        };
-        const res = await validateUsingItemValues(value);
-        if (!res) return;
-        emit('add', new SelectedItem(value, 'text'));
-        keyword.value = '';
-        setMenuList();
-        return;
-      }
-      const { values } = usingItem.value;
-      if (!values?.length) {
-        if (keyword.value?.length) {
-          if (keyword.value.includes(valueLoagic.value)) {
-            const valueList = keyword.value.split(valueLoagic.value);
-            const res = await validateUsingItemValues({ id: keyword.value, name: keyword.value });
-            if (!res) return;
-            valueList.forEach(v => usingItem.value.addValue({ id: v, name: v }));
-          } else {
-            const value = { id: keyword.value, name: keyword.value };
-            const res = await validateUsingItemValues(value);
-            if (!res) return;
-            usingItem.value.addValue(value);
-          }
-          emit('add', usingItem.value);
-          keyword.value = '';
-          usingItem.value = null;
-          setInputFocus(true);
+        if (!keyword.value || props.valueBehavior === ValueBehavior.NEEDKEY) {
           return;
         }
-        showNoSelectValueError.value = true;
-        return;
+        return await enterNewItemSelected();
       }
       if (keyword.value) {
-        const value = {
-          id: keyword.value,
-          name: keyword.value,
-        };
-        const res = await validateUsingItemValues(value);
-        if (!res) return;
-        usingItem.value.addValue(value);
-        emit('add', usingItem.value);
-        keyword.value = '';
-        usingItem.value = null;
-        setInputFocus(true);
-        return;
+        return await enterExistingItemSelected();
       }
-
-      const res = await validateUsingItemValues();
-      if (!res) return;
+      // 处理没有特殊类型且值为空的情况
+      if (!usingItem.value?.isSpecialType() && usingItem.value?.values.length < 1) {
+        showNoSelectValueError.value = !showNoSelectValueError.value;
+        return false;
+      }
+      // 最终验证
+      const isValid = await validateUsingItemValues();
+      if (!isValid) {
+        return false;
+      }
       setSelectedItem();
+      return false;
     }
-    function handleKeyBackspace() {
+    function handleKeyBackspace(event: KeyboardEvent) {
       // 删除已选择项
       if (!usingItem.value && !keyword.value) {
         emit('delete');
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         setTimeout(setMenuList, 16);
         return;
       }
       if (usingItem.value?.values.length) {
-        // 删除选项
-        if (
-          usingItem.value?.multiple ||
-          usingItem.value.isInValueList(usingItem.value.values[0]) ||
-          (props.mode === SearchInputMode.EDIT && !keyword.value)
-        ) {
-          usingItem.value.values.splice(-1, 1);
+        if (usingItem.value.type === 'text' || !usingItem.value.children?.length) return;
+        event.preventDefault();
+        const selection = window.getSelection();
+        if (selection?.rangeCount > 0) {
+          const range: Range = selection.getRangeAt(0);
+          const startPos = range.startContainer;
+          let node: Node | HTMLSpanElement = startPos;
+          while (node && node.parentNode !== inputRef.value) {
+            node = node.parentNode;
+          }
+          const editIndex: number | string = (node as HTMLSpanElement)?.dataset?.index || -1;
+          usingItem.value.values.splice(+editIndex, 1);
           keyword.value = '';
-          setInputFocus();
+          setInputFocus(false, false);
           return;
         }
       } else if (!keyword.value) {
@@ -335,47 +313,43 @@ export default defineComponent({
     async function handleSelectItem(item: ICommonItem, type?: SearchItemType) {
       // 快捷选中
       if (item.value?.id) {
-        if ((props.valueBehavior === ValueBehavior.NEEDKEY && item.value) || !props.validateValues) {
-          const seleted = new SelectedItem({ ...item, id: item.realId ?? item.id }, type);
-          seleted.addValue(item.value);
-          setSelectedItem(seleted);
-          if (props.valueBehavior === ValueBehavior.NEEDKEY && menuHoverId.value) {
-            setInputFocus(true);
-          }
+        const selectedItem = new SelectedItem({ ...item, id: item.realId ?? item.id }, type);
+        selectedItem.addValues(item.value.name, false);
+        if (props.valueBehavior === ValueBehavior.NEEDKEY && menuHoverId.value) {
+          setSelectedItem(selectedItem);
+          setInputFocus(true);
           menuHoverId.value = '';
           return;
         }
-        usingItem.value = new SelectedItem({ ...item, id: item.realId ?? item.id }, type);
-        usingItem.value.addValue(item.value);
-        const res = await validateUsingItemValues(item.value);
-        if (!res) {
+        usingItem.value = selectedItem;
+        if (!(await validateUsingItemValues(usingItem.value.values))) {
           usingItem.value = null;
           return;
         }
-
         setSelectedItem(usingItem.value);
-        menuHoverId.value = '';
         setInputFocus(true);
+        menuHoverId.value = '';
         return;
       }
-      if (!usingItem.value || !inputRef?.value?.innerText) {
-        usingItem.value = new SelectedItem(item, type);
+      if (!usingItem.value || usingItem.value?.type === 'condition') {
+        usingItem.value = new SelectedItem(item, type ?? usingItem.value?.type);
         keyword.value = '';
-        const isCondition = type === 'condition';
-        isCondition && setSelectedItem();
+        const isCondition = usingItem.value?.type === 'condition';
+        if (isCondition) {
+          setSelectedItem();
+        }
         showPopover.value = isCondition || !!usingItem.value.children.length;
         setInputFocus(props.valueBehavior === ValueBehavior.NEEDKEY && !!menuHoverId.value);
         return;
       }
-      if (usingItem.value?.type === 'condition') {
-        usingItem.value = new SelectedItem(item, type);
-        setSelectedItem();
-        return;
+      if (usingItem.value) {
+        usingItem.value.addValue(item);
+        nextTick(deleteInputTextNode);
       }
-      usingItem.value.addValue(item);
-      const res = await validateUsingItemValues(item);
-      if (!res) return;
-      if (!usingItem.value.multiple) setSelectedItem();
+      if (!(await validateUsingItemValues(usingItem.value.values))) return;
+      if (!usingItem.value.multiple) {
+        setSelectedItem();
+      }
       if (props.valueBehavior === ValueBehavior.NEEDKEY && usingItem.value?.multiple) {
         setInputFocus();
       }
@@ -396,55 +370,47 @@ export default defineComponent({
           break;
       }
     }
+    function handleLogicalChange(logical: SearchLogical) {
+      if (!usingItem.value) return;
+      usingItem.value.logical = logical;
+    }
 
     // functions
-    async function validateUsingItemValues(value?: ICommonItem) {
+    async function validateValues(searchItem?: ISearchItem, value?: ICommonItem[]) {
+      if (typeof props.validateValues === 'function') {
+        let validateStr: string | boolean = '';
+        try {
+          validateStr = await props.validateValues(searchItem ?? null, value);
+        } catch {
+          validateStr = false;
+        }
+        if (typeof validateStr === 'string' || validateStr === false) {
+          onValidate(validateStr || '校验错误');
+          return false;
+        }
+      }
+      onValidate('');
+      return true;
+    }
+    async function validateUsingItemValues(preValues?: ICommonItem[]) {
       if (!usingItem.value) {
-        return await validateValues(null, [value]);
+        return await validateValues(null, preValues);
       }
       const { searchItem, validate, values } = usingItem.value;
       if (validate && typeof props.validateValues === 'function') {
-        return await validateValues(searchItem, value ? [value] : values);
+        return await validateValues(searchItem, preValues ?? values);
       }
       onValidate('');
       return true;
-    }
-    async function validateValues(searchItem?: ISearchItem, value?: ICommonItem[]) {
-      const validateStr = await props.validateValues?.(searchItem ?? null, value).catch(() => false);
-      if (typeof validateStr === 'string' || validateStr === false) {
-        onValidate(validateStr || '校验错误');
-        return false;
-      }
-      onValidate('');
-      return true;
-    }
-    function setInputFocus(refleshMenuList = false) {
-      if (refleshMenuList) {
-        setTimeout(() => {
-          setMenuList();
-        }, 16);
-      }
-      isFocus.value = true;
-      showPopover.value = true;
-      showNoSelectValueError.value = false;
-      const timer = setTimeout(() => {
-        if (inputRef.value) {
-          inputRef.value.focus(); // 光标移至最后
-          const selection = window.getSelection();
-          if (selection.focusOffset === 0) {
-            selection.selectAllChildren(inputRef.value);
-            selection.collapseToEnd();
-          }
-        }
-        window.clearTimeout(timer);
-      }, 0);
-      emit('focus', isFocus.value);
     }
     async function setMenuList() {
       let list = [];
       if (
         typeof props.getMenuList === 'function' &&
-        (typeof usingItem.value?.searchItem?.async === 'undefined' || usingItem.value.searchItem.async === true)
+        ((!props.data?.length && !usingItem.value) ||
+          (usingItem.value &&
+            usingItem.value.type !== 'condition' &&
+            (usingItem.value.searchItem?.async === undefined || usingItem.value.searchItem.async === true)))
       ) {
         loading.value = true;
         list = await props.getMenuList(usingItem.value?.searchItem, keyword.value).catch(() => []);
@@ -522,35 +488,119 @@ export default defineComponent({
         }
       }
     }
+    async function enterNewItemSelected() {
+      const formatItem = str2SeletedItem(keyword.value);
+      const valueList = formatItem?.values || [{ id: keyword.value, name: keyword.value }];
+      const res = await validateUsingItemValues(valueList);
+      if (!res) return;
+      emit('add', formatItem || new SelectedItem({ ...valueList[0] }, 'text'));
+      keyword.value = '';
+      setMenuList();
+      return true;
+    }
+    async function enterExistingItemSelected() {
+      let valueList: ICommonItem[] = [];
+      if (usingItem.value.isSpecialType()) {
+        const formatItem = str2SeletedItem(keyword.value);
+        if (formatItem) {
+          usingItem.value = formatItem;
+          valueList = formatItem.values;
+        }
+      }
+      valueList = valueList.length ? valueList : usingItem.value.str2Values(keyword.value);
+      const isValid = await validateUsingItemValues(valueList);
+      if (!isValid) return;
+      if (usingItem.value.type === 'text') {
+        usingItem.value.name = keyword.value;
+        usingItem.value.id = keyword.value;
+      } else {
+        usingItem.value.values = valueList;
+      }
+      emit('add', usingItem.value);
+      keyword.value = '';
+      usingItem.value = null;
+      setInputFocus(true);
+      return true;
+    }
+    function setCursorToEnd() {
+      if (!inputRef.value) return;
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(inputRef.value);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+    function setInputFocus(refleshMenuList = false, needCursorToEnd = true) {
+      if (refleshMenuList) {
+        setTimeout(setMenuList, 16);
+      }
+      isFocus.value = true;
+      showPopover.value = true;
+      showNoSelectValueError.value = false;
+      needCursorToEnd && nextTick(setCursorToEnd);
+      emit('focus', isFocus.value);
+    }
     function setSelectedItem(item?: SelectedItem) {
       emit('add', item ?? usingItem.value);
       usingItem.value = null;
       keyword.value = '';
-      setInputFocus(props.valueBehavior === ValueBehavior.NEEDKEY);
+      setInputFocus(true, true);
+      nextTick(clearInput);
     }
     function clearInput() {
-      const text = inputRef.value.innerText;
-      if (text[text.length - 1] === '\n' || text[0] === '\r') {
-        setInputText(text.slice(0, -1));
-        clearInput();
-      } else if (text[0] === '\n' || text[0] === '\r') {
-        setInputText(text.slice(1));
-        clearInput();
+      if (!inputRef.value) return;
+      keyword.value = '';
+      nextTick(() => (inputRef.value.innerText = ''));
+    }
+    function str2SeletedItem(str: string) {
+      const [key, value] = str.split(':');
+      if (key?.trim()) {
+        const selectedItem = searchData.value.find(item => item.name === key.trim());
+        if (selectedItem) {
+          const item = new SelectedItem(
+            {
+              ...selectedItem,
+            },
+            'default',
+          );
+          item.addValues(value);
+          return item;
+        }
+      }
+      return undefined;
+    }
+    function deleteInputTextNode() {
+      if (keyword.value?.length) {
+        keyword.value = '';
+        const nodes = Array.from(inputRef.value.childNodes);
+        nodes.forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+            inputRef.value.removeChild(node);
+          }
+        });
       }
     }
-    function setInputText(text = '') {
-      if (inputRef.value) {
-        inputRef.value.innerHTML = text || usingItem.value?.inputInnerHtml || '';
-      }
+    function inputFocusForWrapper() {
+      inputRef.value?.focus();
     }
-
-    function handleLogicalChange(logical: SearchLogical) {
-      if (!usingItem.value) return;
-      usingItem.value.logical = logical;
+    async function inputEnterForWrapper() {
+      await handleKeyEnter().then(v => v && clearInput());
+      showPopover.value = false;
+      inputRef.value.blur();
     }
-
+    function inputClearForWrapper() {
+      keyword.value = '';
+      showNoSelectValueError.value = false;
+      showPopover.value = false;
+      usingItem.value = null;
+      nextTick(clearInput);
+    }
     // expose
     expose({
+      inputFocusForWrapper,
+      inputEnterForWrapper,
+      inputClearForWrapper,
       handleInputFocus,
       isFocus,
     });
@@ -572,12 +622,17 @@ export default defineComponent({
       handleClickOutside,
       handleInputFocus,
       handleInputChange,
+      handleInputPaste,
       handleLogicalChange,
       handleInputKeyup,
       handleSelectItem,
       handleSelectCondtionItem,
       handleMenuFooterClick,
       resolveClassName,
+      inputFocusForWrapper,
+      inputEnterForWrapper,
+      inputClearForWrapper,
+      deleteInputTextNode,
       t,
     };
   },
@@ -607,10 +662,45 @@ export default defineComponent({
         data-tips={placeholder || ''}
         spellcheck='false'
         v-clickoutside={this.handleClickOutside}
+        onPaste={this.handleInputPaste}
         onFocus={this.handleInputFocus}
         onInput={this.handleInputChange}
         onKeydown={this.handleInputKeyup}
-      />
+      >
+        {this.usingItem?.name &&
+          (!this.usingItem.isSpecialType() ? (
+            <span
+              data-key={this.usingItem.name}
+              data-type={this.usingItem.type}
+              key={this.usingItem.nameRenderkey}
+              onMousedown={e => e.preventDefault()}
+              contenteditable={false}
+              style={{ color: '#979BA5' }}
+            >
+              {this.usingItem.name}:&nbsp;
+            </span>
+          ) : (
+            <span
+              data-key={this.usingItem.name}
+              data-type={this.usingItem.type}
+              key={this.usingItem.nameRenderkey}
+            >
+              {this.usingItem.name}
+            </span>
+          ))}
+        {this.usingItem?.values?.map((item, index) => (
+          <span
+            key={index}
+            data-key={item.name}
+            data-type='value'
+            data-id={item.id}
+            data-index={index}
+          >
+            {index > 0 ? ` ${this.usingItem.logical} ` : ''}
+            {item.name}
+          </span>
+        ))}
+      </div>
     );
     const popoverContent = () => {
       if (this.loading) {

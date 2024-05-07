@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import Modal from '@bkui-vue/modal';
@@ -54,6 +54,8 @@ export default defineComponent({
   emits: ['closed', 'update:isShow', 'shown', 'hidden', 'animation-end'],
 
   setup(props, { slots, emit }) {
+    const refRoot = ref(null);
+
     const handleClose = async () => {
       // 这里无需处理 beforeClose，在 modal 中会处理
       emit('update:isShow', false);
@@ -61,7 +63,8 @@ export default defineComponent({
       setTimeout(() => {
         // 有动画，推迟发布事件
         emit('animation-end');
-      }, 250);
+        refRoot.value?.close?.();
+      }, props.hiddenDelay);
     };
     const handleShown = () => {
       // 有动画，推迟发布事件
@@ -79,7 +82,7 @@ export default defineComponent({
     const { resolveClassName } = usePrefix();
 
     return () => {
-      const dialogSlot = {
+      const modelSlot = {
         header: () => (
           <>
             <div class={`${resolveClassName('sideslider-header')}`}>
@@ -94,17 +97,18 @@ export default defineComponent({
           </>
         ),
         default: () => <div class={`${resolveClassName('sideslider-content')}`}>{slots.default?.()}</div>,
-        footer: () => {
-          if (slots.footer) {
-            return <div class={`${resolveClassName('sideslider-footer')}`}>{slots.footer()}</div>;
-          }
-
-          return null;
-        },
       };
+      if (slots.footer) {
+        Object.assign(modelSlot, {
+          footer: () => {
+            return <div class={`${resolveClassName('sideslider-footer')}`}>{slots.footer()}</div>;
+          },
+        });
+      }
 
       return (
         <Modal
+          ref={refRoot}
           {...props}
           class={{
             [resolveClassName('sideslider')]: true,
@@ -115,7 +119,7 @@ export default defineComponent({
           onShown={handleShown}
           onClose={handleClose}
         >
-          {dialogSlot}
+          {modelSlot}
         </Modal>
       );
     };

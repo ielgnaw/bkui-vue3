@@ -5,6 +5,7 @@
       :tip="'只允许上传JPG、PNG、JPEG、ZIP的文件'"
       :handle-res-code="handleRes"
       :url="'https://jsonplaceholder.typicode.com/posts/'"
+      :selectChange="handleSelectChange"
       @success="handleSuccess"
       @error="handleError"
       @progress="handleProgress"
@@ -35,6 +36,10 @@
     }
     return false;
   };
+
+  const handleSelectChange = (event) => {
+    console.log(event, 'change')
+  }
 </script>
 
 <style lang="less">

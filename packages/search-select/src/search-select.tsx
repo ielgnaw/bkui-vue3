@@ -45,6 +45,7 @@ import { debounce } from '@bkui-vue/shared';
 import SearchSelectInput from './input';
 import SearchSelected from './selected';
 import {
+  // DeleteBehavior,
   GetMenuListFunc,
   ICommonItem,
   ISearchItem,
@@ -102,6 +103,13 @@ export const SearchSelectProps = {
       return [ValueBehavior.ALL, ValueBehavior.NEEDKEY].includes(v);
     },
   },
+  // deleteBehavior: {
+  //   type: String as PropType<`${DeleteBehavior}`>,
+  //   default: DeleteBehavior.CHAR,
+  //   validator(v: DeleteBehavior) {
+  //     return [DeleteBehavior.CHAR, DeleteBehavior.VALUE].includes(v);
+  //   },
+  // },
 };
 export default defineComponent({
   name: 'SearchSelect',
@@ -124,7 +132,7 @@ export default defineComponent({
     });
 
     // refs
-    const inputRef = ref<typeof SearchSelectInput>(null);
+    const inputRef = ref<InstanceType<typeof SearchSelectInput>>(null);
     const wrapRef = ref<HTMLDivElement>(null);
 
     // vars
@@ -214,6 +222,8 @@ export default defineComponent({
       onEditBlur,
       onValidate,
       editKey,
+      searchData: computed(() => props.data),
+      isClickOutside: handleInputOutside,
     });
     function onEditClick(item: SelectedItem, index: number) {
       editKey.value = `${item.id}_${index}`;
@@ -266,12 +276,13 @@ export default defineComponent({
     }
     function handleWrapClick() {
       if (!editKey.value) {
-        inputRef.value.handleInputFocus();
+        inputRef.value.inputFocusForWrapper();
       }
     }
     function handleClearAll() {
       selectedList.value = [];
       overflowIndex.value = -1;
+      inputRef.value.inputClearForWrapper();
       emit('update:modelValue', []);
     }
     function handleInputOutside(target: Node) {
@@ -303,6 +314,7 @@ export default defineComponent({
       isFocus.value = v;
     }
     function handleClickSearch(e: MouseEvent) {
+      inputRef.value.inputEnterForWrapper();
       emit('search', e);
     }
     return {

@@ -167,5 +167,6 @@ module.exports = {
     'vue/prefer-separate-static-class': 'error',
     'vue/prefer-true-attribute-shorthand': 'error',
     'vue/v-on-function-call': 'error',
+    'vue/script-indent': 'off',
   },
 };

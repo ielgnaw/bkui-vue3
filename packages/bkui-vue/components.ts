@@ -76,7 +76,8 @@ export { default as Dropdown } from '@bkui-vue/dropdown';
 export { default as Cascader } from '@bkui-vue/cascader';
 export { default as Slider } from '@bkui-vue/slider';
 export { default as ResizeLayout } from '@bkui-vue/resize-layout';
-export { default as TimeLine } from '@bkui-vue/timeline';
+export { default as TimeLine } from '@bkui-vue/timeline'; // 兼容以往版本
+export { default as Timeline } from '@bkui-vue/timeline';
 export { default as Process } from '@bkui-vue/process';
 export { default as Upload } from '@bkui-vue/upload';
 export { default as CodeDiff } from '@bkui-vue/code-diff';

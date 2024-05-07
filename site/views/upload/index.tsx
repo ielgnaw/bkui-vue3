@@ -148,6 +148,13 @@ const uploadProps: IPropsTableItem[] = [
     optional: [],
   },
   {
+    name: 'select-change',
+    type: 'Function',
+    default: null,
+    desc: 'input 元素 change 事件或拖拽事件处理函数，若返回 false 则取消文件选择',
+    optional: [],
+  },
+  {
     name: 'before-upload',
     type: 'Function',
     default: null,

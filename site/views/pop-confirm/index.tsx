@@ -33,6 +33,7 @@ import PropsBox from '../../components/props-box';
 import { resolvePropsToDesData } from '../utils';
 
 import DemoBase from './demo-base.vue';
+import DemoSelect from './demo-select.vue';
 import DemoSimple from './demo-simple.vue';
 import DemoSlot from './demo-slot.vue';
 
@@ -71,6 +72,14 @@ export default defineComponent({
           demoName='demo-slot'
         >
           <DemoSlot />
+        </DemoBox>
+        <DemoBox
+          title='嵌入Select'
+          desc='嵌入Select组件'
+          componentName='pop-confirm'
+          demoName='demo-select'
+        >
+          <DemoSelect />
         </DemoBox>
 
         <PropsBox

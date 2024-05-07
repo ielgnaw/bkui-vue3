@@ -29,7 +29,7 @@ import { PropType } from 'vue-types/dist/types';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { bkTooltips } from '@bkui-vue/directives';
-import { classes, PropTypes, TagThemeType } from '@bkui-vue/shared';
+import { classes, InputBehaviorType, PropTypes, TagThemeType } from '@bkui-vue/shared';
 import Tag from '@bkui-vue/tag';
 
 import { selectKey } from './common';
@@ -52,6 +52,7 @@ export default defineComponent({
     disabled: PropTypes.bool.def(false),
     modelValue: PropTypes.any,
     collapseTags: PropTypes.bool.def(false),
+    behavior: InputBehaviorType(),
   },
   emits: ['update:modelValue', 'remove', 'enter', 'keydown'],
   setup(props, { emit }) {
@@ -168,6 +169,7 @@ export default defineComponent({
       'is-disabled': this.disabled,
       'collapse-tag': this.collapseTags,
       'has-prefix': !!prefix,
+      'is-simplicity': this.behavior === 'simplicity',
     });
     const tagWrapperClass = classes({
       [this.resolveClassName('select-tag-wrapper')]: true,
