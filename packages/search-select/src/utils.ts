@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { ComputedRef, inject, InjectionKey, provide, Ref, VNode } from 'vue';
+import { ComputedRef, inject, InjectionKey, provide, Ref } from 'vue';
 
 import { random } from '@bkui-vue/shared';
 /**
@@ -44,11 +44,10 @@ export enum DeleteBehavior {
 export type GetMenuListFunc = (item: ISearchItem, keyword: string) => Promise<ISearchItem[]>;
 export type ValidateValuesFunc = (item: ISearchItem, values: ICommonItem[]) => Promise<string | true>;
 export type MenuSlotParams = {
-  item: ISearchItem;
-  list: ISearchItem[];
-  hoverId: string;
-  multiple: boolean;
-  getSearchNode: (str: string) => string | (string | VNode)[];
+  value: ICommonItem;
+  id: string;
+  name: string;
+  onSubmit: (value: string) => void;
 };
 export interface ISearchSelectProvider {
   onEditClick: (item: SelectedItem, index: number) => void;
@@ -113,6 +112,8 @@ export interface ISearchItem {
   logical?: SearchLogical;
   // 是否显示逻辑符号选项列表 默认不显示 仅在多选时生效
   showLogicalPanel?: boolean;
+  // 是否配置了自定义子项menu
+  isCustomMenu?: boolean;
 }
 export enum SearchLogical {
   AND = '&',
@@ -170,6 +171,9 @@ export class SelectedItem {
   }
   get showLogical() {
     return !!this.searchItem.showLogicalPanel;
+  }
+  get isCustomMenu() {
+    return this.searchItem.isCustomMenu;
   }
   isSpecialType() {
     return ['text', 'condition'].includes(this.type);

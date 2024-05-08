@@ -36,6 +36,7 @@ import {
   shallowRef,
   watch,
 } from 'vue';
+import { type SlotsType } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
@@ -117,7 +118,13 @@ export default defineComponent({
     clickoutside,
   },
   props: SearchSelectProps,
-  emits: ['update:modelValue', 'search'],
+  emits: ['update:modelValue', 'search', 'selectKey'],
+  slots: Object as SlotsType<{
+    menu: MenuSlotParams;
+    prepend: void;
+    append: void;
+    validate: void;
+  }>,
   setup(props, { emit }) {
     const t = useLocale('searchSelect');
     const { resolveClassName } = usePrefix();
@@ -317,6 +324,9 @@ export default defineComponent({
       inputRef.value.inputEnterForWrapper();
       emit('search', e);
     }
+    function handleSelectedKey(a: any) {
+      emit('selectKey', a);
+    }
     return {
       inputRef,
       wrapRef,
@@ -337,6 +347,7 @@ export default defineComponent({
       handleClickSearch,
       localConditions,
       resolveClassName,
+      handleSelectedKey,
       t,
     };
   },
@@ -378,6 +389,7 @@ export default defineComponent({
               validateValues={this.validateValues}
               valueBehavior={this.valueBehavior as ValueBehavior}
               onDelete={this.handleDeleteSelected}
+              onSelectKey={this.handleSelectedKey}
               v-slots={{ ...menuSlots }}
             />
             <div class='search-container-input'>
@@ -395,6 +407,7 @@ export default defineComponent({
                 onAdd={this.handleAddSelected}
                 onDelete={this.handleDeleteSelected}
                 onFocus={this.handleInputFocus}
+                onSelectKey={this.handleSelectedKey}
                 v-slots={{ ...menuSlots }}
               />
             </div>

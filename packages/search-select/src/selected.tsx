@@ -62,7 +62,7 @@ export default defineComponent({
     validateValues: Function as PropType<ValidateValuesFunc>,
     valueBehavior: String as PropType<ValueBehavior>,
   },
-  emits: ['delete'],
+  emits: ['delete', 'selectKey'],
   setup(_props, { emit }) {
     const inputRef = ref<InstanceType<typeof SearchSelectInput>>(null);
     const selectedInputRef = ref<HTMLDivElement>(null);
@@ -74,6 +74,11 @@ export default defineComponent({
       e.preventDefault();
       e.stopPropagation();
       onEditClick(item, index);
+      emit('selectKey', {
+        id: item.id,
+        name: item.name,
+        values: item.values.slice(),
+      });
       // magic code
       setTimeout(() => inputRef.value.handleInputFocus(), 200);
     }
@@ -127,6 +132,7 @@ export default defineComponent({
             valueBehavior={this.valueBehavior}
             onAdd={v => this.handleAddSelected(v, index)}
             onFocus={this.handleInputFocus}
+            v-slots={{ ...this.$slots }}
           />
         </div>
       ) : (

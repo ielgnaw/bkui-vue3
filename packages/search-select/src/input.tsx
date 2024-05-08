@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { computed, defineComponent, nextTick, PropType, Ref, ref, watch } from 'vue';
+import { computed, defineComponent, nextTick, PropType, Ref, ref, SlotsType, watch } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
@@ -74,7 +74,10 @@ export default defineComponent({
     validateValues: Function as PropType<ValidateValuesFunc>,
     valueBehavior: String as PropType<ValueBehavior>,
   },
-  emits: ['focus', 'add', 'delete'],
+  emits: ['focus', 'add', 'delete', 'selectKey'],
+  slots: Object as SlotsType<{
+    menu: MenuSlotParams;
+  }>,
   setup(props, { emit, expose }) {
     const t = useLocale('searchSelect');
     const { resolveClassName } = usePrefix();
@@ -167,19 +170,28 @@ export default defineComponent({
       const item = menuList.value.find(item => item.id === menuHoverId.value);
       item && handleSelectItem(item);
     }
+
     function handleClickOutside(e: MouseEvent) {
-      if (!popoverRef.value?.contains(e.target as Node) && props.clickOutside?.(e.target, popoverRef.value)) {
-        if (props.mode === SearchInputMode.EDIT || usingItem.value) {
-          usingItem.value && handleKeyEnter().then(v => v && clearInput());
-          if (!usingItem.value) {
-            emit('focus', false);
-          }
-          return;
-        }
-        isFocus.value = false;
-        showPopover.value = false;
-        emit('focus', isFocus.value);
+      if (popoverRef.value?.contains(e.target as Node) || !props.clickOutside?.(e.target, popoverRef.value)) {
+        return;
       }
+      if (usingItem.value?.isCustomMenu) {
+        if (props.mode === SearchInputMode.EDIT) {
+          handleKeyEnter().then(v => v && clearInput());
+          showPopover.value = false;
+        }
+        return;
+      }
+      if (props.mode === SearchInputMode.EDIT || usingItem.value) {
+        usingItem.value && handleKeyEnter().then(v => v && clearInput());
+        if (!usingItem.value) {
+          emit('focus', false);
+        }
+        return;
+      }
+      isFocus.value = false;
+      showPopover.value = false;
+      emit('focus', isFocus.value);
     }
     function handleInputFocus() {
       showNoSelectValueError.value = false;
@@ -276,6 +288,9 @@ export default defineComponent({
       if (!isValid) {
         return false;
       }
+      if (usingItem.value?.isCustomMenu) {
+        showPopover.value = false;
+      }
       setSelectedItem();
       return false;
     }
@@ -335,6 +350,13 @@ export default defineComponent({
         usingItem.value = new SelectedItem(item, type ?? usingItem.value?.type);
         keyword.value = '';
         const isCondition = usingItem.value?.type === 'condition';
+        if (!isCondition) {
+          emit('selectKey', {
+            id: item.id,
+            name: item.name,
+            values: [],
+          });
+        }
         if (isCondition) {
           setSelectedItem();
         }
@@ -543,10 +565,13 @@ export default defineComponent({
     }
     function setSelectedItem(item?: SelectedItem) {
       emit('add', item ?? usingItem.value);
+      const needCursorToEnd = !usingItem.value?.isCustomMenu;
       usingItem.value = null;
       keyword.value = '';
-      setInputFocus(true, true);
-      nextTick(clearInput);
+      if (needCursorToEnd) {
+        setInputFocus(true, needCursorToEnd);
+        nextTick(clearInput);
+      }
     }
     function clearInput() {
       if (!inputRef.value) return;
@@ -596,6 +621,10 @@ export default defineComponent({
       usingItem.value = null;
       nextTick(clearInput);
     }
+    function customPanelSubmit(value: string) {
+      usingItem.value.values = [{ id: value, name: value }];
+      handleKeyEnter().then(v => v && clearInput());
+    }
     // expose
     expose({
       inputFocusForWrapper,
@@ -633,22 +662,16 @@ export default defineComponent({
       inputEnterForWrapper,
       inputClearForWrapper,
       deleteInputTextNode,
+      customPanelSubmit,
       t,
     };
   },
   render() {
-    const { multiple, values, placeholder, inputInnerHtml } = this.usingItem || {};
+    const { multiple, values, placeholder, inputInnerHtml, isCustomMenu } = this.usingItem || {};
     const showInputAfter = !this.keyword?.length && !values?.length && placeholder;
-    const showPopover = this.loading || this.showNoSelectValueError || (this.showPopover && !!this.menuList?.length);
+    const showPopover =
+      this.loading || this.showNoSelectValueError || (this.showPopover && (!!isCustomMenu || !!this.menuList?.length));
     const showCondition = !this.usingItem && this.showCondition;
-    const menuSlots = Object.assign(
-      {},
-      this.$slots.menu
-        ? {
-            default: (data: MenuSlotParams) => this.$slots.menu?.(data),
-          }
-        : {},
-    );
     const inputContent = () => (
       <div
         ref='inputRef'
@@ -696,8 +719,8 @@ export default defineComponent({
             data-id={item.id}
             data-index={index}
           >
-            {index > 0 ? ` ${this.usingItem.logical} ` : ''}
             {item.name}
+            {index < this.usingItem.values.length - 1 ? ` ${this.usingItem.logical} ` : ''}
           </span>
         ))}
       </div>
@@ -708,6 +731,21 @@ export default defineComponent({
       }
       if (this.showNoSelectValueError) {
         return <div>{this.t.filterQueryMustHasValue}</div>;
+      }
+      if (this.usingItem?.isCustomMenu && this.$slots.menu) {
+        return (
+          <div
+            ref='popoverRef'
+            class={this.resolveClassName('search-select-popover')}
+          >
+            {this.$slots.menu({
+              value: this.usingItem.values?.[0],
+              id: this.usingItem.id,
+              name: this.usingItem.name,
+              onSubmit: this.customPanelSubmit,
+            })}
+          </div>
+        );
       }
       return this.menuList?.length ? (
         <div
@@ -727,7 +765,6 @@ export default defineComponent({
             onSelectItem={this.handleSelectItem}
             onSelectCondition={this.handleSelectCondtionItem}
             onFooterClick={this.handleMenuFooterClick}
-            v-slots={{ ...menuSlots }}
           />
         </div>
       ) : undefined;

@@ -164,27 +164,17 @@ export default defineComponent({
             tabindex='-1'
             onClick={() => !item.disabled && this.handleClick(item)}
           >
-            {this.$slots.default ? (
-              this.$slots.default({
-                item,
-                list: this.list,
-                multiple: !!this.multiple,
-                hoverId: this.hoverId,
-                getSearchNode: this.getSearchNode,
-              })
-            ) : (
-              <>
-                {this.multiple && (
-                  <span onClick={e => this.handleSelectedChange(e, item)}>
-                    <Checkbox
-                      modelValue={this.selected.includes(item.id)}
-                      class='is-selected'
-                    />
-                  </span>
-                )}
-                {this.getSearchNode(item)}
-              </>
-            )}
+            <>
+              {this.multiple && (
+                <span onClick={e => this.handleSelectedChange(e, item)}>
+                  <Checkbox
+                    modelValue={this.selected.includes(item.id)}
+                    class='is-selected'
+                  />
+                </span>
+              )}
+              {this.getSearchNode(item)}
+            </>
           </li>
         ))}
       </ul>
