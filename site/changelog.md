@@ -1,5 +1,23 @@
 ## 更新日志
 
+### 1.0.3-beta.65
+
+* **[feat]**:
+    - bugfix(form): 验证规则配置为 pattern 全局匹配时，多次执行 pattern.test 需要重置 lastIndex
+
+
+### 1.0.3-beta.64
+
+* **[feat]**:
+    - bugfix(select): 修复list模式下没有设置唯一Key的问题
+
+
+### 1.0.3-beta.63
+
+* **[feat]**:
+    - bugfix(radio|checkbox): prop 同时支持 Boolean 和 String 时默认值解析不正确
+
+
 ### 1.0.3-beta.61
 
 * **[feat]**:
