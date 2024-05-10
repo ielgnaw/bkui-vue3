@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { type App, createApp, h, ref, VNode } from 'vue';
+import { createApp, h, ref, VNode } from 'vue';
 
 import RenderComponent, { genDefaultState } from './render-component';
 

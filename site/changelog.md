@@ -1,6 +1,6 @@
 ## 更新日志
 
-### 1.0.3-beta.66.dialog.1
+### 1.0.3-beta.66.dialog.2
 
 * **[feat]**:
     - perf(dialog|sideslider|infobox): 代码调整
