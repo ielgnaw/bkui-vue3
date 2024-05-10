@@ -1,9 +1,16 @@
 ## 更新日志
 
+### 1.0.3-beta.66.dialog.3
+
+* **[feat]**:
+    - bugfix: overflow title计算文本溢出算法
+
+
 ### 1.0.3-beta.66.dialog.2
 
 * **[feat]**:
     - perf(dialog|sideslider|infobox): 代码调整
+
 
 ### 1.0.3-beta.65.dialog.1
 
