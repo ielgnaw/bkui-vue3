@@ -1,5 +1,11 @@
 ## 更新日志
 
+### 1.0.3-beta.66.dialog.4
+
+* **[feat]**:
+    - feature(select): 去除滚动的动画
+
+
 ### 1.0.3-beta.66.dialog.3
 
 * **[feat]**:
