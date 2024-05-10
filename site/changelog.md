@@ -23,13 +23,31 @@
 ### 1.0.3-beta.61.dialog.1
 
 * **[feat]**:
-    - fix(table): 分页改变参数不生效 & 换页过滤条件丢失
+    - feat(search-select): 支持自定义面板功能
 
 
-### 1.0.3-beta.60.dialog.1
+### 1.0.3-beta.65
 
 * **[feat]**:
-    - perf(dialog|sideslider|infobox): 代码调整
+    - bugfix(form): 验证规则配置为 pattern 全局匹配时，多次执行 pattern.test 需要重置 lastIndex
+
+
+### 1.0.3-beta.64
+
+* **[feat]**:
+    - bugfix(select): 修复list模式下没有设置唯一Key的问题
+
+
+### 1.0.3-beta.63
+
+* **[feat]**:
+    - bugfix(radio|checkbox): prop 同时支持 Boolean 和 String 时默认值解析不正确
+
+
+### 1.0.3-beta.61
+
+* **[feat]**:
+    - feature(select): 简化样式 支持tag模式
 
 
 ### 1.0.3-beta.60

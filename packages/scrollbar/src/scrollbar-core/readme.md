@@ -49,7 +49,6 @@ instance = new BkScrollbar(target.value, {
       scrollable: 'bk-scrollable',
       mouseEntered: 'bk-mouse-entered',
     },
-    scrollableNode: null,
     contentNode: null,
     wrapperNode: null,
     /**

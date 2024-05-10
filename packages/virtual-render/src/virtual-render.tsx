@@ -94,10 +94,9 @@ export default defineComponent({
     }));
 
     const refRoot = ref(null);
-    const refVirtualSection = ref(null);
     const refContent = ref(null);
 
-    const { init, scrollTo, classNames } = useScrollbar(refRoot, props);
+    const { init, scrollTo, classNames, updateScrollHeight } = useScrollbar(refRoot, props);
 
     let instance = null;
     const pagination = reactive({
@@ -139,7 +138,8 @@ export default defineComponent({
       instance = new VisibleRender(binding, refRoot.value);
 
       if (props.scrollbar?.enabled) {
-        init(instance.executeThrottledRender.bind(instance), null, refVirtualSection.value);
+        init(instance.executeThrottledRender.bind(instance));
+        updateScrollHeight(contentHeight.value);
         instance.executeThrottledRender.call(instance, { offset: { x: 0, y: 0 } });
         return;
       }
@@ -220,13 +220,8 @@ export default defineComponent({
       };
     });
 
-    /** 虚拟渲染区域内置占位区域样式，用来撑起总高度，出现滚动条 */
-    const innerStyle = computed(() => {
-      const isHidden = typeof props.abosuteHeight === 'number' && props.abosuteHeight === 0;
-      return {
-        height: `${innerHeight.value < props.minHeight ? props.minHeight : innerHeight.value}px`,
-        display: isHidden ? 'none' : 'block',
-      };
+    const contentHeight = computed(() => {
+      return innerHeight.value < props.minHeight ? props.minHeight : innerHeight.value;
     });
 
     const { resolveClassName } = usePrefix();
@@ -260,6 +255,7 @@ export default defineComponent({
     watchEffect(() => {
       instance?.setBinding(binding);
       handleChangeListConfig();
+      updateScrollHeight(contentHeight.value);
       nextTick(() => {
         afterListDataReset();
         instance?.executeThrottledRender.call(instance, {
@@ -302,11 +298,6 @@ export default defineComponent({
             ],
           ),
           ctx.slots.afterContent?.() ?? '',
-          h('div', {
-            ref: refVirtualSection,
-            class: [resolveClassName('virtual-section')],
-            style: innerStyle.value,
-          }),
           ctx.slots.afterSection?.() ?? '',
         ],
       );

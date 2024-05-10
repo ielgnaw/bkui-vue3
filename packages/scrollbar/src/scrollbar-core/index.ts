@@ -58,14 +58,13 @@ interface DebouncedFunc<T extends (...args: any[]) => any> {
   flush(): ReturnType<T> | undefined;
 }
 
-interface Options {
+export interface Options {
   forceVisible: boolean | Axis;
   clickOnTrack: boolean;
   scrollbarMinSize: number;
   scrollbarMaxSize: number;
   classNames: Partial<ClassNames>;
   ariaLabel: string;
-  scrollableNode: HTMLElement | null;
   contentNode: HTMLElement | null;
   delegateYContent: HTMLElement | null;
   delegateXContent: HTMLElement | null;
@@ -73,6 +72,10 @@ interface Options {
   autoHide: boolean;
   useSystemScrollXBehavior?: boolean;
   useSystemScrollYBehavior?: boolean;
+  scrollDelegate: {
+    scrollHeight?: number;
+    scrollWidth?: number;
+  };
   onScrollCallback?: (args: { x: number; y: number }) => void;
 }
 
@@ -159,7 +162,6 @@ export default class BkScrollbarCore {
       scrollable: 'bk-scrollable',
       mouseEntered: 'bk-mouse-entered',
     },
-    scrollableNode: null,
     contentNode: null,
     wrapperNode: null,
     /**
@@ -174,6 +176,11 @@ export default class BkScrollbarCore {
     useSystemScrollXBehavior: true,
     useSystemScrollYBehavior: true,
     onScrollCallback: null,
+
+    scrollDelegate: {
+      scrollHeight: null,
+      scrollWidth: null,
+    },
   };
 
   /**
@@ -449,6 +456,14 @@ export default class BkScrollbarCore {
     });
   }
 
+  getWrapperElScrollSize(attrName: string, target = this.wrapperEl) {
+    if (this.options.scrollDelegate[attrName]) {
+      return this.options.scrollDelegate[attrName];
+    }
+
+    return target?.[attrName] ?? 0;
+  }
+
   recalculate() {
     if (!this.contentEl || !this.wrapperEl) return;
 
@@ -459,8 +474,8 @@ export default class BkScrollbarCore {
     const wrapperOffsetWidth = this.wrapperEl.offsetWidth;
     const wrapperOffsetHeight = this.wrapperEl.offsetHeight;
 
-    const wrapperScrollHeight = this.wrapperEl.scrollHeight;
-    const wrapperScrollWidth = this.wrapperEl.scrollWidth;
+    const wrapperScrollHeight = this.getWrapperElScrollSize('scrollHeight'); // this.wrapperEl.scrollHeight;
+    const wrapperScrollWidth = this.getWrapperElScrollSize('scrollWidth'); // this.wrapperEl.scrollWidth;
 
     this.axis.x.isOverflowing = wrapperOffsetWidth !== 0 && wrapperScrollWidth > wrapperOffsetWidth;
     this.axis.y.isOverflowing = wrapperScrollHeight > wrapperOffsetHeight;
@@ -506,7 +521,7 @@ export default class BkScrollbarCore {
       return this.options.delegateYContent ?? this.contentEl;
     };
 
-    const contentSize = getContentTarget()[this.axis[axis].scrollSizeAttr];
+    const contentSize = this.getWrapperElScrollSize(this.axis[axis].scrollSizeAttr, getContentTarget());
     const trackSize = this.axis[axis].track.el?.[this.axis[axis].offsetSizeAttr] ?? 0;
     const scrollbarRatio = trackSize / contentSize;
 
@@ -529,7 +544,7 @@ export default class BkScrollbarCore {
       return;
     }
 
-    const contentSize = this.wrapperEl[this.axis[axis].scrollSizeAttr];
+    const contentSize = this.getWrapperElScrollSize(this.axis[axis].scrollSizeAttr);
     const trackSize = this.axis[axis].track.el?.[this.axis[axis].offsetSizeAttr] || 0;
     const hostSize = parseInt(this.elStyles[this.axis[axis].sizeAttr], 10);
 
@@ -563,11 +578,9 @@ export default class BkScrollbarCore {
     if (!track || !scrollbar || !this.wrapperEl) return;
     if (this.axis[axis].isOverflowing || this.axis[axis].forceVisible) {
       track.style.visibility = 'visible';
-      // this.wrapperEl.style[this.axis[axis].overflowAttr] = 'scroll';
       this.el.classList.add(`${this.classNames.scrollable}-${axis}`);
     } else {
       track.style.visibility = 'hidden';
-      // this.wrapperEl.style[this.axis[axis].overflowAttr] = 'hidden';
       this.el.classList.remove(`${this.classNames.scrollable}-${axis}`);
     }
 
@@ -813,7 +826,7 @@ export default class BkScrollbarCore {
     const { track } = this.axis[axis];
     const trackSize = track.rect?.[this.axis[axis].sizeAttr] ?? 0;
     const { scrollbar } = this.axis[axis];
-    const contentSize = this.wrapperEl?.[this.axis[axis].scrollSizeAttr] ?? 0;
+    const contentSize = this.getWrapperElScrollSize(this.axis[axis].scrollSizeAttr) ?? 0;
     const hostSize = parseInt(this.elStyles?.[this.axis[axis].sizeAttr] ?? '0px', 10);
 
     // Convert the mouse position into a percentage of the scrollbar height/width.
@@ -837,11 +850,11 @@ export default class BkScrollbarCore {
       }
 
       if (axisValue === 'y') {
-        const diffHeight = this.wrapperEl.scrollHeight - this.wrapperEl.offsetHeight;
+        const diffHeight = this.getWrapperElScrollSize('scrollHeight') - this.wrapperEl.offsetHeight;
         return scrollPos >= diffHeight ? diffHeight : scrollPos;
       }
 
-      const diffWidth = this.wrapperEl.scrollWidth - this.wrapperEl.offsetWidth;
+      const diffWidth = this.getWrapperElScrollSize('scrollWidth') - this.wrapperEl.offsetWidth;
       return scrollPos >= diffWidth ? diffWidth : scrollPos;
     };
 

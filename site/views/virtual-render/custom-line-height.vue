@@ -83,7 +83,7 @@
     },
     methods: {
       getLineHeight(index) {
-        return 30 + index;
+        return 30 + index % 6;
       },
       getCellStyle(item) {
         const lineHeight = this.getLineHeight(item.$index);

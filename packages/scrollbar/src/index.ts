@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import BkScrollbarCore from './scrollbar-core';
+import BkScrollbarCore, { Options } from './scrollbar-core';
 
 const { addClasses, classNamesToQuery } = BkScrollbarCore.helpers;
 
@@ -79,6 +79,10 @@ export default class BkScrollBar extends BkScrollbarCore {
   scrollTo({ left = 0, top = 0 }) {
     this.scrollToAxisPosition(left, 'x');
     this.scrollToAxisPosition(top, 'y');
+  }
+
+  setOptions(options: Partial<Options>) {
+    Object.assign(this.options, options);
   }
 
   private createScrollElement(className: string): HTMLElement {

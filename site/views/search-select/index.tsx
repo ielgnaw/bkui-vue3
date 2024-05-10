@@ -137,7 +137,12 @@ const slotsJson = [
     type: 'scoped slot',
     default: [],
     desc: 'menu面板子项插槽',
-    params: '{list, item, hoverId, multiple, getSearchNode}',
+    params: `{
+      value: ICommonItem;
+      id: string;
+      name: string;
+      onSubmit: (value: string) => void;
+    }`,
   },
 ];
 const eventJson = [
@@ -219,6 +224,12 @@ const dataJson = [
     default: 'false',
     desc: '是否显示逻辑符号选项列表 默认不显示 仅在多选时生效',
   },
+  {
+    name: 'isCustomMenu',
+    type: 'Boolean',
+    default: 'false',
+    desc: '是否配置了自定义子项面板 仅在配置了menu插槽时生效',
+  },
 ];
 const slotColumnMap = {
   name: '名称',
@@ -283,8 +294,8 @@ export default defineComponent({
           <PlaceholderDemo />
         </DemoBox>
         <DemoBox
-          title='配置 menu 插槽来自定义 menu 面板'
-          subtitle='通过配置子选项属性 placeholder 来做到针对每一个选项都有独自的placeholder'
+          title='自定义 menu 面板'
+          subtitle='配置 menu 插槽来自定义 menu 面板'
           desc='menu 插槽'
           componentName='search-select'
           demoName='menu-demo'

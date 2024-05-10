@@ -195,8 +195,15 @@ export default (
   };
 
   const handlePageChange = (current: number) => {
-    Object.assign(props.pagination, { current, value: current });
-    context.emit(EMIT_EVENTS.PAGE_VALUE_CHANGE, current);
+    if (typeof props.pagination === 'object' && current !== props.pagination.current) {
+      Object.assign(props.pagination, { current, value: current });
+      context.emit(EMIT_EVENTS.PAGE_VALUE_CHANGE, current);
+      return;
+    }
+
+    if (typeof props.pagination === 'boolean' && props.pagination !== false) {
+      context.emit(EMIT_EVENTS.PAGE_VALUE_CHANGE, current);
+    }
   };
 
   /**

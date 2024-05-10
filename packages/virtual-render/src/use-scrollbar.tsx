@@ -53,6 +53,10 @@ export default (target: Ref<HTMLElement>, props: VirtualRenderProps) => {
     instance = new BkScrollbar(target.value, {
       classNames,
       wrapperNode: target.value,
+      scrollDelegate: {
+        scrollHeight: null,
+        scrollWidth: null,
+      },
       useSystemScrollYBehavior: !props.enabled,
       useSystemScrollXBehavior: true,
       delegateXContent,
@@ -70,10 +74,22 @@ export default (target: Ref<HTMLElement>, props: VirtualRenderProps) => {
     target.value.scrollTo(x, y);
   };
 
+  const updateScrollHeight = (height: number) => {
+    instance?.setOptions({
+      scrollDelegate: {
+        scrollHeight: height,
+        scrollWidth: null,
+      },
+    });
+
+    instance?.recalculate();
+  };
+
   return {
     init,
     instance,
     scrollTo,
     classNames,
+    updateScrollHeight,
   };
 };

@@ -51,31 +51,15 @@
     </p>
     <!-- simplicity small -->
     <p>
-      simplicity small
+      simplicity tag
       <bk-select
         v-model="selectedValue"
         class="bk-select"
-        size="small"
         behavior="simplicity"
         multiple
         filterable
-      >
-        <bk-option
-          v-for="(item, index) in datasource"
-          :id="item.value"
-          :key="index"
-          :name="item.label"
-        />
-      </bk-select>
-    </p>
-    <!-- simplicity large -->
-    <p>
-      simplicity large
-      <bk-select
-        v-model="selectedValue"
-        class="bk-select"
-        size="large"
-        behavior="simplicity"
+        multiple-mode="tag"
+        collapse-tags
       >
         <bk-option
           v-for="(item, index) in datasource"

@@ -920,6 +920,7 @@ export default defineComponent({
             placeholder={this.localPlaceholder}
             filterable={this.isInput}
             disabled={this.isDisabled}
+            behavior={this.behavior}
             onRemove={this.handleDeleteTag}
             collapseTags={this.isCollapseTags}
             onEnter={this.handleCreateCustomOption}
@@ -1038,6 +1039,7 @@ export default defineComponent({
               ) : (
                 this.list.map(item => (
                   <Option
+                    key={item[this.idKey]}
                     id={item[this.idKey]}
                     name={item[this.displayKey]}
                     v-slots={
