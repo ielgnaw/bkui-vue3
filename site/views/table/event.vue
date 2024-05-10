@@ -19,7 +19,7 @@
     data() {
       return {
         tableData: [...DATA_TABLE],
-        columns: [...DATA_COLUMNS],
+        columns: [{ type: 'selection', width: 20, }, ...DATA_COLUMNS],
         activeRowInfo: {},
       };
     },

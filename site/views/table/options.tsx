@@ -108,9 +108,7 @@ export const DATA_COLUMNS = [
     type: 'index',
     width: 350,
     minWidth: 80,
-    sort: {
-      value: 'desc',
-    },
+    sort: true,
     showOverflowTooltip: {
       mode: 'static',
       content: '这是个静态的提示，限制最大宽度为200px，测试一下是否生效，长度不够，数字来凑，哈哈哈',

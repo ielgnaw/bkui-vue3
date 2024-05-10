@@ -60,15 +60,16 @@ export default (props, context: SetupContext<any>, column: Column, tableResp: IT
     }, {});
   };
 
-  const getSortFnByColumn = (column: Column, fn, a, b) => {
+  const getSortFnByColumn = (column: Column, fn, a, b, type) => {
     if (column.type === 'index') {
       return fn(
         tableResp.getRowAttribute(a, TABLE_ROW_ATTRIBUTE.ROW_INDEX),
         tableResp.getRowAttribute(b, TABLE_ROW_ATTRIBUTE.ROW_INDEX),
+        type,
       );
     }
 
-    return fn(a, b);
+    return fn(a, b, type);
   };
 
   /**
@@ -85,7 +86,8 @@ export default (props, context: SetupContext<any>, column: Column, tableResp: IT
       const type = tableResp.getColumnAttribute(column, COLUMN_ATTRIBUTE.COL_SORT_TYPE) as string;
       nextSort.value = getNextSortType(type);
 
-      const sortFn = (a, b) => getSortFnByColumn(column, getSortFn(column, nextSort.value, props.sortValFormat), a, b);
+      const sortFn = (a, b) =>
+        getSortFnByColumn(column, getSortFn(column, nextSort.value, props.sortValFormat), a, b, type);
       tableResp.setColumnAttribute(column, COLUMN_ATTRIBUTE.COL_SORT_TYPE, nextSort.value);
       tableResp.setColumnAttribute(column, COLUMN_ATTRIBUTE.COL_SORT_FN, sortFn);
       tableResp.setColumnSortActive(column, true);
@@ -138,7 +140,8 @@ export default (props, context: SetupContext<any>, column: Column, tableResp: IT
      * @param type 排序类型
      */
     const handleSortClick = (sortFn: (a, b) => number | boolean, type: string) => {
-      const fn = (a, b) => getSortFnByColumn(column, sortFn, a, b);
+      console.log('handleSortClick', type);
+      const fn = (a, b) => getSortFnByColumn(column, sortFn, a, b, type);
       tableResp.setColumnAttribute(column, COLUMN_ATTRIBUTE.COL_SORT_TYPE, type);
       tableResp.setColumnAttribute(column, COLUMN_ATTRIBUTE.COL_SORT_FN, fn);
       tableResp.sortData(column);

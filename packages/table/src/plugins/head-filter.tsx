@@ -34,7 +34,6 @@ import Popover from '@bkui-vue/popover';
 import { classes, PropTypes, RenderType } from '@bkui-vue/shared';
 import VirtualRender from '@bkui-vue/virtual-render';
 
-import { LINE_HEIGHT } from '../const';
 import { Column, IColumnType, IFilterShape } from '../props';
 import { getRowText, resolvePropVal } from '../utils';
 
@@ -42,11 +41,14 @@ type IHeadFilterPropType = {
   column: Column;
   height: number;
 };
+
+const ROW_HEIGHT = 32;
+
 export default defineComponent({
   name: 'HeadFilter',
   props: {
     column: IColumnType,
-    height: PropTypes.number.def(LINE_HEIGHT),
+    height: PropTypes.number.def(ROW_HEIGHT),
   },
   emits: ['change', 'filterSave'],
 
@@ -61,9 +63,6 @@ export default defineComponent({
       isOpen: false,
       checked: checked.value,
     });
-
-    const maxHeight = computed(() => (filter.value as IFilterShape)?.maxHeight ?? LINE_HEIGHT * 15);
-    const height = computed(() => (filter.value as IFilterShape)?.height || '100%');
 
     watch(
       () => filter.value,
@@ -106,6 +105,18 @@ export default defineComponent({
       const { list = [] } = filter.value as IFilterShape;
       const filterList = list.filter(l => getRegExp(searchValue.value).test(l.value));
       return filterList;
+    });
+
+    const maxLength = 5;
+    const maxHeight = computed(() => (filter.value as IFilterShape)?.maxHeight ?? ROW_HEIGHT * maxLength);
+    const height = computed(() => (filter.value as IFilterShape)?.height || '100%');
+    const minHeight = computed(() => {
+      const defaultMin = ROW_HEIGHT * 2;
+      if (localData.value.length > maxLength) {
+        return maxHeight.value;
+      }
+
+      return defaultMin;
     });
 
     const getRegExp = (val: string | number | boolean, flags = 'ig') =>
@@ -236,17 +247,6 @@ export default defineComponent({
       return <div class='list-item is-empty'>{t.value.emptyText}</div>;
     };
 
-    /* 监听过滤筛选值，更新表格
-    onMounted(() => {
-      watch(() => filter.value.checked, (val) => {
-        if (val?.length) {
-          state.checked = val;
-          emit('change', val, filterFn);
-        }
-      }, { immediate: true });
-    });
-    */
-
     return () => (
       <Popover
         trigger='click'
@@ -269,6 +269,7 @@ export default defineComponent({
               <BkCheckboxGroup class='content-list'>
                 <VirtualRender
                   maxHeight={maxHeight.value}
+                  minHeight={minHeight.value}
                   height={height.value}
                   lineHeight={32}
                   list={localData.value}

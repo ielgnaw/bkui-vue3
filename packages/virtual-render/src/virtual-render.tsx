@@ -214,7 +214,8 @@ export default defineComponent({
         height,
         width: typeof props.width === 'number' ? `${props.width}px` : props.width,
         display: 'inline-block',
-        maxHeight: props.maxHeight ?? height,
+        maxHeight: props.maxHeight ? `${props.maxHeight}px` : false,
+        minHeight: props.minHeight ? `${props.minHeight}px` : false,
         ...(props.scrollPosition === 'container' ? innerContentStyle.value : {}),
         ...props.wrapperStyle,
       };

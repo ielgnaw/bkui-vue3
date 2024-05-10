@@ -27,11 +27,11 @@ import type { HTMLAttributes } from 'vue';
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
 
 import Popover from '@bkui-vue/popover';
-import { debounce } from '@bkui-vue/shared';
+import { debounce, hasOverflowEllipsis } from '@bkui-vue/shared';
 
 import props from '../props';
-import getActualWidthByCanvas from '../utils/getActualWidthByCanvas';
-import getActualWidthByDom from '../utils/getActualWidthByDom';
+// import getActualWidthByCanvas from '../utils/getActualWidthByCanvas';
+// import getActualWidthByDom from '../utils/getActualWidthByDom';
 
 export default defineComponent({
   name: 'OverflowTitle',
@@ -49,19 +49,20 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      const { clientWidth } = boxRef.value;
+      // const { clientWidth } = boxRef.value;
       const resizeHandler = debounce(500, () => {
         isShowTips.value = false;
         textProps.value = {};
-        let textWidth = 0;
+        // let textWidth = 0;
 
-        if (props.calType === 'dom') {
-          textWidth = getActualWidthByDom(textRef.value?.textContent, null, boxRef.value);
-        } else {
-          const { fontSize, fontFamily } = getComputedStyle(boxRef.value);
-          textWidth = getActualWidthByCanvas(contentText.value as string, { fontSize, fontFamily });
-        }
-        if (textWidth > clientWidth) {
+        // if (props.calType === 'dom') {
+        //   textWidth = getActualWidthByDom(textRef.value?.textContent, null, boxRef.value);
+        // } else {
+        //   const { fontSize, fontFamily } = getComputedStyle(boxRef.value);
+        //   textWidth = getActualWidthByCanvas(contentText.value as string, { fontSize, fontFamily });
+        // }
+
+        if (hasOverflowEllipsis(boxRef.value)) {
           isShowTips.value = true;
           if (props.type === 'title') {
             textProps.value = { title: textRef?.value?.innerText ?? props.content };
