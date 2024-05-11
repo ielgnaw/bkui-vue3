@@ -4,7 +4,6 @@
     clearable
     :disable-date="disableDate"
     type="datetime"
-    open
     @change="handleChange"
     @clear="handleClear"
     @pick-success="handleOk"

@@ -6,6 +6,7 @@
     <bk-date-picker
       v-model="initDate"
       clearable
+      editable
       :disabled-date="disabledDate"
       @change="handleChange"
     />
@@ -18,7 +19,6 @@
     <bk-date-picker
       v-model="initMonthDateTime"
       type="month"
-      open
       @change="handleMonthChange"
     />
   </div>
