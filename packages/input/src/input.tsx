@@ -284,7 +284,7 @@ export default defineComponent({
       }
       return props.showOverflowTooltips && isOverflow.value && props.modelValue
         ? {
-            content: props.modelValue,
+            content: props.modelValue?.toString(),
             sameWidth: true,
           }
         : {
