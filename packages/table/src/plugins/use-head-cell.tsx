@@ -140,7 +140,6 @@ export default (props, context: SetupContext<any>, column: Column, tableResp: IT
      * @param type 排序类型
      */
     const handleSortClick = (sortFn: (a, b) => number | boolean, type: string) => {
-      console.log('handleSortClick', type);
       const fn = (a, b) => getSortFnByColumn(column, sortFn, a, b, type);
       tableResp.setColumnAttribute(column, COLUMN_ATTRIBUTE.COL_SORT_TYPE, type);
       tableResp.setColumnAttribute(column, COLUMN_ATTRIBUTE.COL_SORT_FN, fn);

@@ -73,7 +73,7 @@ export default [
       { name: 'async-data', type: 'Boolean', default: 'false', desc: '为避免不必要的数据修改导致的不可控组件更新,默认组件不会对传入组件的data进行任何修改,设置此属性为true则会对源数据进行同步（如：启用selection，勾选时想要自动同步到源数据）, 目前只会对指定了selectionKey的情况下才会对指定的字段数据进行更新，同时需要指定 rowKey，保证匹配到的row是正确的目标对象', optional: ['true', 'false'] },
       { name: 'row-hover', type: 'String', default: 'highlight', desc: '鼠标划过行样式行为,配置`highlight`会高亮当前行，`auto`自行设置样式', optional: ['highlight', 'auto'] },
       { name: 'default-sort', type: 'Object', default: '{}', desc: '如果只指定了 prop, 没有指定 order, 则默认顺序是 asc, 配置格式：{ column: order }', optional: [] },
-      { name: 'is-row-select-enable', type: 'Function|Boolean', default: 'true', desc: '   * 配合 column selection 使用用于配置渲染行数据的勾选框是否可用, 可以直接为 true|false，全部启用或者禁用如果是函数，则返回 true|false({ row, index, isCheckAll }) => boolean', optional: [] },
+      { name: 'is-row-select-enable', type: 'Function|Boolean', default: 'true', desc: '   * 配合 column selection 使用用于配置渲染行数据的勾选框是否可用, 可以直接为 true|false，全部启用或者禁用如果是函数，则返回 true|false({ row, index, isCheckAll }) => boolean; isCheckAll: 标识全选checkbox是否勾选中', optional: [] },
       { name: 'resizer-way', type: 'String', default: 'true', desc: '当外层容器尺寸改变时，当前组件用什么方式进行重新计算,默认为 throttle，按照指定频率重新计算,可选值：debounce，在指定时间范围内只执行一次重新计算', optional: ['throttle', 'debounce'] },
       { name: 'pagination-heihgt', type: 'Number', default: '42', desc: '页组件高度。在设置了分页配置之后才会生效, 用于配置分页组件的高度，在不同项目中，分页组件高度会影响表格高度计算, 这里设置为可配置项，避免自计算导致的性能问题以及不确定性样式问题', optional: [] },
       { name: 'prepend-style', type: 'CSSProperties', default: '{}', desc: '   * 插入至表格第一行之前的内容容器样式，默认样式为固定在第一行，需要跟随滚动或者其他样式，可以通过此配置进行覆盖', optional: [] },
@@ -90,10 +90,15 @@ export default [
         设置对象，参考 IDraggableRowOption，可以设置显示label，fontSize，icon，render
         `, optional: []
       },
-      { name: 'sort-val-format', type: 'Array[]', default: '[]', desc: `* 排序时对需要排序的字符串数值进行格式化
-      * 这里需要配置为正则或者回调函数，(str) => string | number | boolean
-      * 如果配置为正则，程序会提取匹配到的第一个结果尝试转换为数值, 正则必须包含分组,例如 /(\d+)%/会提取到第一个结果并尝试转换为数字
-      * 如果为多个，程序会顺序执行所有正则表达式，直到转换成功`, optional: [] },
+      {
+        name: 'sort-val-format', type: 'Array[]', default: '[]', desc: `* 排序时对需要排序的字符串数值进行格式化
+        * 这里需要配置为正则或者回调函数，(str) => string | number | boolean
+        * 如果配置为正则，程序会提取匹配到的第一个结果尝试转换为数值, 正则必须包含分组,例如 /(\d+)%/会提取到第一个结果并尝试转换为数字
+        * 如果为多个，程序会顺序执行所有正则表达式，直到转换成功`, optional: []
+      },
+      {
+        name: 'shift-multi-checked', type: 'Boolean', default: 'false', desc: '是否开启shift键多选功能', optional: []
+      },
     ],
   },
   {

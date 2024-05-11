@@ -62,7 +62,7 @@ export default defineComponent({
         //   textWidth = getActualWidthByCanvas(contentText.value as string, { fontSize, fontFamily });
         // }
 
-        if (hasOverflowEllipsis(boxRef.value)) {
+        if (hasOverflowEllipsis(textRef.value)) {
           isShowTips.value = true;
           if (props.type === 'title') {
             textProps.value = { title: textRef?.value?.innerText ?? props.content };

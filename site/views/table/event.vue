@@ -3,6 +3,7 @@
     <bk-table
       :columns="columns"
       :data="tableData"
+      :is-row-select-enable="isRowSelectEnable"
       @row-click="handleRowClick"
       @select="handleRowSelect"
     />
@@ -24,6 +25,9 @@
       };
     },
     methods: {
+      isRowSelectEnable({ index }) {
+        return index % 3 === 0;
+      },
       handleRowSelect(arg) {
         console.log('handleRowSelect', arg);
       },

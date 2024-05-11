@@ -511,7 +511,11 @@ export default (
   };
 
   const renderCheckboxColumn = (row: any, index: number | null, isAll = false) => {
-    const handleChecked = value => {
+    const handleChecked = (value: boolean, event: Event) => {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      event.stopPropagation();
+
       if (isAll) {
         tableResp.setRowSelectionAll(value);
         context.emit(EMIT_EVENTS.ROW_SELECT_ALL, { checked: value, data: props.data });
@@ -532,7 +536,8 @@ export default (
           const endIndex = start.index < end.index ? end.index : start.index;
 
           (tableResp.pageData.slice(startIndex, endIndex + 1) ?? []).forEach(item => {
-            tableResp.setRowSelection(item, true);
+            const isRowEnabled = isRowSelectEnable(props, { row, index, isCheckAll: false });
+            isRowEnabled && tableResp.setRowSelection(item, true);
           });
         }
 
