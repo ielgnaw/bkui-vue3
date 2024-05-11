@@ -1,5 +1,11 @@
 ## 更新日志
 
+### 1.0.3-beta.67.dialog.1
+
+* **[feat]**:
+    - bugfix: overflow title计算文本溢出算法
+
+
 ### 1.0.3-beta.66.dialog.4
 
 * **[feat]**:
