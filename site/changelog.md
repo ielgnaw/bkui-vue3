@@ -1,5 +1,11 @@
 ## 更新日志
 
+### 1.0.3-beta.67.dialog.3
+
+* **[feat]**:
+    - feat(slider): 增加label-click配置支持
+
+
 ### 1.0.3-beta.67.dialog.1
 
 * **[feat]**:
