@@ -89,6 +89,21 @@
     border-radius: 100%;
     transform: translateX(-50%);
 
+    &:hover {
+      cursor: pointer;
+      &::after {
+        content: '';
+        position: absolute;
+        left: -5px;
+        top: -4px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: solid 1px @primary-color;
+      }
+    }
+
     &.vertical {
       left: 2px;
     }

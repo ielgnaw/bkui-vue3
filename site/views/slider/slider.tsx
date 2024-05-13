@@ -173,6 +173,13 @@ const switcherPropsJson: IPropsTableItem[] = [
     desc: '自定义滑块tip格式',
     optional: [],
   },
+  {
+    name: 'label-click',
+    type: 'Boolean | Function',
+    default: 'false',
+    desc: '步骤label点击事件，可以设置true或者false，设置true时触发会设置当前值为label所对应的step值，也可以设置自定义函数，返回true或者false或者number，返回true时，会触发change事件，返回number时，会设置当前值为返回的number值，返回false时，不触发change事件',
+    optional: [],
+  },
 ];
 
 const switcherChangeJson: IPropsTableItem[] = [
