@@ -1,5 +1,12 @@
 ## 更新日志
 
+### 1.0.3-beta.68
+
+* **[feat]**:
+    - feat(functional-dependecy): 修复业务组件体验问题
+    - bugfix(pop-confirm): title属性在有slot的时候失效 issue #1755
+
+
 ### 1.0.3-beta.67
 
 * **[feat]**:

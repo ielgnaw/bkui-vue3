@@ -1065,10 +1065,10 @@
   resolved "https://registry.yarnpkg.com/@blueking/date-picker/-/date-picker-2.0.0-beta.19.tgz#eb2b5a47cc5646e54ec63edd7681043b8d62f464"
   integrity sha512-WPEfvt2/KpQsHgyuHYuAkBugi39qNeUf9qjk3YQGFfgeoUCWx3NQcl6oLuaMhIEpqA6X+YZadSKdkScQlYYrjw==
 
-"@blueking/functional-dependency@~0.0.1-beta.5":
-  version "0.0.1-beta.5"
-  resolved "https://registry.yarnpkg.com/@blueking/functional-dependency/-/functional-dependency-0.0.1-beta.5.tgz#95a0d4719b70b1927fb131dbd9deb09d8c00584a"
-  integrity sha512-vdd80d7dJONNFENuhI2z94UujcFCXq99PiGkbGgQd0/+oPVjX56ebGUNqOw4o+oSFOvIT9mCZXbfBMFp8OJVfg==
+"@blueking/functional-dependency@~0.0.1-beta.8":
+  version "0.0.1-beta.8"
+  resolved "https://registry.yarnpkg.com/@blueking/functional-dependency/-/functional-dependency-0.0.1-beta.8.tgz#3e33cae3d836591d506d6d846be4c19e72138c6a"
+  integrity sha512-hMX8CeinyrBk1l/U4Z76RoxuKPJbHwiXdnzaTgQYhPnqrpHlD2uprkxqpk8gQokR/FaMjdBjkW3FDK2D2Pea+g==
 
 "@blueking/log-search@0.0.9-beta.1":
   version "0.0.9-beta.1"
