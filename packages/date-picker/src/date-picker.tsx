@@ -224,6 +224,7 @@ export default defineComponent({
               timePickerOptions={this.timePickerOptions}
               opened={this.opened}
               onPick={this.onPick}
+              format={this.format}
             />
           );
           break;

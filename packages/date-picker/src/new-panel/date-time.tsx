@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent, type ExtractPropTypes, PropType, ref, Transition, watch } from 'vue';
+import { computed, defineComponent, type ExtractPropTypes, PropType, ref, Transition, watch } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
@@ -33,6 +33,7 @@ import { AngleDoubleLeft, AngleDoubleRight, AngleLeft, AngleRight } from '@bkui-
 import { DateIcon, TimeIcon } from '../common';
 import DateTable from '../new-base/date-table';
 import SelectYearMonth from '../new-base/select-year-month';
+import TimeSpinner from '../new-base/time-spinner';
 // import Confirm from '../base/confirm';
 import type {
   DatePickerShortcutsType,
@@ -114,6 +115,8 @@ const datePanelProps = {
     type: Boolean,
     default: false,
   },
+
+  format: String,
 } as const;
 
 export type DatePanelProps = Readonly<ExtractPropTypes<typeof datePanelProps>>;
@@ -143,6 +146,8 @@ export default defineComponent({
     const selectedYear = ref<number>(panelDate.value.getFullYear());
     const selectedMonth = ref<string>(pad(panelDate.value.getMonth() + 1));
 
+    console.error(props.format);
+
     const changeYear = dir => {
       panelDate.value = siblingMonth(panelDate.value, dir * 12);
     };
@@ -161,6 +166,7 @@ export default defineComponent({
       const val = new Date(value);
 
       dates.value = [val];
+      console.error(123123, val);
       emit('pick', val);
     };
 
@@ -187,6 +193,8 @@ export default defineComponent({
       dateWrapperRef.value.style.transform = `translateX(${idx === 'date' ? 0 : '-100%'})`;
       timeWrapperRef.value.style.transform = `translateX(${idx === 'date' ? '100%' : 0})`;
     };
+
+    const showSeconds = computed(() => !(props.format || '').match(/mm$/));
 
     watch(
       () => panelDate.value,
@@ -230,6 +238,8 @@ export default defineComponent({
       selectedYear,
       selectedMonth,
       panelDate,
+
+      showSeconds,
 
       changeYear,
       changeMonth,
@@ -360,7 +370,22 @@ export default defineComponent({
             ref='timeWrapperRef'
             class={this.resolveClassName('date-picker-time-wrapper')}
           >
-            <div style='position: absolute'>assadasd</div>
+            <div class={this.resolveClassName('picker-time-panel-content')}>
+              <TimeSpinner
+                ref='timeSpinnerRef'
+                showSeconds={this.showSeconds}
+                // steps={this.steps}
+                // hours={this.timeSlots[0]}
+                // minutes={this.timeSlots[1]}
+                // seconds={this.timeSlots[2]}
+                // disabledHours={this.disabledHMS.disabledHours}
+                // disabledMinutes={this.disabledHMS.disabledMinutes}
+                // disabledSeconds={this.disabledHMS.disabledSeconds}
+                // hideDisabledOptions={this.hideDisabledOptions}
+                // onPick-click={this.handlePickClick}
+                // onChange={this.handleChange}
+              />
+            </div>
           </div>
         </div>
       </div>
