@@ -1,5 +1,11 @@
 ## 更新日志
 
+### 1.0.3-beta.68.dialog.1
+
+* **[feat]**:
+    - bugfix: 修复scrollbar触摸板滑动X轴不生效
+
+
 ### 1.0.3-beta.67.dialog.5
 
 * **[feat]**:
