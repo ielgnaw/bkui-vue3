@@ -292,7 +292,7 @@ export default defineComponent({
               >
                 <DateIcon
                   class='date-time-tab-icon'
-                  fillColor='#63656e'
+                  fillColor={this.dateTimeActive === 'date' ? '#63656e' : '#c4c6cc'}
                 />
                 <span class='date-time-tab-label'>2019-01-19</span>
               </div>
@@ -302,7 +302,10 @@ export default defineComponent({
                 class='date-time-tab-inner'
                 onClick={() => this.handleToggleDateTime('time')}
               >
-                <TimeIcon class='date-time-tab-icon' />
+                <TimeIcon
+                  class='date-time-tab-icon'
+                  fillColor={this.dateTimeActive === 'time' ? '#63656e' : '#c4c6cc'}
+                />
                 <span class='date-time-tab-label'>00:00:00</span>
               </div>
             </div>
