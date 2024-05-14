@@ -270,7 +270,9 @@ export default class BkScrollbarCore {
   mouseX = 0;
   mouseY = 0;
   mouseWheelInstance: MouseWheelInstance = null;
-  wheelOffset = 0;
+  wheelOffsetY = 0;
+  wheelOffsetX = 0;
+
   mouseWeelTimer;
   /**
    * 最外层滚动容器滚动实际位置缓存器
@@ -906,7 +908,11 @@ export default class BkScrollbarCore {
     }
 
     if (axisValue === 'y') {
-      this.wheelOffset = resolvedValue;
+      this.wheelOffsetY = resolvedValue;
+    }
+
+    if (axisValue === 'x') {
+      this.wheelOffsetX = resolvedValue;
     }
 
     this.options?.onScrollCallback?.({
@@ -1070,13 +1076,16 @@ export default class BkScrollbarCore {
   }
 
   private mOnMouseWheel = args => {
-    const nextPostiion = this.wheelOffset + args.y;
-    if (this.scrollToAxisPosition(nextPostiion, 'y')) {
+    const nextY = this.wheelOffsetY + args.y;
+    const nextX = this.wheelOffsetX + args.x;
+
+    if (this.scrollToAxisPosition(nextY, 'y') || this.scrollToAxisPosition(nextX, 'x')) {
       args.evt.stopPropagation();
       args.evt.preventDefault();
       args.evt.stopImmediatePropagation();
 
       this.showScrollbar('y');
+      this.showScrollbar('x');
 
       if (this.mouseWeelTimer) {
         clearTimeout(this.mouseWeelTimer);
@@ -1085,6 +1094,7 @@ export default class BkScrollbarCore {
 
       this.mouseWeelTimer = setTimeout(() => {
         this.hideScrollbar('y');
+        this.showScrollbar('x');
       }, 200);
     }
   };
