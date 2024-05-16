@@ -29,6 +29,7 @@ import { computed, defineComponent, type ExtractPropTypes, PropType, ref, Transi
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
 import { AngleDoubleLeft, AngleDoubleRight, AngleLeft, AngleRight } from '@bkui-vue/icon';
+import { capitalize } from '@bkui-vue/shared';
 
 import { DateIcon, TimeIcon } from '../common';
 import DateTable from '../new-base/date-table';
@@ -145,8 +146,10 @@ export default defineComponent({
     const allYears = ref(ALL_YEARS);
     const selectedYear = ref<number>(panelDate.value.getFullYear());
     const selectedMonth = ref<string>(pad(panelDate.value.getMonth() + 1));
-
-    console.error(props.format);
+    const selectedDate = ref<string>(pad(panelDate.value.getDate()));
+    const selectedHours = ref<number>(panelDate.value.getHours());
+    const selectedMinutes = ref<number>(panelDate.value.getMinutes());
+    const selectedSeconds = ref<number>(panelDate.value.getSeconds());
 
     const changeYear = dir => {
       panelDate.value = siblingMonth(panelDate.value, dir * 12);
@@ -166,8 +169,14 @@ export default defineComponent({
       const val = new Date(value);
 
       dates.value = [val];
-      console.error(123123, val);
       emit('pick', val);
+    };
+
+    const handleChange = val => {
+      const newDate = new Date(panelDate.value);
+      Object.keys(val).forEach(type => newDate[`set${capitalize(type)}`](val[type]));
+      dates.value = [newDate];
+      emit('pick', newDate);
     };
 
     const handleSelectYear = (year: number) => {
@@ -201,6 +210,11 @@ export default defineComponent({
       (v: Date) => {
         selectedYear.value = v.getFullYear();
         selectedMonth.value = pad(v.getMonth() + 1);
+        selectedDate.value = pad(v.getDate());
+
+        selectedHours.value = v.getHours();
+        selectedMinutes.value = v.getMinutes();
+        selectedSeconds.value = v.getSeconds();
       },
     );
 
@@ -237,6 +251,10 @@ export default defineComponent({
       allYears,
       selectedYear,
       selectedMonth,
+      selectedDate,
+      selectedHours,
+      selectedMinutes,
+      selectedSeconds,
       panelDate,
 
       showSeconds,
@@ -244,6 +262,7 @@ export default defineComponent({
       changeYear,
       changeMonth,
       handlePick,
+      handleChange,
       handleSelectYear,
       handleSelectMonth,
       handleShowSelectYear,
@@ -304,7 +323,9 @@ export default defineComponent({
                   class='date-time-tab-icon'
                   fillColor={this.dateTimeActive === 'date' ? '#63656e' : '#c4c6cc'}
                 />
-                <span class='date-time-tab-label'>2019-01-19</span>
+                <span class='date-time-tab-label'>
+                  {this.selectedYear}-{this.selectedMonth}-{this.selectedDate}
+                </span>
               </div>
             </div>
             <div class={['time', this.dateTimeActive === 'time' ? 'active' : '']}>
@@ -316,7 +337,9 @@ export default defineComponent({
                   class='date-time-tab-icon'
                   fillColor={this.dateTimeActive === 'time' ? '#63656e' : '#c4c6cc'}
                 />
-                <span class='date-time-tab-label'>00:00:00</span>
+                <span class='date-time-tab-label'>
+                  {pad(this.selectedHours)}:{pad(this.selectedMinutes)}:{pad(this.selectedSeconds)}
+                </span>
               </div>
             </div>
           </div>
@@ -373,17 +396,18 @@ export default defineComponent({
             <div class={this.resolveClassName('picker-time-panel-content')}>
               <TimeSpinner
                 ref='timeSpinnerRef'
+                isVisible={this.dateTimeActive === 'time'}
                 showSeconds={this.showSeconds}
                 // steps={this.steps}
-                // hours={this.timeSlots[0]}
-                // minutes={this.timeSlots[1]}
-                // seconds={this.timeSlots[2]}
+                hours={this.selectedHours}
+                minutes={this.selectedMinutes}
+                seconds={this.selectedSeconds}
                 // disabledHours={this.disabledHMS.disabledHours}
                 // disabledMinutes={this.disabledHMS.disabledMinutes}
                 // disabledSeconds={this.disabledHMS.disabledSeconds}
                 // hideDisabledOptions={this.hideDisabledOptions}
                 // onPick-click={this.handlePickClick}
-                // onChange={this.handleChange}
+                onChange={this.handleChange}
               />
             </div>
           </div>

@@ -24,6 +24,7 @@
  * IN THE SOFTWARE.
  */
 
+import merge from 'lodash/merge';
 import type { ExtractPropTypes } from 'vue';
 import { PropType } from 'vue';
 
@@ -256,3 +257,46 @@ export const timePickerProps = {
 };
 
 export type TimePickerProps = Readonly<ExtractPropTypes<typeof timePickerProps>>;
+
+export const selectYearProps = {
+  placement: {
+    type: String as PropType<DatePickerPlacementType>,
+    default: 'bottom',
+    validator: value => {
+      const validList: DatePickerPlacementType[] = [
+        'top',
+        'top-start',
+        'top-end',
+        'bottom',
+        'bottom-start',
+        'bottom-end',
+        'left',
+        'left-start',
+        'left-end',
+        'right',
+        'right-start',
+        'right-end',
+      ];
+      if (validList.indexOf(value) < 0) {
+        console.error(`placement property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
+  },
+  triggerRef: {
+    type: Object,
+  },
+  selectedYear: {
+    type: String,
+  },
+  onClick: Function as PropType<(e: MouseEvent) => void>,
+};
+export type SelectYearProps = Readonly<ExtractPropTypes<typeof selectYearProps>>;
+
+export const selectYearMonthProps = merge(selectYearProps, {
+  selectedMonth: {
+    type: String,
+  },
+});
+export type SelectYearMonthProps = Readonly<ExtractPropTypes<typeof selectYearMonthProps>>;

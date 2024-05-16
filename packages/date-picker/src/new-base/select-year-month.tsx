@@ -24,59 +24,18 @@
  * IN THE SOFTWARE.
  */
 
-import type { ExtractPropTypes } from 'vue';
-import { defineComponent, nextTick, onBeforeUnmount, onMounted, PropType, ref } from 'vue';
+import { defineComponent, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { BKPopover, IBKPopover } from '@bkui-vue/shared';
 import type { Placement } from '@popperjs/core';
 
-import type { DatePickerPlacementType } from '../interface';
+import { selectYearMonthProps } from '../new-props';
 import { ALL_MONTHS, ALL_YEARS } from '../utils';
-
-const pickerDropdownProps = {
-  placement: {
-    type: String as PropType<DatePickerPlacementType>,
-    default: 'bottom',
-    validator: value => {
-      const validList: DatePickerPlacementType[] = [
-        'top',
-        'top-start',
-        'top-end',
-        'bottom',
-        'bottom-start',
-        'bottom-end',
-        'left',
-        'left-start',
-        'left-end',
-        'right',
-        'right-start',
-        'right-end',
-      ];
-      if (validList.indexOf(value) < 0) {
-        console.error(`placement property is not valid: '${value}'`);
-        return false;
-      }
-      return true;
-    },
-  },
-  triggerRef: {
-    type: Object,
-  },
-  selectedYear: {
-    type: String,
-  },
-  selectedMonth: {
-    type: String,
-  },
-  onClick: Function as PropType<(e: MouseEvent) => void>,
-} as const;
-
-export type PickerDropdownProps = Readonly<ExtractPropTypes<typeof pickerDropdownProps>>;
 
 export default defineComponent({
   name: 'SelectYearMonth',
-  props: pickerDropdownProps,
+  props: selectYearMonthProps,
   emits: ['changeVisible', 'selectYear', 'selectMonth'],
   setup(props, { emit }) {
     let popoverInstance: any = Object.create(null);

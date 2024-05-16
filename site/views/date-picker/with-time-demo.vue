@@ -4,7 +4,7 @@
     clearable
     :disable-date="disableDate"
     type="datetime"
-    open
+    editable
     @change="handleChange"
     @clear="handleClear"
     @pick-success="handleOk"
@@ -25,7 +25,7 @@
 
 <script setup>
   import { ref } from 'vue';
-  const dateValue = ref(new Date());
+  const dateValue = ref(new Date('2024-12-12 0:31:21'));
   const disableDate = date => date && date.valueOf() < Date.now() - 86400;
 
   const handleChange = (date) => {

@@ -24,17 +24,20 @@
  * IN THE SOFTWARE.
  */
 
-import debounce from 'lodash/debounce';
-import type { ExtractPropTypes, PropType } from 'vue';
-import { computed, defineComponent, nextTick, onMounted, reactive, ref, toRefs, watch } from 'vue';
+import type { ExtractPropTypes } from 'vue';
+import { computed, defineComponent, PropType, ref, watch } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { scrollTop } from '@bkui-vue/shared';
 
-import { timePanelProps } from '../new-props';
-import { firstUpperCase } from '../utils';
+import { selectYearMonthProps, timePanelProps } from '../new-props';
+import { firstUpperCase, pad } from '../utils';
 
 const timeSpinnerProps = {
+  isVisible: {
+    type: Boolean,
+    default: false,
+  },
   hours: {
     type: [Number, String],
     default: NaN,
@@ -59,28 +62,121 @@ const timeSpinnerProps = {
 
 export type TimeSpinnerProps = Readonly<ExtractPropTypes<typeof timeSpinnerProps>>;
 
-const timeParts = ['hours', 'minutes', 'seconds'];
-
 export default defineComponent({
   name: 'TimeSpinner',
   props: {
+    ...selectYearMonthProps,
     ...timeSpinnerProps,
     ...timePanelProps,
   },
-  emits: ['change', 'pick-click'],
+  emits: ['change', 'pickClick'],
   setup(props, { emit }) {
     const t = useLocale('datePicker');
-    const state = reactive({
-      spinerSteps: [1, 1, 1].map((one, i) => Math.abs(props.steps[i]) || one),
-      compiled: false,
-      focusedColumn: -1,
-      focusedTime: [0, 0, 0],
-    });
+    const hoursRef = ref(null);
+    const minutesRef = ref(null);
+    const secondsRef = ref(null);
+
+    const spinerSteps = ref([1, 1, 1].map((one, i) => Math.abs(props.steps[i]) || one));
+    // const compiled = ref(false);
+    const focusedColumn = ref(-1);
+    const focusedTime = ref([0, 0, 0]);
+
+    const { resolveClassName } = usePrefix();
+
+    const emitChange = changes => {
+      emit('change', changes);
+      emit('pickClick');
+    };
+
+    const getCellCls = cell => {
+      return [
+        resolveClassName('time-picker-cells-cell'),
+        {
+          [resolveClassName('time-picker-cells-cell-selected')]: cell.selected,
+          [resolveClassName('time-picker-cells-cell-focused')]: cell.focused,
+          [resolveClassName('time-picker-cells-cell-disabled')]: cell.disabled,
+        },
+      ];
+    };
+
+    const handleClick = (type, cell) => {
+      if (cell.disabled) {
+        return;
+      }
+      const data = { [type]: cell.text };
+      emitChange(data);
+    };
+
+    // const scrollActiveOptionIntoView = () => {
+    //   const yearSelectedNode = hoursRef.value?.querySelectorAll?.(
+    //     `.${resolveClassName('time-picker-cells-cell-selected')}`,
+    //   );
+    //   yearSelectedNode?.[0]?.scrollIntoView({
+    //     block: 'center',
+    //     behavior: 'instant',
+    //   });
+    //   const monthSelectedNode = minutesRef.value?.querySelectorAll?.(
+    //     `.${resolveClassName('time-picker-cells-cell-selected')}`,
+    //   );
+    //   console.error(monthSelectedNode);
+    //   monthSelectedNode?.[0]?.scrollIntoView({
+    //     block: 'center',
+    //     behavior: 'instant',
+    //   });
+    // };
+
+    const getDomRef = type => {
+      let domRef;
+      if (type === 'hours') {
+        domRef = hoursRef;
+      } else if (type === 'minutes') {
+        domRef = minutesRef;
+      } else {
+        domRef = secondsRef;
+      }
+      return domRef.value;
+    };
+
+    const scroll = (type, index) => {
+      const domRef = getDomRef(type);
+      const from = domRef.scrollTop;
+      const to = 32 * getScrollIndex(type, index);
+      scrollTop(domRef, from, to, 500);
+    };
+
+    const scrollIdx = (idxs: string[]) => {
+      for (const idx of idxs) {
+        let listRef;
+        if (idx === 'hours') {
+          listRef = hoursList;
+        } else if (idx === 'minutes') {
+          listRef = minutesList;
+        } else {
+          listRef = secondsList;
+        }
+        scroll(
+          idx,
+          listRef.value.findIndex(obj => obj.text === props[idx]),
+        );
+      }
+    };
+
+    const getScrollIndex = (type, index) => {
+      const t = firstUpperCase(type);
+      const disabled = props[`disabled${t}`];
+      let ret: number = index;
+      if (disabled.length && props.hideDisabledOptions) {
+        let count = 0;
+        disabled.forEach(item => (item <= index ? (count += 1) : ''));
+        ret -= count;
+      }
+      return ret;
+    };
 
     const hoursList = computed(() => {
       const hours = [];
-      const step = state.spinerSteps[0];
-      const focusedHour = state.focusedColumn === 0 && state.focusedTime[0];
+      const step = spinerSteps.value[0];
+      const focusedHour = focusedColumn.value === 0 && focusedTime.value[0];
       const hourTmpl = {
         text: 0,
         selected: false,
@@ -110,8 +206,8 @@ export default defineComponent({
 
     const minutesList = computed(() => {
       const minutes = [];
-      const step = state.spinerSteps[1];
-      const focusedMinute = state.focusedColumn === 1 && state.focusedTime[1];
+      const step = spinerSteps.value[1];
+      const focusedMinute = focusedColumn.value === 1 && focusedTime.value[1];
       const minuteTmpl = {
         text: 0,
         selected: false,
@@ -140,8 +236,8 @@ export default defineComponent({
 
     const secondsList = computed(() => {
       const seconds = [];
-      const step = state.spinerSteps[2];
-      const focusedMinute = state.focusedColumn === 2 && state.focusedTime[2];
+      const step = spinerSteps.value[2];
+      const focusedMinute = focusedColumn.value === 2 && focusedTime.value[2];
       const secondTmpl = {
         text: 0,
         selected: false,
@@ -175,244 +271,108 @@ export default defineComponent({
 
     watch(
       () => props.hours,
-      val => {
-        if (!state.compiled) {
-          return;
-        }
-        scroll(
-          'hours',
-          hoursList.value.findIndex(obj => obj.text === val),
-        );
+      _val => {
+        scrollIdx(['hours']);
+        // scroll(
+        //   'hours',
+        //   hoursList.value.findIndex(obj => obj.text === val),
+        // );
+        // if (!compiled.value) {
+        //   return;
+        // }
+        // scroll(
+        //   'hours',
+        //   hoursList.value.findIndex(obj => obj.text === val),
+        // );
       },
     );
 
     watch(
       () => props.minutes,
-      val => {
-        if (!state.compiled) {
-          return;
-        }
-        scroll(
-          'minutes',
-          minutesList.value.findIndex(obj => obj.text === val),
-        );
+      _val => {
+        // if (!compiled.value) {
+        //   return;
+        // }
+        // scroll(
+        //   'minutes',
+        //   minutesList.value.findIndex(obj => obj.text === val),
+        // );
+        scrollIdx(['minutes']);
+        // scroll(
+        //   'minutes',
+        //   minutesList.value.findIndex(obj => obj.text === val),
+        // );
       },
     );
 
     watch(
       () => props.seconds,
-      val => {
-        if (!state.compiled) {
-          return;
-        }
-        scroll(
-          'seconds',
-          minutesList.value.findIndex(obj => obj.text === val),
-        );
+      _val => {
+        // if (!compiled.value) {
+        //   return;
+        // }
+        // scroll(
+        //   'seconds',
+        //   minutesList.value.findIndex(obj => obj.text === val),
+        // );
+        scrollIdx(['seconds']);
+        // scroll(
+        //   'seconds',
+        //   secondsList.value.findIndex(obj => obj.text === val),
+        // );
       },
     );
 
     watch(
-      () => state.focusedTime,
-      (updated, old) => {
-        timeParts.forEach((part, i) => {
-          if (updated[i] === old[i] || typeof updated[i] === 'undefined') {
-            return;
-          }
-          const valueIndex = this[`${part}List`].findIndex(obj => obj.text === updated[i]);
-          scroll(part, valueIndex);
-        });
+      () => props.isVisible,
+      () => {
+        scrollIdx(['hours', 'minutes', 'seconds']);
       },
     );
 
-    onMounted(() => {
-      nextTick(() => {
-        state.compiled = true;
-        bindWheelEvent();
-      });
-    });
+    // onMounted(() => {
+    //   nextTick(() => {
+    //     scrollIdx(['hours', 'minutes', 'seconds']);
+    //   });
+    //   // setTimeout(() => {
+    //   //   // compiled.value = true;
+    //   //   // bindWheelEvent();
 
-    function getDomRef(type) {
-      let domRef;
-      if (type === 'hours') {
-        domRef = hoursRef;
-      } else if (type === 'minutes') {
-        domRef = minutesRef;
-      } else {
-        domRef = secondsRef;
-      }
-      return domRef.value;
-    }
-
-    const { resolveClassName } = usePrefix();
-
-    function getCellCls(cell) {
-      return [
-        resolveClassName('time-picker-cells-cell'),
-        {
-          [resolveClassName('time-picker-cells-cell-selected')]: cell.selected,
-          [resolveClassName('time-picker-cells-cell-focused')]: cell.focused,
-          [resolveClassName('time-picker-cells-cell-disabled')]: cell.disabled,
-        },
-      ];
-    }
-
-    const wheelStart = ref(true);
-    const wheelEnd = ref(false);
-    const wheelTimer = ref(null);
-
-    function stopWheel(domRef) {
-      if (wheelEnd.value === true) {
-        // console.log('滚轮停止了');
-        wheelStart.value = true;
-        wheelEnd.value = false;
-        domRef.scrollTop = 32 * Math.round(domRef.scrollTop / 32);
-      }
-    }
-
-    function bindWheelEvent() {
-      const bindFunction = type => {
-        const domRef = getDomRef(type);
-        domRef.addEventListener(
-          'wheel',
-          debounce(() => {
-            // handleWheel(type);
-
-            if (wheelStart.value === true) {
-              // console.log('滚动了');
-              wheelStart.value = false;
-              wheelEnd.value = true;
-              // 这里写开始滚动时调用的方法
-              wheelTimer.value = setTimeout(() => {
-                handleWheel(type);
-                stopWheel(domRef);
-              }, 200);
-            } else {
-              clearTimeout(wheelTimer.value);
-              wheelTimer.value = setTimeout(() => {
-                handleWheel(type);
-                stopWheel(domRef);
-              }, 300);
-            }
-          }, 32),
-          { passive: true },
-        );
-      };
-      bindFunction('hours');
-      bindFunction('minutes');
-      bindFunction('seconds');
-    }
-
-    function typeItemHeight(type) {
-      const domRef = getDomRef(type);
-      return domRef.querySelector('li').offsetHeight;
-    }
-
-    function scrollBarHeight(type) {
-      const domRef = getDomRef(type);
-      return domRef.offsetHeight;
-    }
-
-    function handleWheel(type) {
-      const domRef = getDomRef(type);
-      const value = Math.min(
-        Math.round(
-          (domRef.scrollTop - (scrollBarHeight(type) * 0.5 - 10) / typeItemHeight(type) + 3) / typeItemHeight(type),
-        ),
-        type === 'hours' ? 23 : 59,
-      );
-      let list;
-      if (type === 'hours') {
-        list = hoursList;
-      } else if (type === 'minutes') {
-        list = minutesList;
-      } else {
-        list = secondsList;
-      }
-      const item = list.value.find(data => data.text === value);
-      if (item.disabled) {
-        return false;
-      }
-      nextTick(() => {
-        emitChange({ [type]: value });
-      });
-    }
-
-    function handleClick(type, cell) {
-      if (cell.disabled) {
-        return;
-      }
-      const data = { [type]: cell.text };
-      emitChange(data);
-    }
-
-    function emitChange(changes) {
-      emit('change', changes);
-      emit('pick-click');
-    }
-
-    function scroll(type, index) {
-      const domRef = getDomRef(type);
-      const from = domRef.scrollTop;
-      const to = 32 * getScrollIndex(type, index);
-      scrollTop(domRef, from, to, 500);
-    }
-
-    function getScrollIndex(type, index) {
-      const t = firstUpperCase(type);
-      const disabled = props[`disabled${t}`];
-      let ret: number = index;
-      if (disabled.length && props.hideDisabledOptions) {
-        let count = 0;
-        disabled.forEach(item => (item <= index ? (count += 1) : ''));
-        ret -= count;
-      }
-      return ret;
-    }
-
-    function updateScroll() {
-      nextTick(() => {
-        timeParts.forEach(type => {
-          const domRef = getDomRef(type);
-          let list;
-          if (type === 'hours') {
-            list = hoursList;
-          } else if (type === 'minutes') {
-            list = minutesList;
-          } else {
-            list = secondsList;
-          }
-
-          domRef.scrollTop = 32 * list.value.findIndex(obj => obj.text === props[type]);
-        });
-      });
-    }
-
-    function padTime(text) {
-      return text < 10 ? `0${text}` : text;
-    }
-
-    const hoursRef = ref(null);
-    const minutesRef = ref(null);
-    const secondsRef = ref(null);
+    //   //   scroll(
+    //   //     'hours',
+    //   //     hoursList.value.findIndex(obj => obj.text === props.hours),
+    //   //   );
+    //   //   scroll(
+    //   //     'minutes',
+    //   //     minutesList.value.findIndex(obj => obj.text === props.minutes),
+    //   //   );
+    //   //   scroll(
+    //   //     'seconds',
+    //   //     secondsList.value.findIndex(obj => obj.text === props.seconds),
+    //   //   );
+    //   // }, 500);
+    //   // setTimeout(() => {
+    //   //   scrollActiveOptionIntoView();
+    //   // }, 2000);
+    // });
 
     return {
-      ...toRefs(state),
-      hoursList,
-      minutesList,
-      secondsList,
-      styles,
-
       hoursRef,
       minutesRef,
       secondsRef,
 
+      resolveClassName,
+      t,
+
+      focusedColumn,
+      styles,
+
       getCellCls,
       handleClick,
-      updateScroll,
-      padTime,
-      t,
-      resolveClassName,
+
+      hoursList,
+      minutesList,
+      secondsList,
     };
   },
   render() {
@@ -456,7 +416,7 @@ export default defineComponent({
                 v-show={!item.hide}
                 onClick={() => this.handleClick('hours', item)}
               >
-                {this.padTime(item.text)}
+                {pad(item.text)}
               </li>
             ))}
           </ul>
@@ -473,7 +433,7 @@ export default defineComponent({
                 v-show={!item.hide}
                 onClick={() => this.handleClick('minutes', item)}
               >
-                {this.padTime(item.text)}
+                {pad(item.text)}
               </li>
             ))}
           </ul>
@@ -491,7 +451,7 @@ export default defineComponent({
                 v-show={!item.hide}
                 onClick={() => this.handleClick('seconds', item)}
               >
-                {this.padTime(item.text)}
+                {pad(item.text)}
               </li>
             ))}
           </ul>
