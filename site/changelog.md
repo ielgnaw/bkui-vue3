@@ -1,5 +1,12 @@
 ## 更新日志
 
+### 1.0.3-beta.68.dialog.2
+
+* **[feat]**:
+    - feat(tree|radio): tree支持配置节点进入可视区域内回调&事件抛出 & radio支持配置beforeChange
+    - perf(dialog|sideslider|infobox): 代码调整
+
+
 ### 1.0.3-beta.68.dialog.1
 
 * **[feat]**:
