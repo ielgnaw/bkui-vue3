@@ -113,8 +113,7 @@ export const DATA_COLUMNS = [
       mode: 'static',
       content: '这是个静态的提示，限制最大宽度为200px，测试一下是否生效，长度不够，数字来凑，哈哈哈',
       popoverOption: {
-        maxWidth: 300,
-        with: 100,
+        maxWidth: 250,
       },
     },
     className: () => 'custom-class',

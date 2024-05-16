@@ -15,10 +15,14 @@
           label="name"
           children="children"
           :auto-check-children="false"
+          :intersection-observer="{
+            enabled: true,
+            callback: intersectionObserverFn
+          }"
         />
       </div>
     </div>
-    <div class="column">
+    <!-- <div class="column">
       <bk-input
         v-model="selected2"
         placeholder="设置选中id"
@@ -35,7 +39,7 @@
           :auto-check-children="false"
         />
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -56,6 +60,9 @@
       };
     },
     methods: {
+      intersectionObserverFn(...args) {
+        console.log('intersectionObserverFn', ...args);
+      },
       handleNodeExpand(item, data, schema) {
         console.log('handleNodeExpand', item, data, schema);
       },

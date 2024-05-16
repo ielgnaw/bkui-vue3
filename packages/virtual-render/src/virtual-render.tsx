@@ -130,7 +130,7 @@ export default defineComponent({
       const value = localList.value.slice(start, end);
       calcList.value = value;
       if (event) {
-        ctx.emit('content-scroll', [event, pagination]);
+        ctx.emit('content-scroll', [event, pagination, value]);
       }
     };
 
@@ -269,6 +269,8 @@ export default defineComponent({
       reset,
       scrollTo,
       fixToTop,
+      refRoot,
+      refContent,
     });
 
     return () =>

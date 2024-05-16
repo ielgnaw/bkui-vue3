@@ -85,7 +85,7 @@ export function computedVirtualIndex(lineHeight, callback, pagination, wrapper, 
 
   const bottom = elScrollHeight - elOffsetHeight - elScrollTop;
   typeof callback === 'function' &&
-    callback(event, targetStartIndex, targetEndIndex, elScrollTop, translateY, elScrollLeft, {
+    callback(event, targetStartIndex, targetEndIndex, elScrollTop, elScrollTop, elScrollLeft, {
       bottom: bottom >= 0 ? bottom : 0,
       scrollbar: event,
     });

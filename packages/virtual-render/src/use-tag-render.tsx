@@ -33,6 +33,7 @@ import { VisibleRender } from './v-virtual-render';
 export default (props: VirtualRenderProps, ctx) => {
   const { renderAs, contentAs } = props;
   const refRoot = ref(null);
+  const refContent = ref(null);
 
   const { init, scrollTo, classNames } = useScrollbar(refRoot, props);
   const contentStyle = reactive({ x: 0, y: 0 });
@@ -76,6 +77,8 @@ export default (props: VirtualRenderProps, ctx) => {
   ctx.expose({
     scrollTo,
     fixToTop,
+    refRoot,
+    refContent,
   });
 
   onMounted(() => {
@@ -124,6 +127,7 @@ export default (props: VirtualRenderProps, ctx) => {
             {
               class: contentClassNames.value,
               style: computedStyle.value,
+              ref: refContent,
             },
             [
               ctx.slots.default?.({

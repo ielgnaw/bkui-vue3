@@ -257,12 +257,28 @@ export const treeProps = {
    * 在显示复选框的情况下，是否严格的遵循父子互相关联的做法
    */
   checkStrictly: PropTypes.bool.def(true),
+
+  /**
+   * 是否开启监听Tree节点进入Tree容器可视区域
+   */
+  intersectionObserver: PropTypes.oneOfType([
+    PropTypes.bool.def(false),
+    PropTypes.shape<IIntersectionObserver>({
+      enabled: PropTypes.bool.def(false),
+      callback: PropTypes.func.def(undefined),
+    }),
+  ]).def(false),
 };
 
 type AsyncOption = {
   callback: (item, cb) => Promise<any>;
   cache: Boolean;
   deepAutoOpen?: string;
+};
+
+export type IIntersectionObserver = {
+  enabled: boolean;
+  callback: (node: any, level: number, index: number) => void;
 };
 
 export type SearchOption = {

@@ -4,6 +4,7 @@
       height="100%"
       :columns="columns"
       :data="tableData"
+      settings
     />
   </div>
 </template>

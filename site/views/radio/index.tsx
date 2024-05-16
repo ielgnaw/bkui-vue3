@@ -75,6 +75,13 @@ const radioProps: IPropsTableItem[] = [
     desc: '尺寸',
     optional: ['large', 'small'],
   },
+  {
+    name: 'beforeChange',
+    type: 'fnction',
+    default: null,
+    desc: '值改变之前的回调函数，返回值为 false 会终止值改变',
+    optional: [],
+  },
 ];
 
 const radioEvents: IPropsTableItem[] = [
