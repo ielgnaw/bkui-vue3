@@ -1,0 +1,79 @@
+@import '@bkui-vue/styles/themes/themes.less';
+.@{bk-prefix}-table-head-action {
+  display: flex;
+  height: var(--row-height);
+  padding: 0 10px 0 6px;
+  font-size: 12px;
+  color: #c4c6cc;
+  cursor: pointer;
+  align-items: center;
+
+  &:last-of-type {
+    margin-right: -10px;
+  }
+
+  &.active {
+    color: #3a84ff;
+  }
+
+  &.opened {
+    color: inherit;
+  }
+}
+
+.@{bk-prefix}-popover {
+  &.@{bk-prefix}-pop2-content {
+    &.@{bk-prefix}-table-head-filter {
+      padding: 5px 0 0 0;
+      background-color: #fff;
+      border-radius: 2px;
+      box-shadow: 0 3px 6px 0 rgba(0,0,0,.10);
+
+      .content-list {
+        display: inline-block;
+        max-width: 300px;
+        min-width: 200px;
+
+        .content-items {
+          max-height: 200px;
+          min-height: 40px;
+
+          .list-item {
+            width: 100%;
+            height: 32px;
+            padding: 0 10px;
+            font-size: 12px;
+            line-height: 32px;
+            color: #63656e;
+            text-align: left;
+
+            &:hover {
+              background: #f0f1f5;
+            }
+
+            label {
+              &:hover {
+                background: #f0f1f5;
+              }
+            }
+
+            .@{bk-prefix}-checkbox-label {
+              white-space: nowrap;
+            }
+
+            .@{bk-prefix}-checkbox {
+              margin-left: 0;
+            }
+          }
+        }
+      }
+
+      .content-footer {
+        display: flex;
+        padding: 12px;
+        border-top: solid 1px #dcdee5;
+        align-items: center;
+      }
+    }
+  }
+}

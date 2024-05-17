@@ -1,0 +1,154 @@
+@import '@bkui-vue/styles/themes/themes.less';
+
+@tag-base-color: #fff;
+@tag-success-color: #14a568;
+@tag-info-color: @primary-color;
+@tag-warning-color: #fe9c00;
+@tag-danger-color: @danger-color;
+
+@tag-success-bg-color: #E4FAF0;
+@tag-info-bg-color: #EDF4FF;
+@tag-warning-bg-color: #FFF1DB;
+@tag-danger-bg-color: #FEEBEA;
+@tag-stroke-bg-color: #FAFBFD;
+@tag-filled-bg-color: #979BA5;
+@tag-filled-success-bg-color: #14A568;
+@tag-filled-info-bg-color: #3A84FF;
+@tag-filled-warning-bg-color: #FE9C00;
+@tag-filled-danger-bg-color: #EA3536;
+
+@tag-success-border-color: rgba(20,165,104,.3);
+@tag-info-border-color: rgba(58,132,255,.3);
+@tag-warning-border-color: rgba(254,165,0,.3);
+@tag-danger-border-color: rgba(234,53,54,.3);
+
+@tag-success-hover-bg-color: #C9F5E2;
+@tag-info-hover-bg-color: #E1ECFF;
+@tag-warning-hover-bg-color: #FFE8C3;
+@tag-danger-hover-bg-color: #FEDDDC;
+@tag-stroke-hover-bg-color: #F0F1F5;
+@tag-filled-hover-bg-color: #ACAFB6;
+@tag-filled-success-hover-bg-color: #42B685;
+@tag-filled-info-hover-bg-color: #609CFE;
+@tag-filled-warning-hover-bg-color: #FDAF32;
+@tag-filled-danger-hover-bg-color: #ED5C5D;
+@tag-checkable-hover-bg-color: #F0F1F5;
+
+@themeSelectors: success, info, warning, danger;
+
+.@{bk-prefix}-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 22px;
+  color: @default-color;
+  cursor: default;
+  background-color: #f0f1f5;
+  border-color: rgba(151,155,165,.3);
+  box-sizing: border-box;
+
+  each(@themeSelectors, {
+    @color: 'tag-@{value}-color';
+    @borderColor: 'tag-@{value}-border-color';
+    @bgColor: 'tag-@{value}-bg-color';
+    @bgHoverColor: 'tag-@{value}-hover-bg-color';
+    @filledBgColor: 'tag-filled-@{value}-bg-color';
+    @filledBgHoverColor: 'tag-filled-@{value}-hover-bg-color';
+    &.@{bk-prefix}-tag-@{value} {
+      color: @@color;
+      border-color: @@borderColor;
+      background-color: @@bgColor;
+      &.@{bk-prefix}-tag-filled {
+        background-color: @@filledBgColor;
+        &:hover {
+          background-color: @@filledBgHoverColor;
+        }
+      }
+      &:hover:not(.@{bk-prefix}-tag-filled) {
+        background-color: @@bgHoverColor;
+      }
+    }
+  });
+
+  &:hover {
+    background-color: #dcdee5;
+  }
+
+  &.@{bk-prefix}-tag-filled {
+    color: @tag-base-color;
+    background-color: @tag-filled-bg-color;
+
+    &:hover {
+      background-color: @tag-filled-hover-bg-color;
+    }
+  }
+
+  &.@{bk-prefix}-tag-stroke {
+    padding: 0 9px;
+    line-height: 20px;
+    border-style: solid;
+    border-width: 1px;
+  }
+
+  &.@{bk-prefix}-tag-closable {
+    padding: 0 4px 0 10px;
+  }
+
+  &.@{bk-prefix}-tag-checkable {
+    cursor: pointer;
+    background: none;
+
+    &:hover {
+      background: @tag-checkable-hover-bg-color;
+    }
+  }
+
+  &.@{bk-prefix}-tag-check {
+    color: @tag-base-color;
+    background: @tag-info-color;
+
+    &:hover {
+      color: @tag-base-color;
+      background: @tag-info-color;
+      opacity: 1;
+    }
+  }
+}
+
+.@{bk-prefix}-tag--defaul {
+  padding: 0 8px;
+}
+
+.@{bk-prefix}-tag--small {
+  height: 16px;
+  padding: 0 4px;
+  line-height: 16px;
+
+  .@{bk-prefix}-tag-text {
+    font-size: 10px;
+  }
+}
+
+.@{bk-prefix}-tag-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.@{bk-prefix}-tag-icon {
+  flex-shrink: 0;
+  margin-right: 4px;
+  font-size: 14px;
+  line-height: 0;
+}
+
+.@{bk-prefix}-tag-close {
+  flex-shrink: 0;
+  margin-left: 4px;
+  font-size: 12px;
+  line-height: 0;
+  cursor: pointer;
+}

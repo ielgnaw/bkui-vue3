@@ -1,0 +1,75 @@
+@import '@bkui-vue/styles/themes/themes.less';
+@import '@bkui-vue/info-box/info-box.less';
+
+.@{bk-prefix}-modal-ctx {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  display: none;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+
+  &.is-show {
+    display: block;
+  }
+}
+
+.@{bk-prefix}-modal-ctx-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.@{bk-prefix}-modal-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 2px;
+  transform: translate(-50%, -50%);
+}
+
+.@{bk-prefix}-modal-outside {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.@{bk-prefix}-modal-body {
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.@{bk-prefix}-modal-content {
+  max-height: 100vh;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.@{bk-prefix}-modal-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  color: #979ba5;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: 0.15s;
+
+  &:hover {
+    background: #f0f1f5;
+  }
+}

@@ -1,0 +1,28 @@
+@import '@bkui-vue/styles/themes/themes.less';
+@import '@bkui-vue/styles/mixins/animate.less';
+
+.@{bk-prefix}-backtop {
+  position: fixed;
+  display: flex;
+  width: 52px;
+  height: 52px;
+  cursor: pointer;
+  background: @fixed-navbar-background;
+  border-radius: 50%;
+  opacity: 1;
+  box-shadow: 0px 2px 6px 0px @fixed-navbar-boxshadow-color;
+  align-items: center;
+  justify-content: center;
+  &:hover .@{bk-prefix}-backtop-icon {
+    color: @primary-color;
+  }
+  .@{bk-prefix}-backtop-icon {
+    display: flex;
+    align-items: center;
+    font-size: 26px;
+  }
+}
+
+.@{bk-prefix}-fade-transtion {
+  .fade-transition();
+};

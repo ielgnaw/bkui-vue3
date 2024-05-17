@@ -1,0 +1,64 @@
+@import '@bkui-vue/styles/themes/themes.less';
+@import '@bkui-vue/styles/mixins/mixins.less';
+
+.@{bk-prefix}-breadcrumb {
+  display: flex;
+  font-size: 14px;
+  color: @breadcrumb-black-color ;
+  align-items: center;
+
+  &::after {
+    clear: both
+  }
+
+  &-separator {
+    margin: 0 9px;
+    font-weight: bold;
+
+    &[class*=icon] {
+      margin: 0 6px;
+      font-weight: normal;
+    }
+  }
+
+  &-goback {
+    margin-right: 12px;
+    color: @breadcrumb-primary-hover-color;
+    cursor: pointer;
+
+    svg {
+      font-size: 26px;
+    }
+  }
+
+  &-item {
+    &-inner {
+      &.is-link,
+      & a {
+        color: @breadcrumb-fn-main-color ;
+        text-decoration: none;
+
+        &:hover {
+          color: @breadcrumb-primary-hover-color;
+          cursor: pointer;
+        }
+      }
+    }
+
+    &:last-child {
+      color: @breadcrumb-black-color;
+
+      .el-breadcrumb__inner,
+      .el-breadcrumb__inner a {
+        &,
+        &:hover {
+          cursor: text;
+        }
+      }
+
+      .@{bk-prefix}-breadcrumb-separator {
+        display: none;
+      }
+    }
+  }
+}
