@@ -72,6 +72,7 @@ export const useRadio = () => {
   const isGroup = !isEmptyObj(radioGroup);
 
   const isChecked = ref<boolean>(false);
+
   const isPrechecking = ref(false);
   const size = ref('default');
 
@@ -122,7 +123,8 @@ export const useRadio = () => {
 
     const $targetInput = event.target as HTMLInputElement;
     const newValue = $targetInput.checked;
-    const beforeChangeValue = props.beforeChange?.(newValue, event, props) ?? true;
+    const beforeChangeFn = radioGroup?.props.beforeChange ?? props.beforeChange;
+    const beforeChangeValue = beforeChangeFn?.(newValue, event, props) ?? true;
     Promise.resolve(beforeChangeValue)
       .then(result => {
         if (result) {

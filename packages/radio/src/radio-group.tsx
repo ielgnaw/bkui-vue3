@@ -67,20 +67,14 @@ export default defineComponent({
 
     const handleChange: IRadioGroupContext['handleChange'] = checkedRadioInstance => {
       const nextValue = checkedRadioInstance.label;
-
-      const beforeChangeValue = props.beforeChange?.(nextValue, checkedRadioInstance, props) ?? true;
-      Promise.resolve(beforeChangeValue).then(resp => {
-        if (resp) {
-          radioInstanceList.forEach(radioInstance => {
-            if (radioInstance !== checkedRadioInstance) {
-              radioInstance.setChecked(false);
-            }
-          });
-
-          context.emit('update:modelValue', nextValue);
-          context.emit('change', nextValue);
+      radioInstanceList.forEach(radioInstance => {
+        if (radioInstance !== checkedRadioInstance) {
+          radioInstance.setChecked(false);
         }
       });
+
+      context.emit('update:modelValue', nextValue);
+      context.emit('change', nextValue);
     };
 
     provide(radioGroupKey, {
