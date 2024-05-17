@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 import { v4 as uuidv4 } from 'uuid';
-import { reactive } from 'vue';
+import { reactive, watch } from 'vue';
 
 import { useLocale } from '@bkui-vue/config-provider';
 
@@ -97,6 +97,8 @@ const tableSchemaResponse = (props: TablePropTypes) => {
     localPagination,
     resolvePageData,
     resolvePageDataBySortList,
+    handlePaginationChange,
+    getCurrentPageData,
     multiFilter,
     sort,
     resetStartEndIndex,
@@ -224,12 +226,14 @@ const tableSchemaResponse = (props: TablePropTypes) => {
 
   const getColumnFilterFn = (col: Column) => getColumnAttribute(col, COLUMN_ATTRIBUTE.COL_FILTER_FN);
 
-  const filter = () => {
-    const filterFnList = formatData.columns
+  const getFilterFnList = () => {
+    return formatData.columns
       .filter(col => !isHiddenColumn(col) && typeof getColumnFilterFn(col) === 'function')
       .map(col => getColumnFilterFn(col));
+  };
 
-    multiFilter(filterFnList);
+  const filter = () => {
+    multiFilter(getFilterFnList(), getCurrentPageData());
   };
 
   /**
@@ -522,13 +526,13 @@ const tableSchemaResponse = (props: TablePropTypes) => {
    * @param row
    * @param isSelected
    */
-  const setRowSelection = (row: any, isSelected: boolean) => {
+  const setRowSelection = (row: any, isSelected: boolean, index?: number) => {
     let value = isSelected;
     if (typeof props.isSelectedFn === 'function') {
-      value = props.isSelectedFn({ row });
+      value = props.isSelectedFn({ row, index: index ?? getRowAttribute(row, TABLE_ROW_ATTRIBUTE.ROW_INDEX) });
     }
 
-    if (isRowSelectEnable(props, { row })) {
+    if (isRowSelectEnable(props, { row, index: index ?? getRowAttribute(row, TABLE_ROW_ATTRIBUTE.ROW_INDEX) })) {
       setRowAttribute(row, TABLE_ROW_ATTRIBUTE.ROW_SELECTION, value);
     }
     setRowIndeterminate();
@@ -569,11 +573,11 @@ const tableSchemaResponse = (props: TablePropTypes) => {
   const toggleAllSelection = (value?: boolean) => {
     const val = value ?? !isCheckedAll();
     if (props.acrossAll) {
-      formatData.data.forEach(row => setRowSelection(row, val));
+      formatData.data.forEach((row, index) => setRowSelection(row, val, index));
       return;
     }
 
-    pageData.forEach(row => setRowSelection(row, val));
+    pageData.forEach((row, index) => setRowSelection(row, val, index));
     formatData.dataSchema.set(CHECK_ALL_OBJ, {
       [TABLE_ROW_ATTRIBUTE.ROW_SELECTION]: val,
       [TABLE_ROW_ATTRIBUTE.ROW_SELECTION_INDETERMINATE]: false,
@@ -724,6 +728,16 @@ const tableSchemaResponse = (props: TablePropTypes) => {
     return resolveIndexData();
   };
 
+  watch(
+    () => [props.pagination],
+    () => {
+      handlePaginationChange(getFilterFnList());
+    },
+    {
+      deep: true,
+    },
+  );
+
   return {
     formatColumns,
     formatDataSchema,
@@ -762,6 +776,7 @@ const tableSchemaResponse = (props: TablePropTypes) => {
     localPagination,
     formatData,
     setIndexData,
+    getFilterFnList,
   };
 };
 

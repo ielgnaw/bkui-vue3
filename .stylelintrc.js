@@ -22,27 +22,18 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
-*/
+ */
 
 module.exports = {
-  plugins: [
-    'stylelint-scss',
-    'stylelint-order',
-  ],
-  extends:[
-    "stylelint-config-recommended-vue"
-  ],
+  plugins: ['stylelint-scss', 'stylelint-order'],
+  extends: ['stylelint-config-recommended-vue'],
   rules: {
     // Base rules
     indentation: 2,
-    'number-leading-zero': 'never',
     'string-quotes': 'single',
     'selector-max-id': 3,
     'selector-list-comma-newline-after': 'always',
-    'comment-empty-line-before': [
-      'always',
-      { except: ['first-nested'] },
-    ],
+    'comment-empty-line-before': ['always', { except: ['first-nested'] }],
     'block-opening-brace-space-before': 'always',
     'declaration-colon-space-after': 'always',
     'declaration-colon-space-before': 'never',
@@ -51,12 +42,7 @@ module.exports = {
     'max-nesting-depth': 10,
     'scss/dollar-variable-pattern': '^_?[a-z]+[\\w-]*$',
     'scss/at-extend-no-missing-placeholder': true,
-    'order/order': [
-      'declarations',
-      { type: 'at-rule' },
-      { type: 'at-rule', hasBlock: true },
-      'rules',
-    ],
+    'order/order': ['declarations', { type: 'at-rule' }, { type: 'at-rule', hasBlock: true }, 'rules'],
 
     // 不要使用已被 autoprefixer 支持的浏览器前缀
     'media-feature-name-no-vendor-prefix': true,
@@ -71,14 +57,20 @@ module.exports = {
     // 不能用important
     'declaration-no-important': true,
     // 去掉多个import、extends、父子声明之间的空行 --开始
-    'rule-empty-line-before': ['always', {
-      except: ['first-nested'],
-      ignore: ['after-comment'],
-    }],
-    'at-rule-empty-line-before': ['always', {
-      except: ['first-nested',  'blockless-after-blockless'],
-      ignore: ['after-comment'],
-    }],
+    'rule-empty-line-before': [
+      'always',
+      {
+        except: ['first-nested'],
+        ignore: ['after-comment'],
+      },
+    ],
+    'at-rule-empty-line-before': [
+      'always',
+      {
+        except: ['first-nested', 'blockless-after-blockless'],
+        ignore: ['after-comment'],
+      },
+    ],
     // 去掉多个import、extends、父子声明之间的空行 --结束
     // 指定声明块内属性的字母顺序
     'order/properties-order': [
@@ -238,6 +230,6 @@ module.exports = {
     {
       files: ['*.vue', './**/*.vue'],
       customSyntax: 'postcss-html',
-    }
-  ]
+    },
+  ],
 };

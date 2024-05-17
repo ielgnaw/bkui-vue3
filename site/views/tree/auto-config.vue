@@ -1,34 +1,39 @@
 <template>
   <div class="row">
-    <div class="cell">
+    <div class="column">
       <span>默认连线: <code>level-line="true"</code></span>
-      <bk-tree
-        :data="treeData"
-        level-line
-        label="name"
-        children="children"
-      />
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          level-line
+          label="name"
+          children="children"
+        />
+      </div>
     </div>
-    <div class="cell">
-      <span>默认展开：<code>data.isOpen = true</code></span>
-      <bk-tree
-        :data="autoOpen"
-        label="name"
-        children="children"
-        :auto-open-parent-node="false"
-      />
+    <div class="column">
+      <div class="cell">
+        <bk-tree
+          :data="autoOpen"
+          label="name"
+          children="children"
+          :auto-open-parent-node="false"
+        />
+      </div>
     </div>
-    <div class="cell">
+    <div class="column">
       <bk-button @click="handleAutoSelect">
         设置选中节点
       </bk-button>
-      <bk-tree
-        ref="refAutoSelect"
-        :data="autoCheck"
-        label="name"
-        children="children"
-        :selected="selected"
-      />
+      <div class="cell">
+        <bk-tree
+          ref="refAutoSelect"
+          :data="autoCheck"
+          label="name"
+          children="children"
+          :selected="selected"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -58,18 +63,5 @@
   });
 </script>
 <style scoped>
-.row {
-  display: flex;
-  width: 100%;
-  height: 300px;
-  overflow: auto;
-}
-
-.cell {
-  width: 33%;
-  padding: 0 15px;
-  overflow: auto;
-  border-right: solid 1px #ddd;
-  flex: 1;
-}
+@import './tree.less';
 </style>

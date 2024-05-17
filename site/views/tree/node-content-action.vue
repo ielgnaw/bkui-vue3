@@ -71,23 +71,8 @@
   });
 </script>
 <style scoped>
-.row {
-  display: flex;
-  width: 100%;
-  padding-top: 15px;
-}
+@import './tree.less';
 
-.column {
-  width: 33%;
-}
-
-.cell {
-  height: 300px;
-  padding: 0 15px;
-  overflow: auto;
-  border-right: solid 1px #ddd;
-  flex: 1;
-}
 
 .attr-tag {
   padding: 10px;

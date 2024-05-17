@@ -9,15 +9,6 @@
         is-flex
       />
     </div>
-    <div class="table-layout-demo">
-      <bk-table
-        :columns="columns"
-        :data="tableData.slice(0, 4)"
-        :pagination="pagination"
-        :pagination-heihgt="60"
-        is-flex
-      />
-    </div>
   </div>
 </template>
 

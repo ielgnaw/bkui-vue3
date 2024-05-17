@@ -226,7 +226,10 @@ export default (props: TreePropTypes, ctx, flatData: IFlatData, _renderData, ini
       setNodeAttr(item, NODE_ATTRIBUTES.IS_INDETERMINATE, false);
     }
 
-    deepUpdateChildNode(item, [NODE_ATTRIBUTES.IS_CHECKED, NODE_ATTRIBUTES.IS_INDETERMINATE], [!!value, false]);
+    if (props.checkStrictly) {
+      deepUpdateChildNode(item, [NODE_ATTRIBUTES.IS_CHECKED, NODE_ATTRIBUTES.IS_INDETERMINATE], [!!value, false]);
+    }
+
     updateParentChecked(item, value);
     ctx.emit(
       EVENTS.NODE_CHECKED,

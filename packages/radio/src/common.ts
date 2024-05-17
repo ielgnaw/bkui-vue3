@@ -118,21 +118,28 @@ export const useRadio = () => {
     if (isDisabled.value) {
       return;
     }
+
     const $targetInput = event.target as HTMLInputElement;
-    isChecked.value = $targetInput.checked;
+    const newValue = $targetInput.checked;
+    const beforeChangeValue = props.beforeChange?.(newValue, event, props) ?? true;
+    Promise.resolve(beforeChangeValue).then(result => {
+      if (result) {
+        isChecked.value = $targetInput.checked;
 
-    const nextValue = isChecked.value ? props.label : '';
-    emit('update:modelValue', nextValue);
-    emit('change', nextValue);
-    // 更新 radio-group
-    if (isGroup) {
-      radioGroup.handleChange(currentInstance.proxy as IRadioInstance);
-    }
+        const nextValue = isChecked.value ? props.label : '';
+        emit('update:modelValue', nextValue);
+        emit('change', nextValue);
+        // 更新 radio-group
+        if (isGroup) {
+          radioGroup.handleChange(currentInstance.proxy as IRadioInstance);
+        }
 
-    nextTick(() => {
-      // 选中状态保持同步
-      if ($targetInput.checked !== isChecked.value) {
-        $targetInput.checked = isChecked.value;
+        nextTick(() => {
+          // 选中状态保持同步
+          if ($targetInput.checked !== isChecked.value) {
+            $targetInput.checked = isChecked.value;
+          }
+        });
       }
     });
   };

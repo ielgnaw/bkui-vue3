@@ -23,17 +23,11 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { Ref } from 'vue';
 
 import { VirtualRenderProps } from './props';
 type IFixToTopParams = { index?: number; id?: string; item?: { [key: string]: any }; position: number[] };
 
-export default (props: VirtualRenderProps, refRoot: Ref<HTMLElement>) => {
-  const scrollTo = (option = { left: 0, top: 0 }) => {
-    const { left, top } = option;
-    refRoot.value.scrollTo(left, top);
-  };
-
+export default (props: VirtualRenderProps, scrollTo: (x, y) => void) => {
   /**
    * 指定元素滚动到顶部
    * @param param0
@@ -53,12 +47,13 @@ export default (props: VirtualRenderProps, refRoot: Ref<HTMLElement>) => {
     if (typeof targetIndex === 'number') {
       const resolvedIndex = targetIndex >= 0 ? targetIndex : 0;
       const offsetY = resolvedIndex * props.lineHeight;
-      scrollTo({ left: 0, top: offsetY });
+      scrollTo(0, offsetY);
     }
+
+    return null;
   };
 
   return {
     fixToTop,
-    scrollTo,
   };
 };

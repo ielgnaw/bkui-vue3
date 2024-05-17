@@ -1,24 +1,86 @@
 @import '@bkui-vue/styles/themes/themes.less';
 
-&.@{bk-prefix}-info-wrapper {
+.@{bk-prefix}-infobox {
+  font-size: 12px;
+
   .@{bk-prefix}-modal-wrapper {
-    width: 440px;
-
-    .@{bk-prefix}-dialog-header {
-      .@{bk-prefix}-dialog-title {
-        margin-top: 16px;
-      }
-    }
-  }
-
-  .@{bk-prefix}-dialog-footer {
-    button {
-      min-width: 88px;
-    }
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
-.@{bk-prefix}-info-sub-title {
-  text-align: center;
-  word-break: break-all;
+.@{bk-prefix}-infobox-header {
+  padding-top: 24px;
+}
+
+.@{bk-prefix}-infobox-type {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.@{bk-prefix}-infobox-icon {
+  width: 42px;
+  height: 42px;
+  font-size: 42px;
+
+  &.success {
+    color: @success-color;
+  }
+
+  &.warning {
+    color: @warning-color;
+  }
+
+  &.danger {
+    color: @danger-color;
+  }
+
+  &.loading {
+    color: @primary-color;
+  }
+}
+
+.@{bk-prefix}-infobox-title {
+  padding-right: 24px;
+  padding-left: 24px;
+  margin-top: 24px;
+  font-size: 20px;
+  line-height: 32px;
+  color: #313238;
+}
+
+.@{bk-prefix}-infobox-content {
+  padding-right: 24px;
+  padding-left: 24px;
+  margin-top: 16px;
+}
+
+.@{bk-prefix}-infobox-footer {
+  display: flex;
+  padding-right: 24px;
+  padding-bottom: 24px;
+  padding-left: 24px;
+  margin-top: 24px;
+  align-content: center;
+
+  &.is-position-right {
+    justify-content: right;
+  }
+
+  &.is-position-center {
+    justify-content: center;
+  }
+
+  &.is-position-left {
+    justify-content: left;
+  }
+
+  .@{bk-prefix}-button {
+    min-width: 88px;
+    & ~ .@{bk-prefix}-button {
+      margin-left: 8px;
+    }
+  }
 }

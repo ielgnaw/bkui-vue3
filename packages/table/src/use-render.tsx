@@ -42,6 +42,7 @@ import Settings from './plugins/settings';
 import useDraggable from './plugins/use-draggable';
 import useFixedColumn from './plugins/use-fixed-column';
 import useHeadCell from './plugins/use-head-cell';
+import useShiftKey from './plugins/use-shift-key';
 import { Column, Settings as ISettings, TablePropTypes } from './props';
 import { ITableResponse } from './use-attributes';
 import {
@@ -60,7 +61,6 @@ export default (
   props: TablePropTypes,
   context: SetupContext<any>,
   tableResp: ITableResponse,
-  styleRef,
   head,
   root,
   resetTableHeight,
@@ -74,6 +74,9 @@ export default (
   const columns = computed(() => formatData.value.columns);
 
   const settings = computed(() => formatData.value.settings);
+
+  const { isShiftKeyDown, getStore, setStore } = useShiftKey(props);
+
   // const activeSortIndex = ref(null);
 
   /**
@@ -192,8 +195,15 @@ export default (
   };
 
   const handlePageChange = (current: number) => {
-    Object.assign(props.pagination, { current, value: current });
-    context.emit(EMIT_EVENTS.PAGE_VALUE_CHANGE, current);
+    if (typeof props.pagination === 'object' && current !== props.pagination.current) {
+      Object.assign(props.pagination, { current, value: current });
+      context.emit(EMIT_EVENTS.PAGE_VALUE_CHANGE, current);
+      return;
+    }
+
+    if (typeof props.pagination === 'boolean' && props.pagination !== false) {
+      context.emit(EMIT_EVENTS.PAGE_VALUE_CHANGE, current);
+    }
   };
 
   /**
@@ -208,7 +218,7 @@ export default (
       backgroundColor: props.thead.color,
     };
 
-    const { resolveFixedColumnStyle } = useFixedColumn(props, tableResp, head);
+    // const { resolveFixedColumnStyle } = useFixedColumn(props, tableResp, head);
 
     return (
       <>
@@ -217,7 +227,7 @@ export default (
             <tr>
               {filterColGroups.value.map((column, index: number) => {
                 const { getTH } = useHeadCell(props, context, column, tableResp);
-                const headStyle = Object.assign({}, resolveFixedColumnStyle(column, styleRef.value.hasScrollY), {
+                const headStyle = Object.assign({}, resolveFixedColumnStyle(column), {
                   '--background-color': DEF_COLOR[props.thead?.color ?? IHeadColor.DEF1],
                 });
 
@@ -309,6 +319,7 @@ export default (
       ...formatPropAsArray(props.rowStyle, [row, rowIndex]),
       {
         '--row-height': `${getRowHeight(row, rowIndex)}px`,
+        '--scroll-x': `${tableResp.formatData.layout.translateX}px`,
       },
     ];
 
@@ -318,13 +329,13 @@ export default (
       rowIndex % 2 === 1 && props.stripe ? 'stripe-row' : '',
     ];
     const rowId = tableResp.getRowAttribute(row, TABLE_ROW_ATTRIBUTE.ROW_UID);
+
     return [
       <TableRow key={rowId}>
         <tr
           // @ts-ignore
           style={rowStyle}
           class={rowClass}
-          data-row-id={rowId}
           key={rowId}
           data-row-index={rowIndex}
           onClick={e => handleRowClick(e, row, rowIndex, rows)}
@@ -380,16 +391,20 @@ export default (
                 context.emit(type, args);
               };
 
+              const columnKey = `${rowId}_${index}`;
+              const cellKey = `${rowId}_${index}_cell`;
               return (
                 <td
                   class={cellClass}
                   style={cellStyle}
                   colspan={colspan}
                   rowspan={rowspan}
+                  key={columnKey}
                   onClick={event => handleEmit(event, EMIT_EVENTS.CELL_CLICK)}
                   onDblclick={event => handleEmit(event, EMIT_EVENTS.CELL_DBL_CLICK)}
                 >
                   <TableCell
+                    key={cellKey}
                     class={tdCtxClass}
                     column={column}
                     row={row}
@@ -496,7 +511,11 @@ export default (
   };
 
   const renderCheckboxColumn = (row: any, index: number | null, isAll = false) => {
-    const handleChecked = value => {
+    const handleChecked = (value: boolean, event: Event) => {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      event.stopPropagation();
+
       if (isAll) {
         tableResp.setRowSelectionAll(value);
         context.emit(EMIT_EVENTS.ROW_SELECT_ALL, { checked: value, data: props.data });
@@ -506,6 +525,35 @@ export default (
       tableResp.setRowSelection(row, value);
       context.emit(EMIT_EVENTS.ROW_SELECT, { row, index, checked: value, data: props.data });
       context.emit(EMIT_EVENTS.ROW_SELECT_CHANGE, { row, index, checked: value, data: props.data });
+    };
+
+    const beforeRowChange = () => {
+      if (isShiftKeyDown.value && !isAll) {
+        const result = setStore(row, index);
+        if (result) {
+          const { start, end } = getStore();
+          const startIndex = start.index < end.index ? start.index : end.index;
+          const endIndex = start.index < end.index ? end.index : start.index;
+
+          (tableResp.pageData.slice(startIndex, endIndex + 1) ?? []).forEach(item => {
+            const isRowEnabled = isRowSelectEnable(props, { row, index, isCheckAll: false });
+            isRowEnabled && tableResp.setRowSelection(item, true);
+          });
+        }
+
+        context.emit(EMIT_EVENTS.ROW_SELECT, { row, index, checked: true, data: props.data, isShiftKeyDown: true });
+        context.emit(EMIT_EVENTS.ROW_SELECT_CHANGE, {
+          row,
+          index,
+          checked: true,
+          data: props.data,
+          isShiftKeyDown: true,
+        });
+
+        return Promise.resolve(!result);
+      }
+
+      return Promise.resolve(true);
     };
 
     const indeterminate = tableResp.getRowAttribute(row, TABLE_ROW_ATTRIBUTE.ROW_SELECTION_INDETERMINATE);
@@ -518,6 +566,7 @@ export default (
         disabled={!isEnable}
         modelValue={isChecked}
         indeterminate={indeterminate as boolean}
+        beforeChange={beforeRowChange}
       />
     );
   };

@@ -19,11 +19,10 @@
   />
 </template>
 <script setup>
-  import BkAlert from '@bkui-vue/alert';
-
+import BkAlert from '@bkui-vue/alert';
 </script>
 <style lang="postcss">
-  .bk-alert ~ .bk-alert {
-    margin-top: 20px;
-  }
+.bk-alert ~ .bk-alert {
+  margin-top: 20px;
+}
 </style>

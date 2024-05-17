@@ -221,8 +221,8 @@ export default defineComponent({
       {
         attrs: {
           title: 'Events',
-          subtitle: '自定义Column渲染',
-          desc: 'props: column.render',
+          subtitle: 'table select event',
+          desc: 'event: select',
           componentName: 'table',
           demoName: 'event',
         },

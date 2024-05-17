@@ -104,20 +104,6 @@
   });
 </script>
 <style scoped>
-.row {
-  display: flex;
-  width: 100%;
-  height: 300px;
-  padding-top: 15px;
-  overflow: auto;
+@import './tree.less';
 
-}
-
-.cell {
-  width: 33%;
-  padding: 0 15px;
-  overflow: auto;
-  border-right: solid 1px #ddd;
-  flex: 1;
-}
 </style>

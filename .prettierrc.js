@@ -12,5 +12,5 @@ module.exports = {
   bracketSameLine: false,
   arrowParens: 'avoid',
   vueIndentScriptAndStyle: false,
-  singleAttributePerLine: true
+  singleAttributePerLine: true,
 };

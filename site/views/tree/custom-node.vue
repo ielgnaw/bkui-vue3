@@ -1,62 +1,74 @@
 <template>
   <div class="row">
-    <div class="cell">
+    <div class="column">
       <span>自定义节点内容</span>
-      <bk-tree
-        :data="treeData"
-        level-line
-        label="name"
-        children="children"
-      >
-        <template #default="{ data }">
-          <span style="color: #3a84ff;">(自定义节点)：{{ JSON.stringify(data) }}</span>
-        </template>
-      </bk-tree>
+
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          level-line
+          label="name"
+          children="children"
+        >
+          <template #default="{ data }">
+            <span style="color: #3a84ff;">(自定义节点)：{{ JSON.stringify(data) }}</span>
+          </template>
+        </bk-tree>
+      </div>
     </div>
-    <div class="cell">
+    <div class="column">
       <span>自定义节点展开\收起</span>
-      <bk-tree
-        :data="treeData"
-        level-line
-        label="name"
-        children="children"
-      >
-        <template #nodeAction="item">
-          <span
-            :style="`color: ${item.__attr__.isOpen ? '#FF9C01;' : '#EA3636;'}`"
-          >
-            {{ item.__attr__.hasChildNode ? (item.__attr__.isOpen ? '--' : '+') : '*' }}
-          </span>
-        </template>
-      </bk-tree>
+
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          level-line
+          label="name"
+          children="children"
+        >
+          <template #nodeAction="item">
+            <span
+              :style="`color: ${item.__attr__.isOpen ? '#FF9C01;' : '#EA3636;'}`"
+            >
+              {{ item.__attr__.hasChildNode ? (item.__attr__.isOpen ? '--' : '+') : '*' }}
+            </span>
+          </template>
+        </bk-tree>
+      </div>
     </div>
-    <div class="cell">
+    <div class="column">
       <span>自定义节点节点类型</span>
-      <bk-tree
-        :data="treeData"
-        level-line
-        label="name"
-        children="children"
-      >
-        <template #nodeType="item">
-          <span style="padding: 0 5px;">
-            {{ item.__attr__.hasChildNode ? 'P' : 'C' }}
-          </span>
-        </template>
-      </bk-tree>
+
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          level-line
+          label="name"
+          children="children"
+        >
+          <template #nodeType="item">
+            <span style="padding: 0 5px;">
+              {{ item.__attr__.hasChildNode ? 'P' : 'C' }}
+            </span>
+          </template>
+        </bk-tree>
+      </div>
     </div>
-    <div class="cell">
+    <div class="column">
       <span>自定义节点后缀</span>
-      <bk-tree
-        :data="treeData"
-        level-line
-        label="name"
-        children="children"
-      >
-        <template #nodeAppend>
-          <span style="padding: 0 5px; color: red;">Append</span>
-        </template>
-      </bk-tree>
+
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          level-line
+          label="name"
+          children="children"
+        >
+          <template #nodeAppend>
+            <span style="padding: 0 5px; color: red;">Append</span>
+          </template>
+        </bk-tree>
+      </div>
     </div>
   </div>
 </template>
@@ -65,7 +77,7 @@
   import { BASIC_DATA } from './options';
   const treeData = [...BASIC_DATA];
 </script>
-<style>
+<style scoped>
 .custom-node {
   display: flex;
   width: 18px;
@@ -79,19 +91,13 @@
 .custom-root {
   background: #fafb;
 }
+
+.row {
+  .column {
+    width: 25%;
+  }
+}
 </style>
 <style scoped>
-.row {
-  display: flex;
-  width: 100%;
-  height: 300px;
-  overflow: auto;
-}
-
-.cell {
-  padding: 0 15px;
-  overflow: auto;
-  border-right: solid 1px #ddd;
-  flex: 1;
-}
+@import './tree.less';
 </style>

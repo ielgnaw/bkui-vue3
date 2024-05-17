@@ -1,6 +1,10 @@
 {
   "name": "bkui-vue",
+<<<<<<< HEAD
   "version": "1.0.3-beta.68",
+=======
+  "version": "1.0.3-beta.68.dialog.3",
+>>>>>>> github/beta-2.0.1
   "private": true,
   "workspaces": {
     "packages": [

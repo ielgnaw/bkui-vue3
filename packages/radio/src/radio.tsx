@@ -38,6 +38,7 @@ const radioProps = {
   modelValue: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.number]).def(''),
   checked: PropTypes.bool.def(false),
   disabled: PropTypes.bool.def(false),
+  beforeChange: PropTypes.func,
 };
 
 export type RadioProps = Readonly<ExtractPropTypes<typeof radioProps>>;

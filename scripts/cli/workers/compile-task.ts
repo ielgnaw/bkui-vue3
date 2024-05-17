@@ -57,22 +57,27 @@ export class CompileTask {
   }
   async start() {
     // !this.globals && await this.getRollupGlobals();
-    const styleList = this.taskItemList.filter(item => item.type === 'style');
+    // const styleList = this.taskItemList.filter(item => item.type === 'style');
+    // const scriptItems = this.taskItemList.filter(item => item.type === 'script');
+    const styleList = [];
+    const scriptItems = [];
+    for (const item of this.taskItemList) {
+      if (item.type === 'style') {
+        styleList.push(item);
+      } else if (item.type === 'script') {
+        scriptItems.push(item);
+      }
+    }
+    const groupSize = this.taskOption.analyze ? scriptItems.length : Math.ceil(scriptItems.length / 2);
     const scriptList: ITaskItem[][] = [];
-    this.taskItemList
-      .filter(item => item.type === 'script')
-      .reduce((pre: ITaskItem[], cur: ITaskItem, index, list) => {
-        if (pre.length <= (this.taskOption.analyze ? list.length : Math.ceil(list.length / 2))) {
-          pre.push(cur);
-          if (index === list.length - 1) {
-            scriptList.push(pre);
-            return [];
-          }
-          return pre;
-        }
-        scriptList.push(pre);
-        return [];
-      }, []);
+    let tempArray: ITaskItem[] = [];
+    for (const item of scriptItems) {
+      tempArray.push(item);
+      if (tempArray.length >= groupSize || item === scriptItems[scriptItems.length - 1]) {
+        scriptList.push(tempArray);
+        tempArray = [];
+      }
+    }
     const workerPool = new WorkerPool(Math.min(10, styleList.length + scriptList.length));
     let i = scriptList.length;
     [...styleList, ...scriptList].forEach(item => {

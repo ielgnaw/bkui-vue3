@@ -266,6 +266,10 @@ export function isElement(obj: any) {
  * Whether the text content is clipped due to CSS overflow, as in showing `...`.
  */
 export function hasOverflowEllipsis(element: HTMLElement) {
+  if (!element) {
+    return false;
+  }
+
   return element.offsetWidth < element.scrollWidth || element.offsetHeight < element.scrollHeight;
 }
 

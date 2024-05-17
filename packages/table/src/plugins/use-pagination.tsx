@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { computed, nextTick, reactive, ref, watch } from 'vue';
+import { computed, nextTick, reactive, ref } from 'vue';
 
 import { COLUMN_ATTRIBUTE } from '../const';
 import { Column, SortScope, TablePropTypes } from '../props';
@@ -81,7 +81,7 @@ export default (props: TablePropTypes) => {
     if (!props.pagination) {
       return;
     }
-    localPagination.value = props.remotePagination ? pagination : { ...pagination, count: indexData.length };
+    localPagination.value = props.remotePagination ? pagination : { count: indexData.length, ...pagination };
   };
 
   /**
@@ -159,7 +159,13 @@ export default (props: TablePropTypes) => {
 
     pageData.length = 0;
     pageData.push(...sourceData.slice(startIndex.value, endIndex.value));
-    filter(pageData, filterFn);
+
+    if (Array.isArray(filterFn)) {
+      multiFilter(filterFn, pageData);
+    } else {
+      filter(pageData, filterFn);
+    }
+
     sort(pageData, sortFn, column, type, sortScope);
     resolveLocalPagination();
   };
@@ -168,31 +174,25 @@ export default (props: TablePropTypes) => {
     resolvePageData(null, null, null, null, null, multiCol);
   };
 
-  const multiFilter = (filterFnList: ((row, index, data) => void)[]) => {
-    const sourceData = indexData.slice();
+  const getCurrentPageData = () => {
+    return indexData.slice(startIndex.value, endIndex.value);
+  };
+
+  const multiFilter = (filterFnList: ((row, index, data) => void)[], origin?) => {
+    const sourceData = (origin ?? indexData).slice();
     const target = filterFnList.reduce((result, fn) => filter(result, fn), sourceData);
     pageData.length = 0;
     pageData.push(...getRawData(target));
   };
 
-  const handlePaginationChange = () => {
+  const handlePaginationChange = (filterFn?: any, sortFn?: any) => {
     pagination = resolvePaginationOption(props.pagination, pagination);
     resolveLocalPagination();
     resetStartEndIndex();
-    resolvePageData();
+    resolvePageData(filterFn, sortFn);
   };
 
   handlePaginationChange();
-
-  watch(
-    () => [props.pagination],
-    () => {
-      handlePaginationChange();
-    },
-    {
-      deep: true,
-    },
-  );
 
   return {
     pageData,
@@ -201,7 +201,9 @@ export default (props: TablePropTypes) => {
     resolvePageData,
     resolveIndexData,
     resolvePageDataBySortList,
+    handlePaginationChange,
     resetStartEndIndex,
+    getCurrentPageData,
     multiFilter,
     sort,
   };

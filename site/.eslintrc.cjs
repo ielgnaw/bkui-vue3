@@ -22,12 +22,10 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
-*/
+ */
 module.exports = {
   root: true,
-  extends: [
-    'eslint-config-tencent',
-  ],
+  extends: ['eslint-config-tencent', 'prettier'],
   parserOptions: {
     parser: '@typescript-eslint/parser',
     ecmaVersion: 2019,
@@ -90,6 +88,8 @@ module.exports = {
         'codecc/license': 'off',
         '@typescript-eslint/indent': 'off',
         'vue/multi-word-component-names': 'off',
+        'vue/script-indent': 'off',
+        'vue/singleline-html-element-content-newline': 'off',
       },
     },
     {
@@ -117,10 +117,7 @@ module.exports = {
       },
     },
     {
-      files: [
-        '**/__test__/*.{j,t}s?(x)',
-        '**/tests/unit/**/*.spec.{j,t}s?(x)',
-      ],
+      files: ['**/__test__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
       env: {
         jest: true,
       },
@@ -128,14 +125,12 @@ module.exports = {
   ],
   rules: {
     'codecc/license': 'off',
-    'simple-import-sort/imports': ['error', {
-      groups: [
-        ['^[a-zA-Z]'],
-        ['^@\\w'],
-        ['^\\.\\.'],
-        ['^\\.'],
-      ],
-    }],
+    'simple-import-sort/imports': [
+      'error',
+      {
+        groups: [['^[a-zA-Z]'], ['^@\\w'], ['^\\.\\.'], ['^\\.']],
+      },
+    ],
     'no-param-reassign': ['error', { props: false }],
 
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
@@ -154,19 +149,24 @@ module.exports = {
     'vue/multi-word-component-names': 'off',
     'vue/no-setup-props-destructure': 'off',
     'vue/require-default-prop': 'off',
-    'vue/script-indent': ['error', 2, {
-      baseIndent: 1,
-    }],
-    'vue/component-tags-order': ['error', {
-      order: ['template', 'script', 'style'],
-    }],
-    'vue/component-name-in-template-casing': ['error', 'kebab-case', {
-      registeredComponentsOnly: false,
-      ignores: [],
-    }],
+    'vue/component-tags-order': [
+      'error',
+      {
+        order: ['template', 'script', 'style'],
+      },
+    ],
+    'vue/component-name-in-template-casing': [
+      'error',
+      'kebab-case',
+      {
+        registeredComponentsOnly: false,
+        ignores: [],
+      },
+    ],
     'vue/prefer-separate-static-class': 'error',
     'vue/prefer-true-attribute-shorthand': 'error',
     'vue/v-on-function-call': 'error',
     'vue/script-indent': 'off',
+    'vue/singleline-html-element-content-newline': 'off',
   },
 };
