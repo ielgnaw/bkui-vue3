@@ -1,5 +1,11 @@
 ## 更新日志
 
+### 1.0.3-beta.68.dialog.3
+
+* **[feat]**:
+    - feat(radio|table): 支持配置beforeChange & table修复column template渲染初始化
+
+
 ### 1.0.3-beta.68.dialog.2
 
 * **[feat]**:
