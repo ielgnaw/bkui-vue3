@@ -58,6 +58,8 @@ export default (props: TablePropTypes, ctx) => {
       const { loading, size, mode, title, inline, indicator } = getLoadingOption();
       return ctx.slots.fixedBottom?.() ?? <Loading {...{ loading, size, mode, title, inline, indicator }} />;
     }
+
+    return ctx.slots.fixedBottom?.() ?? null;
   };
   return {
     renderScrollLoading,

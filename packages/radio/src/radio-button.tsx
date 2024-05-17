@@ -39,6 +39,7 @@ const radioButtonProps = {
   checked: PropTypes.bool.def(false),
   disabled: PropTypes.bool.def(false),
   size: PropTypes.size(),
+  beforeChange: PropTypes.func,
 };
 
 export type RadioButtonProps = Readonly<ExtractPropTypes<typeof radioButtonProps>>;

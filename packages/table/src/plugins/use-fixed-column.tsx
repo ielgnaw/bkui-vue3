@@ -27,7 +27,6 @@ import { reactive, Ref } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 
-import { SCROLLY_WIDTH } from '../const';
 import { Column, TablePropTypes } from '../props';
 import { ITableResponse } from '../use-attributes';
 
@@ -107,13 +106,13 @@ export default (props: TablePropTypes, tableResp: ITableResponse, head?: Ref<HTM
    * @param hasScrollY 是否有纵向滚动条
    * @returns
    */
-  const resolveFixedColumnStyle = (column: Column, hasScrollY = false) => {
+  const resolveFixedColumnStyle = (column: Column) => {
     if (!column.fixed || isHiddenColumn(column)) {
       return {};
     }
     const fixedOffset: any = {
       left: 0,
-      right: hasScrollY ? SCROLLY_WIDTH : -1,
+      right: -1,
     };
     const fixedPos = resolveFixColPos(column);
     fixedOffset[fixedPos] = getPreColumnOffset(fixedPos, column, fixedOffset[fixedPos]);

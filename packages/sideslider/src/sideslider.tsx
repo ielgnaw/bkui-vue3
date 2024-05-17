@@ -24,19 +24,23 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent, ref } from 'vue';
+import cloneDeep from 'lodash/cloneDeep';
+import { defineComponent, getCurrentInstance, useAttrs, useSlots } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
-import Modal from '@bkui-vue/modal';
+import { AngleLeft, AngleRight } from '@bkui-vue/icon';
+import Modal, { propsMixin } from '@bkui-vue/modal';
+import { PropTypes } from '@bkui-vue/shared';
 
-const { propsMixin } = Modal;
-const sliderPops = Object.assign({}, propsMixin);
-sliderPops.width.default = '400';
-sliderPops.height.default = '100%';
+const sliderProps = cloneDeep(propsMixin);
+sliderProps.width.default = '400';
+
 export default defineComponent({
   name: 'Sideslider',
+  inheritAttrs: false,
   props: {
-    ...sliderPops,
+    ...sliderProps,
+    title: PropTypes.string.def(''),
     direction: {
       type: String,
       default: 'right',
@@ -53,33 +57,31 @@ export default defineComponent({
 
   emits: ['closed', 'update:isShow', 'shown', 'hidden', 'animation-end'],
 
-  setup(props, { slots, emit }) {
-    const refRoot = ref(null);
+  setup(props, { emit }) {
+    const attrs = useAttrs();
+    const slots = useSlots();
+    const instance = getCurrentInstance();
+    const { resolveClassName } = usePrefix();
 
     const handleClose = async () => {
-      // 这里无需处理 beforeClose，在 modal 中会处理
-      emit('update:isShow', false);
-      emit('closed');
-      setTimeout(() => {
-        // 有动画，推迟发布事件
+      let shouldClose = true;
+      if (typeof props.beforeClose === 'function') {
+        shouldClose = await props.beforeClose();
+      }
+      if (shouldClose) {
+        emit('update:isShow', false);
+        emit('closed');
         emit('animation-end');
-        refRoot.value?.close?.();
-      }, props.hiddenDelay);
-    };
-    const handleShown = () => {
-      // 有动画，推迟发布事件
-      setTimeout(() => {
-        emit('shown');
-      }, 200);
-    };
-    const handleHidden = () => {
-      // 有动画，推迟发布事件
-      setTimeout(() => {
-        emit('hidden');
-      }, 200);
+      }
     };
 
-    const { resolveClassName } = usePrefix();
+    const handleShown = () => {
+      emit('shown');
+    };
+
+    const handleHidden = () => {
+      emit('hidden');
+    };
 
     return () => {
       const modelSlot = {
@@ -87,17 +89,18 @@ export default defineComponent({
           <>
             <div class={`${resolveClassName('sideslider-header')}`}>
               <div
-                class={`${resolveClassName('sideslider-close')} ${props.direction}`}
-                onClick={() => handleClose()}
-              />
-              <div class={`${resolveClassName('sideslider-title')} ${props.direction}`}>
-                {slots.header?.() ?? props.title}
+                class={`${resolveClassName('sideslider-close')}`}
+                onClick={handleClose}
+              >
+                {props.direction === 'left' ? <AngleLeft /> : <AngleRight />}
               </div>
+              <div class={`${resolveClassName('sideslider-title')}`}>{slots.header?.() ?? props.title}</div>
             </div>
           </>
         ),
         default: () => <div class={`${resolveClassName('sideslider-content')}`}>{slots.default?.()}</div>,
       };
+
       if (slots.footer) {
         Object.assign(modelSlot, {
           footer: () => {
@@ -106,16 +109,29 @@ export default defineComponent({
         });
       }
 
+      const inheritAttrs = { ...attrs };
+      if (instance.vnode.scopeId) {
+        inheritAttrs[instance.vnode.scopeId] = '';
+      }
+
       return (
         <Modal
-          ref={refRoot}
-          {...props}
+          {...inheritAttrs}
           class={{
             [resolveClassName('sideslider')]: true,
-            [resolveClassName('sideslider-wrapper')]: true,
+            [`is-position-${props.direction}`]: props.direction,
           }}
+          isShow={props.isShow}
+          width={props.width}
+          animateType={props.direction}
           extCls={props.extCls}
           closeIcon={false}
+          escClose={props.escClose}
+          quickClose={props.quickClose}
+          showMask={props.showMask}
+          transfer={props.transfer}
+          renderDirective={props.renderDirective}
+          zIndex={props.zIndex}
           onHidden={handleHidden}
           onShown={handleShown}
           onClose={handleClose}

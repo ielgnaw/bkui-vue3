@@ -1,44 +1,53 @@
 <template>
   <div class="row">
-    <div class="cell">
+    <div class="column">
       <span>prefix-icon: true</span>
-      <bk-tree
-        :data="treeData"
-        level-line
-        prefix-icon
-        label="name"
-        children="children"
-      />
+
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          level-line
+          prefix-icon
+          label="name"
+          children="children"
+        />
+      </div>
     </div>
-    <div class="cell">
+    <div class="column">
       <span>function 函数返回 'default' 将会调用系统默认样式</span>
-      <bk-tree
-        :data="treeData"
-        level-line
-        :prefix-icon="getPrefixIcon"
-        label="name"
-        children="children"
-      />
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          level-line
+          :prefix-icon="getPrefixIcon"
+          label="name"
+          children="children"
+        />
+      </div>
     </div>
-    <div class="cell">
+    <div class="column">
       <span>function 返回字符串</span>
-      <bk-tree
-        :data="treeData"
-        level-line
-        :prefix-icon="getPrefixIcon2"
-        label="name"
-        children="children"
-      />
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          level-line
+          :prefix-icon="getPrefixIcon2"
+          label="name"
+          children="children"
+        />
+      </div>
     </div>
-    <div class="cell">
+    <div class="column">
       <span>function 返回对象</span>
-      <bk-tree
-        :data="treeData"
-        level-line
-        :prefix-icon="getPrefixIcon3"
-        label="name"
-        children="children"
-      />
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          level-line
+          :prefix-icon="getPrefixIcon3"
+          label="name"
+          children="children"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -114,18 +123,8 @@
 }
 </style>
 <style scoped>
-.row {
-  display: flex;
-  width: 100%;
-  height: 300px;
-  overflow: auto;
-}
-
-.cell {
+@import './tree.less';
+.column {
   width: 25%;
-  padding: 0 15px;
-  overflow: auto;
-  border-right: solid 1px #ddd;
-  flex: 1;
 }
 </style>

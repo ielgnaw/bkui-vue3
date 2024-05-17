@@ -24,11 +24,19 @@
  * IN THE SOFTWARE.
  */
 
+import cloneDeep from 'lodash/cloneDeep';
+
 import { propsMixin } from '@bkui-vue/modal';
 import { AlignEnum, alignType, dialogTypeUnion, PropTypes, ThemeEnum } from '@bkui-vue/shared';
 
+const dialogProps = cloneDeep(propsMixin);
+dialogProps.width.default = '480';
+
 const props = {
-  ...propsMixin,
+  ...dialogProps,
+
+  // 是否可拖拽
+  draggable: PropTypes.bool.def(false),
   // 确认按钮文字
   // confirmText: PropTypes.string.def('确定'),
   confirmText: PropTypes.string,
@@ -45,13 +53,13 @@ const props = {
   // 总步数
   totalStep: PropTypes.number,
   // 弹框的标题
-  title: PropTypes.string.def('title'),
+  title: PropTypes.string.def(''),
   // 显示 header 的位置
   headerAlign: alignType().def(AlignEnum.LEFT),
   // 显示 footer 的位置
   footerAlign: alignType().def(AlignEnum.RIGHT),
   // 颜色 按钮类型
-  theme: PropTypes.theme().def(ThemeEnum.PRIMARY),
+  confirmButtonTheme: PropTypes.theme().def(ThemeEnum.PRIMARY),
   // 对话框类型
   dialogType: dialogTypeUnion(),
   // 按钮loading

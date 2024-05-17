@@ -65,6 +65,10 @@ export default defineComponent({
     formatterLabel: { type: Function, default: (value: number) => value }, // 自定义间断点下文字格式
     formatterButtonLabel: { type: Function, default: (value: number) => value }, // 自定义滑块下文字格式
     formatterTipLabel: { type: Function, default: (value: number) => value }, // 自定义tip格式
+    labelClick: {
+      type: [Boolean, Function],
+      default: false,
+    },
   },
   emits: ['update:modelValue', 'change'],
   setup(props, { slots, emit }) {
@@ -373,6 +377,30 @@ export default defineComponent({
     };
 
     const { resolveClassName } = usePrefix();
+    const handleStepLabelClick = (e: MouseEvent, step: any) => {
+      let percent = step.stepWidth ?? step.percent ?? step;
+      if (props.labelClick) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        let fnResult;
+        if (typeof props.labelClick === 'function') {
+          const args = {
+            percent,
+            step,
+          };
+          fnResult = props.labelClick(e, args);
+          if (fnResult === false) {
+            return;
+          }
+        }
+
+        percent = typeof fnResult === 'number' ? fnResult : percent;
+        console.log('handleStepLabelClick', percent);
+        setPosition(percent);
+        return;
+      }
+    };
 
     const renderDom = () => (
       <div class={[`${resolveClassName('slider')}`, props.extCls]}>
@@ -401,6 +429,7 @@ export default defineComponent({
                     key={index}
                     class={[`${resolveClassName('slider-interval')}`, { vertical: props.vertical }]}
                     style={getIntervalStyle(interval)}
+                    onClick={e => handleStepLabelClick(e, interval)}
                   ></div>
                 );
               })
@@ -415,6 +444,7 @@ export default defineComponent({
                     key={index}
                     class={[`${resolveClassName('slider-interval')}`, { vertical: props.vertical }]}
                     style={getIntervalStyle(custom.percent)}
+                    onClick={e => handleStepLabelClick(e, custom)}
                   ></div>
                 );
               })
@@ -444,6 +474,7 @@ export default defineComponent({
                       class={[`${resolveClassName('slider-label')}`, props.vertical ? 'vertical' : 'horizontal']}
                       key={index}
                       style={getIntervalStyle(intervalLabel.stepWidth)}
+                      onClick={e => handleStepLabelClick(e, intervalLabel)}
                     >
                       {intervalLabel.stepLabel}
                     </div>
@@ -455,6 +486,7 @@ export default defineComponent({
                       class={[`${resolveClassName('slider-label')}`, props.vertical ? 'vertical' : 'horizontal']}
                       key={index}
                       style={getIntervalStyle(item.percent)}
+                      onClick={e => handleStepLabelClick(e, item)}
                     >
                       {item.label}
                     </div>

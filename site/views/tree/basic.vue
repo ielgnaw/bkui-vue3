@@ -5,6 +5,7 @@
       label="name"
       children="children"
       show-checkbox
+      :check-strictly="false"
       level-line
       :auto-open-parent-node="false"
       @node-click="handleNodeClick"

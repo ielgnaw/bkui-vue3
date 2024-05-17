@@ -6,6 +6,7 @@
       :pagination="pagination"
       :pagination-heihgt="60"
       show-overflow-tooltip
+      shift-multi-checked
       height="100%"
     />
   </div>

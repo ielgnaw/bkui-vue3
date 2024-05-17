@@ -1,6 +1,6 @@
 <template>
-  <div style=" width: 100%;height: 300px; overflow: auto;">
-    <div>
+  <div class="row">
+    <div class="column">
       <bk-input
         v-model="selectText"
         style="width: 120px;margin: 0 15px 0 0;"
@@ -8,18 +8,20 @@
       <bk-button @click="handleSelect">
         测试选中
       </bk-button>
+      <div class="cell">
+        <bk-tree
+          ref="refAutoSelect"
+          :data="treeData"
+          label="name"
+          children="children"
+          show-checkbox
+          level-line
+          node-key="id"
+          :selected="selected"
+          :auto-open-parent-node="false"
+        />
+      </div>
     </div>
-    <bk-tree
-      ref="refAutoSelect"
-      :data="treeData"
-      label="name"
-      children="children"
-      show-checkbox
-      level-line
-      node-key="id"
-      :selected="selected"
-      :auto-open-parent-node="false"
-    />
   </div>
 </template>
 
@@ -56,3 +58,6 @@
     },
   });
 </script>
+<style scoped>
+@import './tree.less';
+</style>

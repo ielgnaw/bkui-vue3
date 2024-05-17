@@ -55,14 +55,14 @@ export function getMatchedIndex(
   return { startIndex, height, diffHeight };
 }
 
-export function computedVirtualIndex(lineHeight, callback, pagination, _el, event) {
-  if (!event.target) {
+export function computedVirtualIndex(lineHeight, callback, pagination, wrapper, event) {
+  if (!wrapper || !event.offset) {
     return;
   }
-  const elScrollTop = event.target.scrollTop;
-  const elScrollLeft = event.target.scrollLeft;
-  const elScrollHeight = event.target.scrollHeight;
-  const elOffsetHeight = event.target.offsetHeight;
+  const elScrollTop = event.offset.y;
+  const elScrollLeft = event.offset.x;
+  const elScrollHeight = wrapper.scrollHeight;
+  const elOffsetHeight = wrapper.offsetHeight;
 
   const { count, groupItemCount } = pagination;
   let targetStartIndex = 0;
@@ -85,8 +85,9 @@ export function computedVirtualIndex(lineHeight, callback, pagination, _el, even
 
   const bottom = elScrollHeight - elOffsetHeight - elScrollTop;
   typeof callback === 'function' &&
-    callback(event, targetStartIndex, targetEndIndex, elScrollTop, translateY, elScrollLeft, {
+    callback(event, targetStartIndex, targetEndIndex, elScrollTop, elScrollTop, elScrollLeft, {
       bottom: bottom >= 0 ? bottom : 0,
+      scrollbar: event,
     });
 
   return {
@@ -112,10 +113,13 @@ export class VisibleRender {
   public render(e) {
     const { lineHeight = 30, handleScrollCallback, pagination = {}, onlyScroll } = this.binding.value;
     if (onlyScroll) {
-      const elScrollTop = this.wrapper.scrollTop;
-      const elScrollLeft = this.wrapper.scrollLeft;
-      const bottom = this.wrapper.scrollHeight - this.wrapper.offsetHeight - this.wrapper.scrollTop;
-      handleScrollCallback(e, null, null, elScrollTop, elScrollTop, elScrollLeft, { bottom: bottom >= 0 ? bottom : 0 });
+      const elScrollTop = e.offset?.y;
+      const elScrollLeft = e.offset?.x ?? 0;
+      const bottom = this.wrapper.scrollHeight - this.wrapper.offsetHeight - elScrollTop;
+      handleScrollCallback(e, null, null, elScrollTop, elScrollTop, elScrollLeft, {
+        bottom: bottom >= 0 ? bottom : 0,
+        scrollbar: e,
+      });
       return;
     }
 
@@ -130,7 +134,7 @@ export class VisibleRender {
   }
 
   public executeThrottledRender(e) {
-    throttle(this.render.bind(this), this.delay)(e);
+    throttle(this.render.bind(this), this.delay)(this.getEvent(e));
   }
 
   public install() {
@@ -144,6 +148,31 @@ export class VisibleRender {
   public setBinding(binding) {
     this.binding = binding;
   }
+
+  private getEvent = (event: Event | any) => {
+    const { scrollbar = { enabled: false } } = this.binding.value;
+    if (scrollbar.enabled) {
+      return {
+        offset: event.offset ?? event,
+      };
+    }
+
+    if (event?.offset) {
+      return {
+        offset: event?.offset,
+      };
+    }
+
+    const elScrollTop = (event.target as HTMLElement).scrollTop;
+    const elScrollLeft = (event.target as HTMLElement).scrollLeft;
+
+    return {
+      offset: {
+        x: elScrollLeft,
+        y: elScrollTop,
+      },
+    };
+  };
 }
 
 let instance: VisibleRender = null;

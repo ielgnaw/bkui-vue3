@@ -80,6 +80,9 @@
             create_time: '2018-05-25 15:02:24',
           },
         ],
+        scrollbar: {
+          enabled: true,
+        },
       };
     },
     created() {
@@ -92,7 +95,7 @@
           padding: '2px 10px',
           height: `${lineHeight}px`,
           lineHeight: `${lineHeight}px`,
-          display: 'inline-block',
+          display: 'block',
           width: '200px',
         };
       },
@@ -103,6 +106,7 @@
           height: `${lineHeight}px`,
           lineHeight: `${lineHeight}px`,
           borderBottom: 'solid 1px #ddd',
+          display: 'inline-flex',
         };
       },
       handleRandomRows() {

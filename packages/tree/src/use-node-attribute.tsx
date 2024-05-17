@@ -24,6 +24,8 @@
  * IN THE SOFTWARE.
  */
 
+import { isElement } from 'lodash';
+
 import { NODE_ATTRIBUTES, NODE_SOURCE_ATTRS } from './constant';
 import { TreePropTypes } from './props';
 
@@ -209,10 +211,35 @@ export default (
     attributes: resolveScopedSlotParam(item),
   });
 
+  /**
+   * 组装进入可视区域元素返回数据
+   * @param target
+   * @returns
+   */
+  const getIntersectionResponse = (target: HTMLElement | Record<string, any>) => {
+    if (!target) {
+      return null;
+    }
+
+    let node = target;
+    if (isElement(target)) {
+      node = getNodeById(target.getAttribute('data-tree-node'));
+    }
+
+    const level = getNodeAttr(node, NODE_ATTRIBUTES.DEPTH);
+    const isRoot = getNodeAttr(node, NODE_ATTRIBUTES.IS_ROOT);
+    const parent = getNodeAttr(node, NODE_ATTRIBUTES.PARENT);
+    const index = isRoot
+      ? getNodeAttr(node, NODE_ATTRIBUTES.INDEX)
+      : parent?.[props.children]?.findIndex(child => child === node);
+    return { level, target, index, parent, node, isRoot };
+  };
+
   return {
     getSchemaVal,
     getNodeAttr,
     getNodeId,
+    getNodeById,
     getNodeParentId,
     getParentNodeData,
     getNodePathById,
@@ -239,5 +266,6 @@ export default (
     extendNodeAttr,
     getChildNodes,
     extendNodeScopedData,
+    getIntersectionResponse,
   };
 };

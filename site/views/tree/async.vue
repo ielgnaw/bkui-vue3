@@ -1,37 +1,45 @@
 <template>
   <div class="row">
-    <div class="cell">
-      <bk-tree
-        ref="refAutoSelect"
-        :data="treeData"
-        :selected="selected"
-        node-key="id"
-        :async="{
-          callback: getRemoteData,
-          cache: true,
-        }"
-        level-line
-        label="name"
-        children="children"
-        :auto-check-children="false"
-      />
+    <div class="column">
+      <div class="cell">
+        <bk-tree
+          ref="refAutoSelect"
+          :data="treeData"
+          :selected="selected"
+          node-key="id"
+          :async="{
+            callback: getRemoteData,
+            cache: true,
+          }"
+          level-line
+          label="name"
+          children="children"
+          :auto-check-children="false"
+          :intersection-observer="{
+            enabled: true,
+            callback: intersectionObserverFn
+          }"
+        />
+      </div>
     </div>
-    <div class="cell">
+    <!-- <div class="column">
       <bk-input
         v-model="selected2"
         placeholder="设置选中id"
       />
-      <bk-tree
-        ref="refAutoSelect"
-        :data="treeData2"
-        :selected="selected2"
-        node-key="id"
-        level-line
-        label="name"
-        children="children"
-        :auto-check-children="false"
-      />
-    </div>
+      <div class="cell">
+        <bk-tree
+          ref="refAutoSelect"
+          :data="treeData2"
+          :selected="selected2"
+          node-key="id"
+          level-line
+          label="name"
+          children="children"
+          :auto-check-children="false"
+        />
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -52,6 +60,9 @@
       };
     },
     methods: {
+      intersectionObserverFn(...args) {
+        console.log('intersectionObserverFn', ...args);
+      },
       handleNodeExpand(item, data, schema) {
         console.log('handleNodeExpand', item, data, schema);
       },
@@ -95,18 +106,5 @@
   });
 </script>
 <style scoped>
-.row {
-  display: flex;
-  width: 100%;
-  height: 300px;
-  overflow: auto;
-}
-
-.cell {
-  width: 33%;
-  padding: 0 15px;
-  overflow: auto;
-  border-right: solid 1px #ddd;
-  flex: 1;
-}
+@import './tree.less';
 </style>

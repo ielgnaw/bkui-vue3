@@ -86,6 +86,12 @@ export const propsCollapse = {
    * 图标位置
    */
   headerIconAlign: PropTypes.string.def('left'),
+
+
+  /** 
+   * 是否使用色块样式
+   */
+  useBlockTheme: PropTypes.bool.def(false)
 };
 export const CollapsePanelEventProps = {
   itemClick: {

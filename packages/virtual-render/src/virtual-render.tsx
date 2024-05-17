@@ -41,13 +41,14 @@ import {
   ref,
   type SetupContext,
   SlotsType,
-  watch,
+  watchEffect,
 } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 
 import { type VirtualRenderProps, virtualRenderProps } from './props';
 import useFixTop from './use-fix-top';
+import useScrollbar from './use-scrollbar';
 import useTagRender from './use-tag-render';
 import virtualRender, { computedVirtualIndex, VisibleRender } from './v-virtual-render';
 
@@ -89,9 +90,14 @@ export default defineComponent({
       handleScrollCallback,
       pagination,
       throttleDelay: props.throttleDelay,
+      scrollbar: props.scrollbar,
     }));
 
     const refRoot = ref(null);
+    const refContent = ref(null);
+
+    const { init, scrollTo, classNames, updateScrollHeight } = useScrollbar(refRoot, props);
+
     let instance = null;
     const pagination = reactive({
       startIndex: 0,
@@ -115,21 +121,29 @@ export default defineComponent({
       let end = (pagination.endIndex + props.preloadItemCount) * props.groupItemCount;
       const total = localList.value.length;
       if (total < end) {
-        const contentLength = end - start;
         calcList.value = localList.value.slice(start, total);
-        end = total + 1;
-        start = end - contentLength;
+        end = total;
+        start = end - Math.floor(refContent.value.offsetHeight / props.lineHeight);
         start = start < 0 ? 0 : start;
       }
-      const value = localList.value.slice(start, end + 10);
+
+      const value = localList.value.slice(start, end);
       calcList.value = value;
       if (event) {
-        ctx.emit('content-scroll', [event, pagination]);
+        ctx.emit('content-scroll', [event, pagination, value]);
       }
     };
 
     onMounted(() => {
       instance = new VisibleRender(binding, refRoot.value);
+
+      if (props.scrollbar?.enabled) {
+        init(instance.executeThrottledRender.bind(instance));
+        updateScrollHeight(contentHeight.value);
+        instance.executeThrottledRender.call(instance, { offset: { x: 0, y: 0 } });
+        return;
+      }
+
       instance.install();
     });
 
@@ -183,7 +197,7 @@ export default defineComponent({
 
     /** 映射传入的数组为新的数组，增加 $index属性，用来处理唯一Index */
     const localList = computed(() => {
-      if (props.rowKey !== undefined) {
+      if (props.rowKey !== undefined || !props.autoIndex) {
         return props.list;
       }
 
@@ -191,14 +205,7 @@ export default defineComponent({
     });
 
     /** 展示列表内容区域样式 */
-    const innerContentStyle = computed(() =>
-      props.scrollPosition === 'content'
-        ? {
-            top: `${pagination.scrollTop + props.scrollOffsetTop}px`,
-            transform: `translateY(-${pagination.translateY}px)`,
-          }
-        : {},
-    );
+    const innerContentStyle = computed(() => (props.scrollPosition === 'content' ? {} : {}));
 
     /** 虚拟渲染外层容器样式 */
     const wrapperStyle = computed(() => {
@@ -207,19 +214,15 @@ export default defineComponent({
         height,
         width: typeof props.width === 'number' ? `${props.width}px` : props.width,
         display: 'inline-block',
-        maxHeight: props.maxHeight ?? height,
+        maxHeight: props.maxHeight ? `${props.maxHeight}px` : false,
+        minHeight: props.minHeight ? `${props.minHeight}px` : false,
         ...(props.scrollPosition === 'container' ? innerContentStyle.value : {}),
         ...props.wrapperStyle,
       };
     });
 
-    /** 虚拟渲染区域内置占位区域样式，用来撑起总高度，出现滚动条 */
-    const innerStyle = computed(() => {
-      const isHidden = typeof props.abosuteHeight === 'number' && props.abosuteHeight === 0;
-      return {
-        height: `${innerHeight.value < props.minHeight ? props.minHeight : innerHeight.value}px`,
-        display: isHidden ? 'none' : 'block',
-      };
+    const contentHeight = computed(() => {
+      return innerHeight.value < props.minHeight ? props.minHeight : innerHeight.value;
     });
 
     const { resolveClassName } = usePrefix();
@@ -227,8 +230,7 @@ export default defineComponent({
     /** 外层样式列表 */
     const wrapperClass = computed(() => [
       resolveClassName('virtual-render'),
-      props.scrollXName,
-      props.scrollYName,
+
       ...resolvePropClassName(props.className),
       props.scrollPosition === 'container' ? resolveClassName('virtual-content') : '',
     ]);
@@ -246,26 +248,29 @@ export default defineComponent({
     const reset = () => {
       handleChangeListConfig();
       afterListDataReset();
+      instance?.executeThrottledRender.call(instance, { offset: { x: 0, y: 0 } });
     };
 
-    const { scrollTo, fixToTop } = useFixTop(props, refRoot);
+    const { fixToTop } = useFixTop(props, scrollTo);
 
-    watch(
-      () => [props.lineHeight, props.height, props.list, props.maxHeight],
-      () => {
-        instance?.setBinding(binding);
-        handleChangeListConfig();
-        nextTick(() => {
-          afterListDataReset();
+    watchEffect(() => {
+      instance?.setBinding(binding);
+      handleChangeListConfig();
+      updateScrollHeight(contentHeight.value);
+      nextTick(() => {
+        afterListDataReset();
+        instance?.executeThrottledRender.call(instance, {
+          offset: { x: pagination.scrollLeft, y: pagination.scrollTop },
         });
-      },
-      { deep: true, immediate: true },
-    );
+      });
+    });
 
     ctx.expose({
       reset,
       scrollTo,
       fixToTop,
+      refRoot,
+      refContent,
     });
 
     return () =>
@@ -274,7 +279,7 @@ export default defineComponent({
         renderAs || 'div',
         {
           ref: refRoot,
-          class: wrapperClass.value,
+          class: [...wrapperClass.value, classNames.wrapper],
           style: wrapperStyle.value,
         },
         [
@@ -282,7 +287,8 @@ export default defineComponent({
           h(
             contentAs || 'div',
             {
-              class: innerClass.value,
+              ref: refContent,
+              class: [...innerClass.value, classNames.contentEl],
               style: {
                 ...innerContentStyle.value,
                 ...props.contentStyle,
@@ -295,10 +301,6 @@ export default defineComponent({
             ],
           ),
           ctx.slots.afterContent?.() ?? '',
-          h('div', {
-            class: [resolveClassName('virtual-section')],
-            style: innerStyle.value,
-          }),
           ctx.slots.afterSection?.() ?? '',
         ],
       );

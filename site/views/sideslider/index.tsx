@@ -32,6 +32,8 @@ import PropsBox from '../../components/props-box';
 import { IPropsTableItem } from '../../typings';
 
 import BaseDemo from './base-demo.vue';
+import BeforeCloseDemo from './before-close-demo.vue';
+import DirectionDemo from './direction-demo.vue';
 import FooterDemo from './footer-demo.vue';
 import TitleDemo from './title-demo.vue';
 
@@ -83,13 +85,6 @@ const SideSliserPropsJson: IPropsTableItem[] = [
     type: 'Function',
     default: '',
     desc: '关闭前的钩子函数',
-    optional: [],
-  },
-  {
-    name: 'ext-cls',
-    type: 'String',
-    default: '',
-    desc: '配置自定义样式类名，传入的类会被加在组件最外层的 DOM .bk-sideslider-wrapper 上',
     optional: [],
   },
   {
@@ -163,7 +158,6 @@ export default defineComponent({
         <DemoTitle
           name='Sideslider侧栏'
           desc='Sideslider组件， 提供一个从两侧滑入的组件，供用户填写/查看更多信息。'
-          link='https://www.google.com.hk/'
         />
         <DemoBox
           title='基础用法'
@@ -172,7 +166,25 @@ export default defineComponent({
           componentName='sideslider'
           demoName='base-demo'
         >
-          <BaseDemo></BaseDemo>
+          <BaseDemo />
+        </DemoBox>
+        <DemoBox
+          title='关闭前确认'
+          subtitle=''
+          desc='配置 before-close参数，点击遮罩关闭组件前会执行before-close函数'
+          componentName='sideslider'
+          demoName='before-close-demo'
+        >
+          <BeforeCloseDemo />
+        </DemoBox>
+        <DemoBox
+          title='显示方向'
+          subtitle=''
+          desc='配置 direction参数，配置组件滑出的方向'
+          componentName='sideslider'
+          demoName='direction-demo'
+        >
+          <DirectionDemo />
         </DemoBox>
         <DemoBox
           title='自定义标题和内容'

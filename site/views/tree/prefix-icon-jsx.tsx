@@ -26,6 +26,8 @@
 import { defineComponent } from 'vue';
 
 import { BASIC_DATA } from './options';
+
+import './tree.less';
 export default defineComponent({
   components: {},
   data() {
@@ -55,15 +57,19 @@ export default defineComponent({
   },
   render() {
     return (
-      <div style='height: 300px; width: 100%; overflow: auto;'>
-        <span>function 返回对象</span>
-        <bk-tree
-          data={this.treeData}
-          levelLine={true}
-          prefix-icon={this.getPrefixIcon}
-          label='name'
-          children='children'
-        />
+      <div class={'row'}>
+        <div class={'column'}>
+          <span>function 返回对象</span>
+          <div class={'cell'}>
+            <bk-tree
+              data={this.treeData}
+              levelLine={true}
+              prefix-icon={this.getPrefixIcon}
+              label='name'
+              children='children'
+            />
+          </div>
+        </div>
       </div>
     );
   },

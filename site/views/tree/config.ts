@@ -152,6 +152,13 @@ export default [
         desc: '是否展示节点类型Icon（默认根节点是文件夹icon，子节点为文件icon）',
         optional: ['true', 'false'],
       },
+      {
+        name: 'intersection-observer',
+        type: 'Boolean|IIntersectionObserver',
+        default: 'false',
+        desc: '是否开启监听节点进入父容器可视区域',
+        optional: ['true', 'false', 'IIntersectionObserver'],
+      },
     ],
   },
   {
@@ -182,6 +189,33 @@ export default [
     ],
   },
   {
+    title: 'IIntersectionObserver',
+    subTile: '监听节点进入父容器可视区域数据配置',
+    config: [
+      {
+        name: 'callback',
+        type: `({
+          level: any;
+          target: Record<string, any> | HTMLElement;
+          index: any;
+          parent: any;
+          node: Record<...> | HTMLElement;
+          isRoot: Boolean;
+        }) => void`,
+        default: 'undefined',
+        desc: '节点进入父容器可视区域时回调函数',
+        optional: [],
+      },
+      {
+        name: 'enabled',
+        type: 'Boolean',
+        default: 'false',
+        desc: '是否开启监听节点进入父容器可视区域',
+        optional: ['true', 'false'],
+      },
+    ],
+  },
+  {
     title: 'ISearchOption',
     subTile: '搜索配置',
     config: [
@@ -205,7 +239,7 @@ export default [
   },
   {
     title: 'Events',
-    subTile: '表格事件',
+    subTile: 'Tree抛出事件',
     type: 'events',
     config: [
       { name: 'node-click', desc: '节点点击事件', params: '' },
@@ -216,12 +250,24 @@ export default [
       { name: 'node-drag-over', desc: '节点拖拽经过事件', params: '' },
       { name: 'node-drag-leave', desc: '节点拖拽离开事件', params: '' },
       { name: 'node-drop', desc: '节点拖拽释放事件', params: '' },
+      {
+        name: 'node-enter-view',
+        desc: '节点进入父容器可视区域抛出事件',
+        params: `{
+        level: any;
+        target: Record<string, any> | HTMLElement;
+        index: any;
+        parent: any;
+        node: Record<...> | HTMLElement;
+        isRoot: Boolean;
+      }`,
+      },
     ],
   },
   {
     title: 'Methods',
-    subTile: 'bk-table 方法',
-    type: 'events',
+    subTile: 'bk-tree 方法',
+    type: 'Methods',
     config: [
       { name: 'handleTreeNodeClick', desc: '节点点击', params: '(item: any, e: MouseEvent)' },
       { name: 'isNodeChecked', desc: '判定指定节点是否选中', params: '(node)' },

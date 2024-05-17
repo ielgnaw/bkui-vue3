@@ -1,6 +1,10 @@
 <template>
   <div>
-    <bk-button @click="handleOpenSlider">
+    <bk-button
+      @click="handleOpen"
+      text
+      theme="primary"
+    >
       自定义footer
     </bk-button>
     <bk-sideslider
@@ -9,43 +13,33 @@
       quick-close
     >
       <template #default>
-        <div :style="{height: `${contentHeight}px`}" />
+        <div :style="{ height: `${contentHeight}px` }" />
       </template>
       <template #footer>
-        <div style="padding-left: 24px;">
-          <bk-button
-            theme="primary"
-            @click="contentHeight = 1000"
-          >
-            设置内容高度1000px
-          </bk-button>
-          <bk-button
-            style="margin-left: 8px;"
-            @click="contentHeight = 400"
-          >
-            设置内容高度400px
-          </bk-button>
-        </div>
+        <bk-button
+          theme="primary"
+          @click="contentHeight = 1000"
+        >
+          设置内容高度1000px
+        </bk-button>
+        <bk-button
+          style="margin-left: 8px"
+          @click="contentHeight = 400"
+        >
+          设置内容高度400px
+        </bk-button>
       </template>
     </bk-sideslider>
   </div>
 </template>
 
-<script lang="ts">
-  import  { defineComponent, ref } from 'vue';
-  export default defineComponent({
-    name: 'SiteSideslider',
-    setup() {
-      const isShow = ref(false);
-      const contentHeight = ref(400);
-      const handleOpenSlider = () => {
-        isShow.value = !isShow.value;
-      };
-      return {
-        handleOpenSlider,
-        contentHeight,
-        isShow,
-      };
-    },
-  });
+<script setup>
+import { defineComponent, ref } from 'vue';
+
+const isShow = ref(false);
+const contentHeight = ref(400);
+
+const handleOpen = () => {
+  isShow.value = true;
+};
 </script>

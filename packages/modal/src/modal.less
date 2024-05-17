@@ -1,21 +1,7 @@
 @import '@bkui-vue/styles/themes/themes.less';
 @import '@bkui-vue/info-box/info-box.less';
 
-.@{bk-prefix}-modal-ctx {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  display: none;
-  width: 100%;
-  height: 100%;
-  pointer-events: auto;
-
-  &.is-show {
-    display: block;
-  }
-}
-
-.@{bk-prefix}-modal-ctx-mask {
+.@{bk-prefix}-modal-mask {
   position: fixed;
   top: 0;
   left: 0;
@@ -25,19 +11,7 @@
 }
 
 .@{bk-prefix}-modal-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  border-radius: 2px;
-  transform: translate(-50%, -50%);
-}
-
-.@{bk-prefix}-modal-outside {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
 }
 
 .@{bk-prefix}-modal-body {
@@ -49,9 +23,16 @@
 }
 
 .@{bk-prefix}-modal-content {
+  position: relative;
   max-height: 100vh;
-  overflow: auto;
-  scrollbar-gutter: stable;
+  font-size: 0;
+
+  div {
+    font-size: 12px;
+  }
+}
+.@{bk-prefix}-modal-footer {
+  position: relative;
 }
 
 .@{bk-prefix}-modal-close {
@@ -72,4 +53,82 @@
   &:hover {
     background: #f0f1f5;
   }
+}
+
+.modal-fadein-enter-from {
+  opacity: 0;
+  .@{bk-prefix}-modal-body {
+    transform: translateY(-20px);
+  }
+}
+
+.modal-fadein-enter-to {
+  opacity: 1;
+  .@{bk-prefix}-modal-body {
+    transform: translateY(0);
+  }
+}
+
+.modal-fadein-leave-from {
+  opacity: 1;
+  .@{bk-prefix}-modal-body {
+    transform: translateY(0);
+  }
+}
+
+.modal-fadein-leave-to {
+  opacity: 0;
+  .@{bk-prefix}-modal-body {
+    transform: translateY(-20px);
+  }
+}
+
+.modal-fadein-enter-active,
+.modal-fadein-leave-active {
+  transition: opacity 0.15s linear;
+  .@{bk-prefix}-modal-body {
+    transition: transform 0.08s linear;
+  }
+}
+
+.modal-right-enter-from {
+  transform: translateX(100%);
+}
+
+.modal-right-enter-to {
+  transform: translateX(0);
+}
+
+.modal-right-leave-from {
+  transform: translateX(0);
+}
+
+.modal-right-leave-to {
+  transform: translateX(100%);
+}
+
+.modal-right-enter-active,
+.modal-right-leave-active {
+  transition: transform 0.15s ease;
+}
+
+.modal-left-enter-from {
+  transform: translateX(-100%);
+}
+
+.modal-left-enter-to {
+  transform: translateX(0);
+}
+
+.modal-left-leave-from {
+  transform: translateX(0);
+}
+
+.modal-left-leave-to {
+  transform: translateX(-100%);
+}
+
+.modal-left-enter-active,
+.modal-left-leave-active {
+  transition: transform 0.15s ease;
 }

@@ -1,22 +1,24 @@
 <template>
-  <div style="width: 100%; overflow: auto;">
-    <div class="row">
-      <bk-tree
-        :data="treeData"
-        label="name"
-        children="children"
-        draggable
-        :disable-drag="disableDrag"
-        :disable-drop="disableDrop"
-      >
-        <template #node="item">
-          <div>
-            isFolder：{{ String(item.isFolder) }},
-            disDraggable：{{ String(item.disabled) }},
-            <span style="color: #3a84ff;">{{ item.name }}</span>，
-          </div>
-        </template>
-      </bk-tree>
+  <div class="row">
+    <div class="column">
+      <div class="cell">
+        <bk-tree
+          :data="treeData"
+          label="name"
+          children="children"
+          draggable
+          :disable-drag="disableDrag"
+          :disable-drop="disableDrop"
+        >
+          <template #node="item">
+            <div>
+              isFolder：{{ String(item.isFolder) }},
+              disDraggable：{{ String(item.disabled) }},
+              <span style="color: #3a84ff;">{{ item.name }}</span>，
+            </div>
+          </template>
+        </bk-tree>
+      </div>
     </div>
   </div>
 </template>
@@ -37,19 +39,5 @@
   });
 </script>
 <style scoped>
-.row {
-  display: flex;
-  width: 100%;
-  height: 300px;
-  padding-top: 15px;
-  overflow: auto;
-
-}
-
-.cell {
-  padding: 0 15px;
-  overflow: auto;
-  border-right: solid 1px #ddd;
-  flex: 1;
-}
+@import './tree.less';
 </style>

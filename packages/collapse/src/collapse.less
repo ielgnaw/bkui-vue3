@@ -25,6 +25,7 @@
   line-height: 46px;
   color: #63656e;
   text-overflow: ellipsis;
+  background: #fff;
   cursor: pointer;
 
   .@{bk-prefix}-collapse-title {
@@ -115,5 +116,18 @@
 .@{bk-prefix}-collapse-icon-left {
   .@{bk-prefix}-collapse-icon {
     left: 13px;
+  }
+}
+
+.@{bk-prefix}-collapse-block {
+  .@{bk-prefix}-collapse-item {
+    margin-bottom: 10px;
+    .@{bk-prefix}-collapse-header {
+      background: #F0F1F5;
+      border-radius: 2px;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }

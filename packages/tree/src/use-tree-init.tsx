@@ -245,7 +245,7 @@ export default (props: TreePropTypes) => {
       }
     }
     flatten(treeData ?? data);
-    if (props.showCheckbox !== false) {
+    if (props.showCheckbox !== false && props.checkStrictly) {
       checkedList?.forEach((value: any) => {
         loopUpdateNodeAttr(value, NODE_ATTRIBUTES.IS_CHECKED, true, loopUpdateCheckedEvent);
       });

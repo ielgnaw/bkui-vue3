@@ -1,24 +1,29 @@
 <template>
   <div style="width: 100%; overflow: auto;">
     <div class="row">
-      <div class="cell">
+      <div class="column">
         <span>draggable: <code>draggable = true</code></span>
-        <bk-tree
-          :data="treeData"
-          label="name"
-          children="children"
-          draggable
-        />
+
+        <div class="cell">
+          <bk-tree
+            :data="treeData"
+            label="name"
+            children="children"
+            draggable
+          />
+        </div>
       </div>
-      <div class="cell">
+      <div class="column">
         <span>draggable<code>drag-sort = true</code></span>
-        <bk-tree
-          :data="treeData"
-          label="name"
-          draggable
-          drag-sort
-          children="children"
-        />
+        <div class="cell">
+          <bk-tree
+            :data="treeData"
+            label="name"
+            draggable
+            drag-sort
+            children="children"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -38,19 +43,5 @@
   });
 </script>
 <style scoped>
-.row {
-  display: flex;
-  width: 100%;
-  height: 300px;
-  padding-top: 15px;
-  overflow: auto;
-
-}
-
-.cell {
-  padding: 0 15px;
-  overflow: auto;
-  border-right: solid 1px #ddd;
-  flex: 1;
-}
+@import './tree.less';
 </style>

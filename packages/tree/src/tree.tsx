@@ -29,9 +29,10 @@ import { usePrefix } from '@bkui-vue/config-provider';
 import { debounce } from '@bkui-vue/shared';
 import VirtualRender from '@bkui-vue/virtual-render';
 
-import { NODE_ATTRIBUTES, TreeEmitEventsType } from './constant';
+import { EVENTS, NODE_ATTRIBUTES, TreeEmitEventsType } from './constant';
 import { treeProps, TreePropTypes as defineTypes } from './props';
 import useEmpty from './use-empty';
+import useIntersectionObserver from './use-intersection-observer';
 import useNodeAction from './use-node-action';
 import useNodeAttribute from './use-node-attribute';
 import useNodeDrag from './use-node-drag';
@@ -51,7 +52,10 @@ export default defineComponent({
   props: treeProps,
   emits: TreeEmitEventsType,
   setup(props, ctx) {
+    const root = ref();
+
     const { flatData, onSelected, registerNextLoop } = useTreeInit(props);
+
     const {
       checkNodeIsOpen,
       isRootNode,
@@ -61,6 +65,7 @@ export default defineComponent({
       hasChildNode,
       getNodePath,
       getNodeId,
+      getIntersectionResponse,
     } = useNodeAttribute(flatData, props);
 
     const { searchFn, isSearchActive, refSearch, isSearchDisabled, isTreeUI, showChildNodes } = useSearch(props);
@@ -83,6 +88,7 @@ export default defineComponent({
 
     // 计算当前需要渲染的节点信息
     const renderData = computed(() => flatData.data.filter(item => filterFn(item)));
+    const { getLastVisibleElement, intersectionObserver } = useIntersectionObserver(props);
 
     const {
       renderTreeNode,
@@ -116,7 +122,6 @@ export default defineComponent({
         { deep: true, immediate: true },
       );
     }
-    const root = ref();
 
     /**
      * 设置指定节点是否选中
@@ -211,6 +216,29 @@ export default defineComponent({
       return ctx.slots.empty?.() ?? renderEmpty(emptyType);
     };
 
+    /**
+     * 如果启用了虚拟渲染 & 虚拟滚动
+     * @param param0
+     */
+    const handleContentScroll = ([scroll, _pagination, list]) => {
+      if (intersectionObserver.value.enabled) {
+        if (scroll.offset.y > 5) {
+          if (!props.virtualRender) {
+            const lastElement = getLastVisibleElement(scroll.offset.y, root.value.refRoot);
+            const result = getIntersectionResponse(lastElement[0]);
+            intersectionObserver.value?.callback?.(result);
+            ctx.emit(EVENTS.NODE_ENTER_VIEW, result);
+            return;
+          }
+
+          const resp = getIntersectionResponse(list.slice(-1)[0]);
+          intersectionObserver.value?.callback?.(resp);
+          ctx.emit(EVENTS.NODE_ENTER_VIEW, resp);
+          return;
+        }
+      }
+    };
+
     const { resolveClassName } = usePrefix();
 
     return () => (
@@ -225,6 +253,7 @@ export default defineComponent({
         keepAlive={true}
         contentClassName={resolveClassName('container')}
         throttleDelay={0}
+        onContentScroll={handleContentScroll}
         ref={root}
       >
         {{

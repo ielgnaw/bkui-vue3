@@ -44,6 +44,7 @@ import DemoCollapseLine from './demo/collapse-line.vue';
 import DemoCollapsePanel from './demo/collapse-panel.vue';
 import DemoCollapseSlot from './demo/collapse-slot.vue';
 import DemoCollapseTitle from './demo/collapse-title.vue';
+import DemoCollapseBlock from './demo/collapse-block.vue';
 
 const collapseProps: IPropsTableItem[] = [
   {
@@ -238,6 +239,14 @@ export default defineComponent({
           demoName='demo/collapse-card'
         >
           <DemoCollapseCard />
+        </DemoBox>
+        <DemoBox
+          title='色块样式'
+          desc='通过配置use-block-theme来使用色块样式效果。'
+          componentName='collapse'
+          demoName='demo/collapse-card'
+        >
+          <DemoCollapseBlock />
         </DemoBox>
         <DemoBox
           title='自定义图标'

@@ -4,17 +4,17 @@
       height="100%"
       :columns="columns"
       :data="tableData"
-      scroll-loading
       @scroll-bottom="handleScrollBottom"
     >
       <template #prepend>
-        <div>HEAD ROW TITLE</div>
+        <div style="background-color: red; width: 100%; color: #fff; opacity: 0.4;padding: 10px;">
+          Fixed TOP
+        </div>
       </template>
       <template #fixedBottom>
-        <bk-loading
-          :loading="isScrollLoading"
-          mode="spin"
-        />
+        <div style="background-color: red; width: 100%; color: #fff; opacity: 0.4;padding: 10px;">
+          {{ `Fixed Bottom` }}
+        </div>
       </template>
     </bk-table>
   </div>
