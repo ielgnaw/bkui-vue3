@@ -23,60 +23,34 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+import { debounce } from 'lodash';
 import { reactive, watch } from 'vue';
 
-import { ITableColumn } from './components/table-column';
 import { SORT_OPTION } from './const';
-import { Column, IColSortBehavior, ISortShape, TablePropTypes } from './props';
+import useColumnTemplate from './plugins/use-column-template';
+import { IColSortBehavior, ISortShape, TablePropTypes } from './props';
 
 /**
  * 渲染column settings
  * @param props: TablePropTypes
  * @param targetColumns 解析之后的column配置（主要用来处理通过<bk-column>配置的数据结构）
  */
-export default (props: TablePropTypes, targetColumns: ITableColumn[]) => {
+export default (props: TablePropTypes) => {
   const resolvedColumns = reactive(props.columns ?? []);
+  const throttleUpdate = debounce(instance => {
+    const { resolveColumns } = useColumnTemplate();
+
+    resolvedColumns.length = 0;
+    resolvedColumns.push(...resolveColumns(instance));
+  });
 
   /**
    * 初始化Column配置
    * @param column 传入
    * @param remove 是否移除当前列
    */
-  const initColumns = (column: ITableColumn[], remove = false) => {
-    let resolveColumns: ITableColumn[] = [];
-
-    if (!Array.isArray(column)) {
-      resolveColumns = [column];
-    } else {
-      resolveColumns = column;
-    }
-
-    if (!remove) {
-      resolveColumns.forEach(col => {
-        const index = targetColumns.findIndex(
-          tc => tc.label === col.label && tc.field === col.field && tc.uniqueId === col.uniqueId,
-        );
-        if (index >= 0) {
-          Object.assign(targetColumns[index], col);
-        } else {
-          targetColumns.push(col);
-        }
-      });
-
-      targetColumns.sort((col1, col2) => col1.index - col2.index);
-    } else {
-      resolveColumns.forEach(col => {
-        const matchColIndex = targetColumns.findIndex(
-          c => c.label === col.label && c.field === col.field && c.uniqueId === col.uniqueId,
-        );
-        if (matchColIndex >= 0) {
-          targetColumns.splice(matchColIndex, 1);
-        }
-      });
-    }
-
-    resolvedColumns.length = 0;
-    resolvedColumns.push(...(targetColumns as Column[]));
+  const initColumns = tableInstance => {
+    throttleUpdate(tableInstance);
   };
 
   watch(

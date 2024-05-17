@@ -27,9 +27,9 @@
 import {
   // computed,
   defineComponent,
+  getCurrentInstance,
   nextTick,
   provide,
-  reactive,
   Ref,
   ref,
   SetupContext,
@@ -41,9 +41,8 @@ import { usePrefix } from '@bkui-vue/config-provider';
 import { debounce } from '@bkui-vue/shared';
 import VirtualRender from '@bkui-vue/virtual-render';
 
-import BkTableCache from './cache';
 import { ITableColumn } from './components/table-column';
-import { PROVIDE_KEY_INIT_COL, PROVIDE_KEY_TB_CACHE } from './const';
+import { PROVIDE_KEY_INIT_COL } from './const';
 import { EMIT_EVENT_TYPES, EMIT_EVENTS } from './events';
 import useColumnResize from './plugins/use-column-resize';
 import useFixedColumn from './plugins/use-fixed-column';
@@ -67,15 +66,16 @@ export default defineComponent({
     // scrollX 右侧距离
     const tableOffsetRight = ref(0);
 
-    const bkTableCache = new BkTableCache();
-    const targetColumns = reactive([]);
-    const { initColumns, columns } = useColumn(props, targetColumns);
+    const { columns, initColumns } = useColumn(props);
+    const instance = getCurrentInstance();
+    const initTableColumns = () => {
+      initColumns(instance);
+    };
+
+    provide(PROVIDE_KEY_INIT_COL, initTableColumns);
     const tableSchema = useData(props);
 
     const { resizeColumnStyle, resizeHeadColStyle, registerResizeEvent } = useColumnResize(tableSchema, false, head);
-
-    provide(PROVIDE_KEY_INIT_COL, initColumns);
-    provide(PROVIDE_KEY_TB_CACHE, bkTableCache);
 
     const {
       tableClass,

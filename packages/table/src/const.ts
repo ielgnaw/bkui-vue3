@@ -130,11 +130,11 @@ export const createDefaultSizeList = (t: ComputedRef<Language['table']>) => [
 /**
  * Provide key: init column when use <column { ...props }> template
  */
-export const PROVIDE_KEY_INIT_COL = 'InitColumns';
+export const PROVIDE_KEY_INIT_COL = Symbol('bkInitColumns');
 
-export const PROVIDE_KEY_TB_CACHE = 'BKTableCahce';
+export const PROVIDE_KEY_TB_CACHE = Symbol('bkTableCahce');
 
-export const BK_COLUMN_UPDATE_DEFINE = 'Bk_COlumn_Update_Define';
+export const BK_COLUMN_UPDATE_DEFINE = Symbol('bkColumnUpdateDefine');
 
 /**
  * 表格底部高度

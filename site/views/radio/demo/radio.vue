@@ -2,6 +2,7 @@
   <bk-radio
     v-model="value"
     label="QQ"
+    :before-change="handleBeforeChange"
   />
   <bk-radio
     v-model="value"
@@ -19,6 +20,9 @@
   import { ref } from 'vue';
 
   import { BkRadio } from '@bkui-vue/radio';
+  const handleBeforeChange = () => {
+    return false;
+  }
 
   const value = ref('微信');
 </script>

@@ -77,7 +77,7 @@ const radioProps: IPropsTableItem[] = [
   },
   {
     name: 'beforeChange',
-    type: 'fnction',
+    type: 'function',
     default: null,
     desc: '值改变之前的回调函数，返回值为 false 会终止值改变',
     optional: [],
