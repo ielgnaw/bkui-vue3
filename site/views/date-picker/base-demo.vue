@@ -26,10 +26,7 @@
 <script setup>
   import { ref } from 'vue';
   const initDate = ref(new Date());
-  const disabledDate = (date) => {
-    console.error(date && date.valueOf() < Date.now() - 86400);
-    return date && date.valueOf() <= Date.now() + 86400;
-  };
+  const disabledDate = (date) => date && date.valueOf() <= Date.now() + 86400;
   const dateValue = ref('');
   const handleChange = (val) => {
     console.warn('handleChange', val, initDate);

@@ -426,6 +426,9 @@ export function useCalendar(props, _slots, emit) {
       case 'datetime':
         ret = DatePickerPanelType.DateTimePanel;
         break;
+      case 'time':
+        ret = DatePickerPanelType.TimePanel;
+        break;
       default:
         break;
     }

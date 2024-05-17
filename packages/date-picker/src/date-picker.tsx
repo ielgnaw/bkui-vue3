@@ -231,6 +231,7 @@ export default defineComponent({
       }
       return view;
     };
+
     return (
       <div
         class={[this.resolveClassName('date-picker'), this.type === 'datetimerange' ? 'long' : '', this.longWidthCls]}

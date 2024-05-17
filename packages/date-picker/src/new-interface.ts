@@ -72,8 +72,8 @@ export enum DatePickerPanelType {
   DateRangePanel = 'DateRangePanel',
   DateTimePanel = 'DateTimePanel',
   DateTimeRangePanel = 'DateTimeRangePanel',
-  TimePickerPanel = 'TimePickerPanel',
-  RangeTimePickerPanel = 'RangeTimePickerPanel',
+  TimePanel = 'TimePanel',
+  TimeRangePanel = 'TimeRangePanel',
 }
 
 // export type DatePickerPanelType =

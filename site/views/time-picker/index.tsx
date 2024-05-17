@@ -68,14 +68,14 @@ export default defineComponent({
         >
           <BaseDemo />
         </DemoBox>
-        <DemoBox
+        {/* <DemoBox
           title='开启时间范围'
           desc='通过设置 type 属性为 timerange 来开启时间设置'
           componentName='time-picker'
           demoName='range-demo'
         >
           <RangeDemo />
-        </DemoBox>
+        </DemoBox> */}
         <PropsBox propsData={menuPropsJson} />
       </div>
     );
