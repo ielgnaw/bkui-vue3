@@ -52,13 +52,13 @@ import {
  */
 export const useClass = (
   props: TablePropTypes,
-  targetColumns: ITableColumn[],
+  _targetColumns: ITableColumn[],
   root?,
   TableSchema?: ITableResponse,
   pageData?: any[],
 ) => {
   const { resolveClassName } = usePrefix();
-  const { getColumns } = useColumn(props, targetColumns);
+  const { getColumns } = useColumn(props);
   // const autoHeight = ref(LINE_HEIGHT * 10);
   const fixHeight = ref(LINE_HEIGHT * 10);
   const maxFixHeight = ref(LINE_HEIGHT * 10);
