@@ -11,7 +11,6 @@
       @change="handleChange"
     />
   </div>
-  <div style="height: 300px;" />
   <div>
     <p style="font-size: 14px;">
       月选择器 {{ monthValue }}

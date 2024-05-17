@@ -199,7 +199,6 @@ export default defineComponent({
               startDate={this.startDate}
               focusedDate={this.focusedDate}
               disabledDate={this.disabledDate}
-              showTime={this.type === 'datetime' || this.type === 'datetimerange'}
               timePickerOptions={this.timePickerOptions}
               opened={this.opened}
               showToday={this.showToday}
@@ -220,7 +219,6 @@ export default defineComponent({
               startDate={this.startDate}
               focusedDate={this.focusedDate}
               disabledDate={this.disabledDate}
-              showTime={this.type === 'datetime' || this.type === 'datetimerange'}
               timePickerOptions={this.timePickerOptions}
               opened={this.opened}
               onPick={this.onPick}

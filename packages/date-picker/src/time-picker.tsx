@@ -50,9 +50,9 @@ import { DateIcon, TimeIcon } from './common';
 // import VueTypes, { toType, toValidableType } from 'vue-types';
 // import { PropTypes } from '@bkui-vue/shared';
 import type { DatePickerPanelType, SelectionModeType } from './interface';
+import { datePickerProps, timePanelProps, timePickerProps } from './new-props';
 import TimePanel from './panel/time';
 import TimeRangePanel from './panel/time-range';
-import { datePickerProps, timePanelProps, timePickerProps } from './props';
 import { datePickerKey, extractTime, formatDate, isAllEmptyArr, parseDate } from './utils';
 
 export default defineComponent({

@@ -96,10 +96,6 @@ const datePanelProps = {
     type: Boolean,
     default: false,
   },
-  showTime: {
-    type: Boolean,
-    default: false,
-  },
   disabledDate: {
     // type: Function,
     type: Function as PropType<DisabledDateType>,
