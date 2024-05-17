@@ -1,14 +1,45 @@
 <template>
-  <bk-date-picker
-    v-model="dateValue"
-    clearable
-    append-to-body
-    :disabled-date="disabledDate"
-  />
+  <div>
+    <p style="font-size: 14px;">
+      日期选择器 {{ dateValue }}
+    </p>
+    <bk-date-picker
+      v-model="initDate"
+      clearable
+      editable
+      :disabled-date="disabledDate"
+      @change="handleChange"
+    />
+  </div>
+  <div>
+    <p style="font-size: 14px;">
+      月选择器 {{ monthValue }}
+    </p>
+    <bk-date-picker
+      v-model="initMonthDateTime"
+      type="month"
+      @change="handleMonthChange"
+    />
+  </div>
 </template>
 
 <script setup>
   import { ref } from 'vue';
-  const dateValue = ref(new Date());
-  const disabledDate = date => date && date.valueOf() < Date.now() - 86400;
+  const initDate = ref(new Date());
+  const disabledDate = (date) => {
+    console.error(date && date.valueOf() < Date.now() - 86400);
+    return date && date.valueOf() <= Date.now() + 86400;
+  };
+  const dateValue = ref('');
+  const handleChange = (val) => {
+    console.warn('handleChange', val, initDate);
+    dateValue.value = val;
+  };
+
+  const initMonthDateTime = ref(new Date(2024, 2));
+  const monthValue = ref('');
+  const handleMonthChange = (val) => {
+    console.warn('handleChange', val, initMonthDateTime);
+    monthValue.value = val;
+  };
 </script>

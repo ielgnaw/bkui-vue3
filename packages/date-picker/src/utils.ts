@@ -24,13 +24,67 @@
  * IN THE SOFTWARE.
  */
 
-import { format as dateFnsFormat, toDate } from 'date-fns';
+import { format as dateFnsFormat, isValid, parse as dateFnsParse /* , toDate */ } from 'date-fns';
 import type { InjectionKey } from 'vue';
 
 import { resolveClassName } from '@bkui-vue/shared';
 
 import fecha from './fecha';
-import type { IDatePickerCtx, ITimePickerCtx, PickerTypeType } from './interface';
+import type { IDatePickerCtx, ITimePickerCtx, PickerTypeType } from './new-interface';
+
+export const pad = str => (String(str).length > 1 ? str : `0${str}`);
+
+export const PICKER_TYPE_LIST: PickerTypeType[] = [
+  'year',
+  'yearrange',
+  'quarter',
+  'quarterrange',
+  'month',
+  'monthrange',
+  'date',
+  'daterange',
+  'datetime',
+  'datetimerange',
+  'time',
+  'timerange',
+];
+
+// 非 year 选择器中，选择年时的下拉框的年份可选数据
+export const ALL_YEARS = (() => {
+  const start = 1900;
+  const end = 2100;
+  return new Array(end - start + 1).fill('').map((_, index) => ({ value: index + start, label: index + start }));
+})();
+
+// 非 year 选择器中，选择月时的下拉框的月份可选数据
+export const ALL_MONTHS = (() => {
+  const start = 1;
+  const end = 12;
+  return new Array(end - start + 1)
+    .fill('')
+    .map((_, index) => ({ value: pad(index + start), label: pad(index + start) }));
+})();
+
+// 单个 panel 的宽度
+export const PANEL_WIDTH = 248;
+
+export const EVENT_CODE = {
+  tab: 'Tab',
+  enter: 'Enter',
+  space: 'Space',
+  left: 'ArrowLeft', // 37
+  up: 'ArrowUp', // 38
+  right: 'ArrowRight', // 39
+  down: 'ArrowDown', // 40
+  esc: 'Escape',
+  delete: 'Delete',
+  backspace: 'Backspace',
+  numpadEnter: 'NumpadEnter',
+  pageUp: 'PageUp',
+  pageDown: 'PageDown',
+  home: 'Home',
+  end: 'End',
+};
 
 export const RANGE_SEPARATOR = ' - ';
 
@@ -59,7 +113,12 @@ export const RANGE_SEPARATOR = ' - ';
 // };
 
 const dateFormat = (_date, format) => {
-  const date = toDate(new Date(_date));
+  // const date = toDate(new Date(_date));
+  if (_date instanceof Date) {
+    return dateFnsFormat(_date, format || 'yyyy-MM-dd');
+  }
+
+  const date = dateFnsParse(_date, format || 'yyyy-MM-dd', new Date());
   if (!date || isNaN(date.getTime())) {
     return '';
   }
@@ -135,8 +194,31 @@ export const typeValueResolver = {
     parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
   },
   month: {
-    formatter: (value, format) => dateFormat(value, format),
-    parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
+    formatter: (value, format) => {
+      return dateFormat(value, format);
+    },
+    // parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
+    parser: (text, format) => {
+      const parseRet = dateFnsParse(text, format, new Date());
+      if (isValid(parseRet)) {
+        return parseRet;
+      }
+      return false;
+    },
+  },
+  quarter: {
+    formatter: (value, format) => {
+      // return dateFnsFormat(toDate(new Date(value)), format);
+      return dateFormat(value, format);
+    },
+    // parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
+    parser: (text, format) => {
+      const parseRet = dateFnsParse(text, format || 'yyyy-QQQ', new Date());
+      if (isValid(parseRet)) {
+        return parseRet;
+      }
+      return false;
+    },
   },
   monthrange: {
     formatter: rangeFormatter,
@@ -243,17 +325,19 @@ export const extractTime = (date: Date) => {
   }
   return [date.getHours(), date.getMinutes(), date.getSeconds()];
 };
-
 export const DEFAULT_FORMATS: Record<PickerTypeType, string> = {
-  date: 'yyyy-MM-dd',
+  year: 'yyyy',
+  yearrange: 'yyyy',
+  quarter: 'yyyy-QQQ',
+  quarterrange: 'yyyy-QQQ',
   month: 'yyyy-MM',
   monthrange: 'yyyy-MM',
-  year: 'yyyy',
+  date: 'yyyy-MM-dd',
+  daterange: 'yyyy-MM-dd',
   datetime: 'yyyy-MM-dd HH:mm:ss',
+  datetimerange: 'yyyy-MM-dd HH:mm:ss',
   time: 'HH:mm:ss',
   timerange: 'HH:mm:ss',
-  daterange: 'yyyy-MM-dd',
-  datetimerange: 'yyyy-MM-dd HH:mm:ss',
 };
 
 export const parseDate = (val, type, multiple, format) => {
@@ -347,6 +431,16 @@ export const siblingMonth = (src, diff) => {
   temp.setMonth(newMonth);
 
   return temp;
+};
+
+export const getYearCells = (startYear: number) => {
+  const cells = [];
+  for (let i = 0; i < 10; i++) {
+    const cell: { date?: Date } = {};
+    cell.date = new Date(startYear + i, 0, 1);
+    cells.push(cell);
+  }
+  return cells;
 };
 
 export const formatDateLabels = (() => {

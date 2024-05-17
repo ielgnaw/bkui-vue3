@@ -1,8 +1,13 @@
 @import '@bkui-vue/styles/themes/themes.less';
 
+.@{bk-prefix}-date-picker-transfer {
+  z-index: 1060;
+  max-height: none;
+}
+
 .@{bk-prefix}-date-picker {
   display: inline-block;
-  width: 261px;
+  width: var(--panel-width);
   line-height: normal;
 
   &.long {
@@ -16,6 +21,18 @@
   &.large-width {
     width: 402px;
   }
+}
+
+.@{bk-prefix}-date-picker-dropdown {
+  position: absolute;
+  z-index: 900;
+  padding: 0;
+  overflow: visible;
+  background-color: @date-picker-dropdown-bg;
+  outline: 1px solid @disable-color;
+  border-radius: 2px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .1);
+  box-sizing: border-box;
 }
 
 .@{bk-prefix}-date-picker-rel {
@@ -126,16 +143,395 @@
   }
 }
 
-.@{bk-prefix}-date-picker-dropdown {
-  position: absolute;
-  z-index: 900;
-  padding: 5px 0 0 0;
-  overflow: auto;
-  background-color: @date-picker-dropdown-bg;
-  border: 1px solid @disable-color;
-  border-radius: 2px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, .1);
-  box-sizing: border-box;
+.@{bk-prefix}-picker-panel-body-wrapper {
+  &.@{bk-prefix}-picker-panel-with-sidebar {
+    padding-right: 140px;
+  }
+}
+
+.@{bk-prefix}-date-picker-header {
+  height: 48px;
+  font-size: 14px;
+  line-height: 48px;
+  color: #63656e;
+  text-align: center;
+  float: left;
+  width: 100%;
+
+  .@{bk-prefix}-date-picker-header-label {
+    color: #63656e;
+    font-weight: 700;
+    line-height: 44px;
+    vertical-align: text-bottom;
+  }
+
+  .up-to-now {
+    margin-left: 3px;
+    font-weight: 400;
+    cursor: pointer;
+
+    &.disabled {
+      color: #c4c6cc;
+      cursor: not-allowed;
+    }
+  }
+
+  .@{bk-prefix}-date-picker-selectyear-wrapper {
+    display: inline-block;
+    line-height: 44px;
+    vertical-align: text-bottom;
+  }
+  .@{bk-prefix}-date-picker-year-label {
+    color: #63656e;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-block;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 12px;
+    border-radius: 2px;
+    &:hover {
+      background-color: #f0f1f5;
+    }
+  }
+
+  .@{bk-prefix}-date-picker-selectyear {
+    overflow: auto;
+    max-height: 200px;
+    background-color: #fff;
+    box-shadow: 0 0 6px #dcdee5;
+    font-size: @font-size-base;
+    .@{bk-prefix}-date-picker-selectyear-items {
+      padding: 4px 0;
+      .@{bk-prefix}-date-picker-selectyear-item {
+        position: relative;
+        display: flex;
+        height: 32px;
+        padding: 0 12px;
+        line-height: 32px;
+        color: #63656e;
+        text-align: left;
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        &:hover {
+          color: #63656e;
+          background-color: #f5f7fa;
+        }
+        &.is-selected {
+          color: #3a84ff;
+          background-color: #e1ecff;
+        }
+      }
+    }
+  }
+
+  .@{bk-prefix}-date-picker-selectyearmonth {
+    overflow: auto;
+    max-height: 200px;
+    background-color: #fff;
+    font-size: @font-size-base;
+    float: left;
+    width: 58px;
+    .@{bk-prefix}-date-picker-selectyearmonth-items {
+      padding: 4px 0;
+      .@{bk-prefix}-date-picker-selectyearmonth-item {
+        position: relative;
+        display: flex;
+        height: 32px;
+        padding: 0 12px;
+        line-height: 32px;
+        color: #63656e;
+        text-align: left;
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        &:hover {
+          color: #63656e;
+          background-color: #f5f7fa;
+        }
+        &.is-selected {
+          color: #3a84ff;
+          background-color: #e1ecff;
+        }
+      }
+    }
+  }
+}
+
+&.@{bk-prefix}-date-picker-cells-date {
+  margin: 0 8px 8px 8px;
+  font-size: 12px;
+  color: #63656e;
+  white-space: normal;
+
+  .@{bk-prefix}-date-picker-cells-cell-day {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    padding-left: 4px;
+    margin-bottom: 4px;
+
+    em {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+
+      font-style: normal;
+      line-height: 32px;
+
+      cursor: pointer;
+      border-radius: 4px;
+    }
+  }
+
+  .@{bk-prefix}-date-picker-cells-header {
+    text-align: center;
+
+    .@{bk-prefix}-date-picker-cells-header-week {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin: 2px 4px;
+      line-height: 24px;
+      color: #63656e;
+      text-align: center;
+      cursor: default;
+    }
+  }
+}
+
+&.@{bk-prefix}-date-picker-cells-year {
+  margin: 0 8px 2px 13px;
+  span {
+    display: inline-block;
+    width: 56px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: 4px;
+    margin-bottom: 6px;
+
+    em {
+      display: inline-block;
+      font-style: normal;
+
+      cursor: pointer;
+
+      width: 56px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      border-radius: 4px;
+    }
+  }
+}
+
+&.@{bk-prefix}-date-picker-cells-quarter {
+  margin: 4px 8px 2px 12px;
+  span {
+    display: inline-block;
+    width: 56px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: 4px;
+    margin-bottom: 6px;
+
+    em {
+      display: inline-block;
+      font-style: normal;
+
+      cursor: pointer;
+
+      width: 56px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      border-radius: 4px;
+    }
+  }
+}
+
+&.@{bk-prefix}-date-picker-cells-month {
+  margin: 4px 8px 2px 12px;
+
+  span {
+    display: inline-block;
+    width: 56px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: 4px;
+    margin-bottom: 6px;
+
+    em {
+      display: inline-block;
+      font-style: normal;
+
+      cursor: pointer;
+
+      width: 56px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      border-radius: 4px;
+    }
+  }
+}
+
+.@{bk-prefix}-picker-panel-content {
+  float: left;
+  font-size: 12px;
+}
+
+.@{bk-prefix}-date-picker-cells-cell {
+  &:hover {
+    em {
+      background-color: #f0f1f5;
+    }
+  }
+  &.@{bk-prefix}-date-picker-cells-cell-prev-month,
+  &.@{bk-prefix}-date-picker-cells-cell-next-month {
+    em {
+      border-radius: 0;
+      background-color: #f5f7fa;
+      color: #c4c6cc;
+      &:hover {
+        background-color: #f5f7fa;
+      }
+    }
+  }
+  &.@{bk-prefix}-date-picker-cells-cell-prev-month-first,
+  &.@{bk-prefix}-date-picker-cells-cell-next-month-first {
+    em {
+      border-radius: 2px 0 0 2px;
+      // background-color: red;
+    }
+  }
+  &.@{bk-prefix}-date-picker-cells-cell-prev-month-last,
+  &.@{bk-prefix}-date-picker-cells-cell-next-month-last {
+    em {
+      border-radius: 0 2px 2px 0;
+      // background-color: green;
+    }
+  }
+
+  // &.@{bk-prefix}-date-picker-cells-cell-disabled.@{bk-prefix}-date-picker-cells-cell-selected {
+  //   em {
+  //     color: #f7f7f7;
+  //     background: #c4c6cc;
+  //   }
+  // }
+
+  &.@{bk-prefix}-date-picker-cells-cell-disabled,
+  &.@{bk-prefix}-date-picker-cells-cell-disabled:hover {
+    color: #c4c6cc;
+    cursor: not-allowed;
+    em {
+      color: inherit;
+      cursor: not-allowed;
+      background: inherit;
+    }
+  }
+}
+
+.@{bk-prefix}-picker-today-shortcut {
+  width: 100%;
+  height: 42px;
+  background-color: #fafbfd;
+  border-top: 1px solid #dcdee5;
+  border-radius: 0 0 2px 2px;
+  color: #3a84ff;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.@{bk-prefix}-picker-date-time-tab {
+  height: 48px;
+  background-color: #fff;
+  font-size: 12px;
+  color: #63656e;
+  border-bottom: 1px solid #dcdee5;
+  display: flex;
+  .date,
+  .time {
+    position: relative;
+    width: 50%;
+    display: inline-block;
+    height: 100%;
+    .date-time-tab-inner {
+      position: absolute;
+      transform: translateY(-50%);
+      top: 50%;
+      line-height: 48px;
+      left: 23%;
+      border-bottom: 2px solid transparent;
+      padding-right: 4px;
+      cursor: pointer;
+    }
+    .date-time-tab-icon {
+      position: relative;
+      width: 14px;
+      height: 14px;
+      color: #c4c6cc;
+      top: 3px;
+      margin-right: 4px;
+    }
+    &.active {
+      .date-time-tab-inner {
+        border-color: #3a84ff;
+      }
+      .date-time-tab-label {
+        font-weight: 500;
+        color: #313238;
+      }
+    }
+  }
+  .time {
+    .date-time-tab-inner {
+      left: 20%;
+    }
+  }
+}
+
+.@{bk-prefix}-date-picker-date-wrapper,
+.@{bk-prefix}-date-picker-time-wrapper {
+  transition: transform 0.3s ease-out;
+}
+.@{bk-prefix}-date-picker-time-wrapper {
+  width: 248px;
+  // height: 200px;
+  transform: translateX(100%);
+  .@{bk-prefix}-picker-time-panel-content {
+    position: absolute;
+    width: 100%;
+  }
 }
 
 .@{bk-prefix}-date-picker .@{bk-prefix}-select-dropdown {
@@ -157,12 +553,6 @@
   clear: both;
   font-size: 14px;
   color: #979ba5;
-}
-
-.@{bk-prefix}-picker-panel-body-wrapper {
-  &.@{bk-prefix}-picker-panel-with-sidebar {
-    padding-right: 140px;
-  }
 }
 
 .@{bk-prefix}-picker-panel-sidebar {
@@ -221,6 +611,7 @@
 
 .@{bk-prefix}-picker-panel-body {
   float: left;
+  overflow: hidden;
 }
 
 .@{bk-prefix}-picker-confirm {
@@ -264,108 +655,19 @@
   }
 }
 
-.@{bk-prefix}-date-picker-header {
-  height: 46px;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 46px;
-  color: #63656e;
-  text-align: center;
-  border-bottom: 1px solid #dcdee5;
-
-  .@{bk-prefix}-date-picker-header-label {
-    cursor: pointer;
-
-    &:hover {
-      color: #3a84ff;
-    }
-  }
-
-  .up-to-now {
-    margin-left: 3px;
-    font-weight: 400;
-    cursor: pointer;
-
-    &.disabled {
-      color: #c4c6cc;
-      cursor: not-allowed;
-    }
-  }
-}
-
-
-.@{bk-prefix}-date-picker-cells {
-  margin: 9px;
-  font-size: 12px;
-  color: #63656e;
-  white-space: normal;
-
-  span {
-    display: inline-block;
-    width: 34px;
-    height: 32px;
-    line-height: 32px;
-    text-align: center;
-
-    em {
-      display: inline-block;
-      width: 34px;
-      height: 32px;
-
-      font-style: normal;
-      line-height: 32px;
-
-      cursor: pointer;
-    }
-  }
-
-  .@{bk-prefix}-date-picker-cells-header {
-    text-align: center;
-
-    span {
-      width: 28px;
-      height: 26px;
-      margin: 3px;
-      line-height: 26px;
-      color: #63656e;
-      text-align: center;
-      cursor: default;
-    }
-  }
-}
-
-.@{bk-prefix}-date-picker-cells-cell:hover em {
-  /* background-color: #e1ecff; */
-  background-color: #f0f1f5;
-}
-
 .@{bk-prefix}-date-picker-cells-focused em {
   color: #3a84ff;
   box-shadow: 0 0 0 1px #a3c5fd inset;
 }
 
-.@{bk-prefix}-date-picker-cells-cell-prev-month em,
-.@{bk-prefix}-date-picker-cells-cell-next-month em {
-  color: #c4c6cc;
-}
-
-.@{bk-prefix}-date-picker-cells-cell-prev-month:hover em,
-.@{bk-prefix}-date-picker-cells-cell-next-month:hover em {
-  background: transparent;
-}
-
 span.@{bk-prefix}-date-picker-cells-cell-week-label,
-span.@{bk-prefix}-date-picker-cells-cell-week-label:hover,
-span.@{bk-prefix}-date-picker-cells-cell-disabled,
-span.@{bk-prefix}-date-picker-cells-cell-disabled:hover {
+span.@{bk-prefix}-date-picker-cells-cell-week-label:hover {
   color: #c4c6cc;
   cursor: not-allowed;
 }
 
 span.@{bk-prefix}-date-picker-cells-cell-week-label em,
-span.@{bk-prefix}-date-picker-cells-cell-week-label:hover em,
-span.@{bk-prefix}-date-picker-cells-cell-disabled em,
-span.@{bk-prefix}-date-picker-cells-cell-disabled:hover em {
+span.@{bk-prefix}-date-picker-cells-cell-week-label:hover em {
   color: inherit;
   cursor: not-allowed;
   background: inherit;
@@ -411,11 +713,6 @@ span.@{bk-prefix}-date-picker-cells-cell-disabled:hover {
   box-shadow: 0 0 0 1px #3a84ff inset;
 }
 
-span.@{bk-prefix}-date-picker-cells-cell-disabled.@{bk-prefix}-date-picker-cells-cell-selected em {
-  color: #f7f7f7;
-  background: #c4c6cc;
-}
-
 .@{bk-prefix}-date-picker-cells-cell-today.@{bk-prefix}-date-picker-cells-cell-selected em:after {
   background: #fff;
 }
@@ -423,27 +720,6 @@ span.@{bk-prefix}-date-picker-cells-cell-disabled.@{bk-prefix}-date-picker-cells
 .@{bk-prefix}-date-picker-cells-cell-today.@{bk-prefix}-date-picker-cells-cell-selected em,
 .@{bk-prefix}-date-picker-cells-cell-today.@{bk-prefix}-date-picker-cells-cell-selected em:hover {
   box-shadow: 0 0 0 1px #3a84ff inset;
-}
-
-.@{bk-prefix}-date-picker-cells-year,
-.@{bk-prefix}-date-picker-cells-month {
-  margin-top: 7px;
-
-  span {
-    width: 36px;
-    height: 32px;
-    margin: 10px 12px;
-    line-height: 32px;
-    text-align: center;
-    border-radius: 3px;
-
-    em {
-      width: 36px;
-      height: 32px;
-      line-height: 32px;
-      text-align: center;
-    }
-  }
 }
 
 .@{bk-prefix}-picker-panel-icon-btn {
@@ -467,10 +743,11 @@ span.@{bk-prefix}-date-picker-cells-cell-disabled.@{bk-prefix}-date-picker-cells
 
 .@{bk-prefix}-date-picker-prev-btn {
   float: left;
+  margin-left: 4px;
 }
 
 .@{bk-prefix}-date-picker-prev-btn-arrow-double {
-  margin-left: 10px;
+  margin-left: 12px;
 }
 
 .@{bk-prefix}-date-picker-prev-btn-arrow-double i:after {
@@ -479,10 +756,11 @@ span.@{bk-prefix}-date-picker-cells-cell-disabled.@{bk-prefix}-date-picker-cells
 
 .@{bk-prefix}-date-picker-next-btn {
   float: right;
+  margin-right: 4px;
 }
 
 .@{bk-prefix}-date-picker-next-btn-arrow-double {
-  margin-right: 10px;
+  margin-right: 12px;
 }
 
 .@{bk-prefix}-date-picker-next-btn-arrow-double i:after {
@@ -500,12 +778,6 @@ span.@{bk-prefix}-date-picker-cells-cell-disabled.@{bk-prefix}-date-picker-cells
 .@{bk-prefix}-date-picker-with-range .@{bk-prefix}-picker-cells-show-week-numbers {
   min-width: 492px;
 }
-
-.@{bk-prefix}-date-picker-transfer {
-  z-index: 1060;
-  max-height: none;
-}
-
 
 .@{bk-prefix}-fade-down-transition-enter-from,
 .@{bk-prefix}-fade-down-transition-leave-to {

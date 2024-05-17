@@ -57,6 +57,13 @@ const menuPropsJson: IPropsTableItem[] = [
     desc: '类型',
     optional: ['date', 'daterange', 'datetime', 'datetimerange', 'month', 'year'],
   },
+  {
+    name: 'showToday',
+    type: 'Boolean',
+    default: 'true',
+    desc: '是否显示今天快捷操作栏，仅在 type 为 date 时生效',
+    optional: ['true', 'false'],
+  },
 ];
 
 export default defineComponent({
@@ -76,28 +83,20 @@ export default defineComponent({
           <BaseDemo />
         </DemoBox>
         <DemoBox
-          title='开启日期范围'
-          desc='通过设置 type 属性为 daterange 来开启时间设置'
-          componentName='date-picker'
-          demoName='range-demo'
-        >
-          <RangeDemo />
-        </DemoBox>
-        <DemoBox
-          title='开启月份范围'
-          desc='通过设置 type 属性为 monthrange 来开启月份范围'
-          componentName='date-picker'
-          demoName='month-range-demo'
-        >
-          <MonthRangeDemo />
-        </DemoBox>
-        <DemoBox
           title='开启时间设置'
           desc='通过设置 type 属性为 datetime 来开启时间设置'
           componentName='date-picker'
           demoName='with-time-demo'
         >
           <WithTimeDemo />
+        </DemoBox>
+        {/* <DemoBox
+          title='开启日期时间范围'
+          desc='通过设置 type 属性为 datetimerange 来开启时间设置'
+          componentName='date-picker'
+          demoName='range-demo'
+        >
+          <RangeDemo />
         </DemoBox>
         <DemoBox
           title='trigger slot'
@@ -139,15 +138,15 @@ export default defineComponent({
           demoName='demo-tsx'
         >
           <DemoTsx />
-        </DemoBox>
-        <DemoBox
+        </DemoBox> */}
+        {/* <DemoBox
           title='年选择器与月选择器'
           desc='通过 type 属性配置年选择器与月选择器'
           componentName='date-picker'
           demoName='year-month-demo'
         >
           <YearMonthDemo />
-        </DemoBox>
+        </DemoBox> */}
         <PropsBox propsData={menuPropsJson} />
       </div>
     );

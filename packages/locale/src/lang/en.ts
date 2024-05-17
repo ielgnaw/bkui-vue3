@@ -49,6 +49,7 @@ const en = {
     min: 'Minute',
     sec: 'Second',
     toNow: 'Now',
+    today: 'Today',
     // now: 'Now',
   },
   dialog: {

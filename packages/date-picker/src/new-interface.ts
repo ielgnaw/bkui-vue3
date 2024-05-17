@@ -47,9 +47,48 @@ import type { DatePickerProps } from './props';
 
 export type DatePickerPlacementType = ComputedPlacement;
 
-export type DatePickerTypeType = 'year' | 'month' | 'quarter' | 'date' | 'daterange' | 'datetime' | 'datetimerange';
+export type DatePickerTypeType =
+  | 'year'
+  | 'yearrange'
+  | 'month'
+  | 'monthrange'
+  | 'quarter'
+  | 'quarterrange'
+  | 'date'
+  | 'daterange'
+  | 'datetime'
+  | 'datetimerange';
 export type TimePickerTypeType = 'time' | 'timerange';
 export type PickerTypeType = DatePickerTypeType | TimePickerTypeType;
+
+export enum DatePickerPanelType {
+  YearPanel = 'YearPanel',
+  YearRangePanel = 'YearRangePanel',
+  QuarterPanel = 'QuarterPanel',
+  QuarterRangePanel = 'QuarterRangePanel',
+  MonthPanel = 'MonthPanel',
+  MonthRangePanel = 'MonthRangePanel',
+  DatePanel = 'DatePanel',
+  DateRangePanel = 'DateRangePanel',
+  DateTimePanel = 'DateTimePanel',
+  DateTimeRangePanel = 'DateTimeRangePanel',
+  TimePickerPanel = 'TimePickerPanel',
+  RangeTimePickerPanel = 'RangeTimePickerPanel',
+}
+
+// export type DatePickerPanelType =
+//   | 'YearPanel'
+//   | 'YearRangePanel'
+//   | 'QuarterPanel'
+//   | 'QuarterRangePanel'
+//   | 'MonthPanel'
+//   | 'MonthRangePanel'
+//   | 'DatePanel'
+//   | 'DateRangePanel'
+//   | 'DateTimePanel'
+//   | 'DateTimeRangePanel'
+//   | 'TimePickerPanel'
+//   | 'RangeTimePickerPanel';
 
 export interface IDatePickerShortcut {
   text: string;
@@ -73,8 +112,6 @@ export interface ITimePickerCtx {
   panelDate?: Date | string | number;
   dates?: ValueType | [ValueType, ValueType];
 }
-
-export type DatePickerPanelType = 'DateRangePanel' | 'DatePanel' | 'RangeTimePickerPanel' | 'TimePickerPanel';
 
 // export type SelectionModeType = 'year' | 'month' | 'quarter' | 'date' | 'time';
 export type SelectionModeType = PickerTypeType;

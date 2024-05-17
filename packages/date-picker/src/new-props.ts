@@ -24,6 +24,7 @@
  * IN THE SOFTWARE.
  */
 
+import merge from 'lodash/merge';
 import type { ExtractPropTypes } from 'vue';
 import { PropType } from 'vue';
 
@@ -33,75 +34,21 @@ import type {
   DatePickerValueType,
   DisabledDateType,
   PickerTypeType,
-} from './interface';
+} from './new-interface';
+import { PICKER_TYPE_LIST } from './utils';
 
 export const datePickerProps = {
   type: {
     type: String as PropType<PickerTypeType>,
     default: 'date',
     validator(value) {
-      const validList: PickerTypeType[] = [
-        'year',
-        'quarter',
-        'month',
-        'monthrange',
-        'date',
-        'daterange',
-        'datetime',
-        'datetimerange',
-        'time',
-        'timerange',
-      ];
+      const validList: PickerTypeType[] = PICKER_TYPE_LIST;
       if (validList.indexOf(value) < 0) {
         console.error(`type property is not valid: '${value}'`);
         return false;
       }
       return true;
     },
-  },
-  // 外部设置的 popover class name
-  extPopoverCls: {
-    type: String,
-    default: '',
-  },
-  format: String,
-  readonly: {
-    type: Boolean,
-    default: false,
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  editable: {
-    type: Boolean,
-    default: true,
-  },
-  clearable: {
-    type: Boolean,
-    default: true,
-  },
-  open: {
-    // type: [Boolean, null],
-    type: Boolean as () => boolean | null,
-    default: null,
-  },
-  multiple: {
-    type: Boolean,
-    default: false,
-  },
-  timePickerOptions: {
-    type: Object as PropType<Record<string, any>>,
-    default: () => ({}),
-  },
-  splitPanels: {
-    type: Boolean,
-    default: true,
-  },
-  startDate: Date,
-  placeholder: {
-    type: String,
-    default: '',
   },
   placement: {
     type: String as PropType<DatePickerPlacementType>,
@@ -128,14 +75,74 @@ export const datePickerProps = {
       return true;
     },
   },
-  transfer: {
+  modelValue: {
+    type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
+  },
+  value: {
+    type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
+  },
+  cellClass: {
+    type: Function,
+    default: () => '',
+  },
+  // 外部设置的 popover class name
+  extPopoverCls: {
+    type: String,
+    default: '',
+  },
+  readonly: {
     type: Boolean,
     default: false,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  open: {
+    // type: [Boolean, null],
+    type: Boolean as () => boolean | null,
+    default: null,
   },
   appendToBody: {
     type: Boolean,
     default: false,
   },
+  editable: {
+    type: Boolean,
+    default: false,
+  },
+  clearable: {
+    type: Boolean,
+    default: true,
+  },
+  showToday: {
+    type: Boolean,
+    default: true,
+  },
+  format: String,
+
+  // //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  multiple: {
+    type: Boolean,
+    default: false,
+  },
+  timePickerOptions: {
+    type: Object as PropType<Record<string, any>>,
+    default: () => ({}),
+  },
+  splitPanels: {
+    type: Boolean,
+    default: true,
+  },
+  startDate: Date,
+  placeholder: {
+    type: String,
+    default: '',
+  },
+  // transfer: {
+  //   type: Boolean,
+  //   default: false,
+  // },
   shortcuts: {
     type: Array as PropType<DatePickerShortcutsType>,
     default: () => [],
@@ -143,12 +150,6 @@ export const datePickerProps = {
   shortcutClose: {
     type: Boolean,
     default: false,
-  },
-  modelValue: {
-    type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
-  },
-  value: {
-    type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
   },
   options: {
     type: Object,
@@ -256,3 +257,46 @@ export const timePickerProps = {
 };
 
 export type TimePickerProps = Readonly<ExtractPropTypes<typeof timePickerProps>>;
+
+export const selectYearProps = {
+  placement: {
+    type: String as PropType<DatePickerPlacementType>,
+    default: 'bottom',
+    validator: value => {
+      const validList: DatePickerPlacementType[] = [
+        'top',
+        'top-start',
+        'top-end',
+        'bottom',
+        'bottom-start',
+        'bottom-end',
+        'left',
+        'left-start',
+        'left-end',
+        'right',
+        'right-start',
+        'right-end',
+      ];
+      if (validList.indexOf(value) < 0) {
+        console.error(`placement property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
+  },
+  triggerRef: {
+    type: Object,
+  },
+  selectedYear: {
+    type: String,
+  },
+  onClick: Function as PropType<(e: MouseEvent) => void>,
+};
+export type SelectYearProps = Readonly<ExtractPropTypes<typeof selectYearProps>>;
+
+export const selectYearMonthProps = merge(selectYearProps, {
+  selectedMonth: {
+    type: String,
+  },
+});
+export type SelectYearMonthProps = Readonly<ExtractPropTypes<typeof selectYearMonthProps>>;

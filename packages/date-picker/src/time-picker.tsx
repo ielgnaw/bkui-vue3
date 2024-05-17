@@ -46,13 +46,13 @@ import { Close } from '@bkui-vue/icon';
 import { getFullscreenRoot, useFormItem } from '@bkui-vue/shared';
 
 import PickerDropdown from './base/picker-dropdown';
-import { dateIcon, timeIcon } from './common';
+import { DateIcon, TimeIcon } from './common';
 // import VueTypes, { toType, toValidableType } from 'vue-types';
 // import { PropTypes } from '@bkui-vue/shared';
 import type { DatePickerPanelType, SelectionModeType } from './interface';
+import { datePickerProps, timePanelProps, timePickerProps } from './new-props';
 import TimePanel from './panel/time';
 import TimeRangePanel from './panel/time-range';
-import { datePickerProps, timePanelProps, timePickerProps } from './props';
 import { datePickerKey, extractTime, formatDate, isAllEmptyArr, parseDate } from './utils';
 
 export default defineComponent({
@@ -627,7 +627,7 @@ export default defineComponent({
           class={['icon-wrapper', this.disabled ? 'disabled' : '']}
           onClick={this.handleIconClick}
         >
-          {this.type === 'time' || this.type === 'timerange' ? timeIcon : dateIcon}
+          {this.type === 'time' || this.type === 'timerange' ? <TimeIcon /> : <DateIcon />}
         </span>
         <input
           type='text'
