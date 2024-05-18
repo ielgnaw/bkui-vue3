@@ -119,7 +119,6 @@ export default defineComponent({
     const renderPanel = () => {
       let view: VNode = null;
 
-      console.error(this.panel);
       switch (this.panel) {
         case 'TimePanel':
           view = (

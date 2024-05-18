@@ -25,10 +25,9 @@
  */
 
 import type { ExtractPropTypes } from 'vue';
-import { computed, defineComponent, PropType, ref, watch } from 'vue';
+import { computed, defineComponent, nextTick, onMounted, PropType, ref, watch } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
-import { scrollTop } from '@bkui-vue/shared';
 
 import { selectYearMonthProps, timePanelProps } from '../new-props';
 import { firstUpperCase, pad } from '../utils';
@@ -139,9 +138,12 @@ export default defineComponent({
 
     const scroll = (type, index) => {
       const domRef = getDomRef(type);
-      const from = domRef.scrollTop;
+      // const from = domRef.scrollTop;
       const to = 32 * getScrollIndex(type, index);
-      scrollTop(domRef, from, to, 500);
+      // scrollTop(domRef, from, to, 500);
+      nextTick(() => {
+        domRef.scrollTop = to;
+      });
     };
 
     const scrollIdx = (idxs: string[]) => {
@@ -329,6 +331,11 @@ export default defineComponent({
         scrollIdx(['hours', 'minutes', 'seconds']);
       },
     );
+
+    onMounted(() => {
+      console.error('onmound');
+      scrollIdx(['hours', 'minutes', 'seconds']);
+    });
 
     // onMounted(() => {
     //   nextTick(() => {

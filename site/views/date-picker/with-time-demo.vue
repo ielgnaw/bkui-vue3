@@ -5,6 +5,7 @@
     :disable-date="disableDate"
     type="datetime"
     editable
+    open
     @change="handleChange"
     @clear="handleClear"
     @pick-success="handleOk"

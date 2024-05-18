@@ -527,10 +527,15 @@
 .@{bk-prefix}-date-picker-time-wrapper {
   width: 248px;
   // height: 200px;
-  transform: translateX(100%);
   .@{bk-prefix}-picker-time-panel-content {
-    position: absolute;
+    position: relative;
     width: 100%;
+  }
+  &.in-date-picker {
+    transform: translateX(100%);
+    .@{bk-prefix}-picker-time-panel-content {
+      position: absolute;
+    }
   }
 }
 

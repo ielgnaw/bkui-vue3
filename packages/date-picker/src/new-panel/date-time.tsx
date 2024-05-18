@@ -387,7 +387,7 @@ export default defineComponent({
           </div>
           <div
             ref='timeWrapperRef'
-            class={this.resolveClassName('date-picker-time-wrapper')}
+            class={[this.resolveClassName('date-picker-time-wrapper'), 'in-date-picker']}
           >
             <div class={this.resolveClassName('picker-time-panel-content')}>
               <TimeSpinner
