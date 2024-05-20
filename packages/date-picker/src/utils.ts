@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { format as dateFnsFormat, isValid, parse as dateFnsParse /* , toDate */ } from 'date-fns';
+import { format as dateFnsFormat, isDate, isValid, parse as dateFnsParse, toDate } from 'date-fns';
 import type { InjectionKey } from 'vue';
 
 import { resolveClassName } from '@bkui-vue/shared';
@@ -114,7 +114,7 @@ export const RANGE_SEPARATOR = ' - ';
 
 const dateFormat = (_date, format) => {
   // const date = toDate(new Date(_date));
-  if (_date instanceof Date) {
+  if (isDate(_date)) {
     return dateFnsFormat(_date, format || 'yyyy-MM-dd');
   }
 
@@ -190,8 +190,28 @@ export const typeValueResolver = {
     parser: rangeParser,
   },
   time: {
-    formatter: (value, format) => dateFormat(value, format),
-    parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
+    formatter: (value, format) => {
+      // let date = value;
+      // if (isDate(date)) {
+      //   return dateFnsFormat(date, format || 'yyyy-MM-dd');
+      // }
+
+      // date = toDate(new Date(`${dateFnsFormat(new Date(), 'yyyy-MM-dd')} ${value}`));
+      // if (!date || isNaN(date.getTime())) {
+      //   return '';
+      // }
+      // return dateFnsFormat(date, format || 'yyyy-MM-dd');
+      let date = value;
+      if (!isDate(date)) {
+        date = toDate(new Date(`${dateFnsFormat(new Date(), 'yyyy-MM-dd')} ${value}`));
+      }
+      return fecha.format(date, format || 'yyyy-MM-dd');
+      // return dateFormat(value, format);
+    },
+    parser: (text, _format) => {
+      // return toDate(new Date(`${dateFnsFormat(new Date(), 'yyyy-MM-dd')} ${text}`));
+      return fecha.parse(text, _format || 'yyyy-MM-dd');
+    },
   },
   month: {
     formatter: (value, format) => {
