@@ -3,7 +3,7 @@
     ref="datePickerRef"
     class="mr15"
     :model-value="defaultValue"
-    :placeholder="'选择月份范围'"
+    :placeholder="'选择日期范围'"
     :disabled-date="disabledDate"
     type="monthrange"
     @change="handleChange"

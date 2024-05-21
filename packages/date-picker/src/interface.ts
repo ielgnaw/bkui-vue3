@@ -47,7 +47,16 @@ import type { DatePickerProps } from './props';
 
 export type DatePickerPlacementType = ComputedPlacement;
 
-export type DatePickerTypeType = 'year' | 'month' | 'quarter' | 'date' | 'daterange' | 'datetime' | 'datetimerange';
+export type DatePickerTypeType =
+  | 'year'
+  | 'yearrange'
+  | 'month'
+  | 'monthrange'
+  | 'quarter'
+  | 'date'
+  | 'daterange'
+  | 'datetime'
+  | 'datetimerange';
 export type TimePickerTypeType = 'time' | 'timerange';
 export type PickerTypeType = DatePickerTypeType | TimePickerTypeType;
 

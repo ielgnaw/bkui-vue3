@@ -41,7 +41,6 @@ import ShortcutsSlotDemo from './shortcuts-slot-demo.vue';
 import TriggerSlotDemo from './trigger-slot-demo.vue';
 import WithTimeDemo from './with-time-demo.vue';
 import YearMonthDemo from './year-month-demo.vue';
-import YearRangeDemo from './year-range-demo.vue';
 
 const menuPropsJson: IPropsTableItem[] = [
   {
