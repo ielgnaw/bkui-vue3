@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { computed, defineComponent, type ExtractPropTypes, PropType, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
@@ -32,91 +32,23 @@ import { capitalize } from '@bkui-vue/shared';
 
 import TimeSpinner from '../new-base/time-spinner';
 // import Confirm from '../base/confirm';
-import type {
-  DatePickerShortcutsType,
-  DatePickerValueType,
-  DisabledDateType,
-  PickerTypeType,
-  // SelectionModeType,
-} from '../new-interface';
+import type { DatePickerValueType } from '../new-interface';
+import { timePanelProps } from '../new-props';
 import {
   ALL_YEARS,
   // formatDateLabels,
   PANEL_WIDTH,
-  PICKER_TYPE_LIST,
   // timePickerKey
 } from '../utils';
 
 // import Time from './time';
-
-const datePanelProps = {
-  value: {
-    type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
-  },
-  type: {
-    type: String as PropType<PickerTypeType>,
-    default: 'date',
-    validator(value) {
-      const validList: PickerTypeType[] = PICKER_TYPE_LIST;
-      if (validList.indexOf(value) < 0) {
-        console.error(`type property is not valid: '${value}'`);
-        return false;
-      }
-      return true;
-    },
-  },
-  shortcuts: {
-    type: Array as PropType<DatePickerShortcutsType>,
-    default: () => [],
-  },
-  multiple: {
-    type: Boolean,
-    default: false,
-  },
-  clearable: {
-    type: Boolean,
-    default: true,
-  },
-  shortcutClose: {
-    type: Boolean,
-    default: false,
-  },
-  startDate: {
-    type: Date,
-  },
-  focusedDate: {
-    type: Date,
-    required: true,
-  },
-  confirm: {
-    type: Boolean,
-    default: false,
-  },
-  disabledDate: {
-    // type: Function,
-    type: Function as PropType<DisabledDateType>,
-    default: () => false,
-  },
-  timePickerOptions: {
-    type: Object as PropType<Record<string, any>>,
-    default: () => ({}),
-  },
-  opened: {
-    type: Boolean,
-    default: false,
-  },
-
-  format: String,
-} as const;
-
-export type DatePanelProps = Readonly<ExtractPropTypes<typeof datePanelProps>>;
 
 export default defineComponent({
   name: 'TimePanel',
   directives: {
     clickoutside,
   },
-  props: datePanelProps,
+  props: timePanelProps,
   emits: ['pick', 'pick-success', 'pick-clear', 'pick-click', 'selection-mode-change'],
   setup(props, { emit }) {
     const t = useLocale('datePicker');
@@ -231,6 +163,11 @@ export default defineComponent({
                 // hideDisabledOptions={this.hideDisabledOptions}
                 onChange={this.handleChange}
               />
+              {this.showNow ? (
+                <>
+                  <div class={this.resolveClassName('picker-today-shortcut')}>{this.t.today}</div>
+                </>
+              ) : null}
             </div>
           </div>
         </div>

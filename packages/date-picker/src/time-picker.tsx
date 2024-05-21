@@ -131,12 +131,12 @@ export default defineComponent({
               shortcutClose={this.shortcutClose}
               type={this.type}
               startDate={this.startDate}
-              focusedDate={this.focusedDate}
               disabledDate={this.disabledDate}
               timePickerOptions={this.timePickerOptions}
               opened={this.opened}
               onPick={this.onPick}
               format={this.format}
+              showNow={this.showNow}
             />
           );
           break;

@@ -29,7 +29,7 @@ import { computed, defineComponent, nextTick, onMounted, PropType, ref, watch } 
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 
-import { selectYearMonthProps, timePanelProps } from '../new-props';
+import { timePanelProps } from '../new-props';
 import { firstUpperCase, pad } from '../utils';
 
 const timeSpinnerProps = {
@@ -64,7 +64,6 @@ export type TimeSpinnerProps = Readonly<ExtractPropTypes<typeof timeSpinnerProps
 export default defineComponent({
   name: 'TimeSpinner',
   props: {
-    ...selectYearMonthProps,
     ...timeSpinnerProps,
     ...timePanelProps,
   },

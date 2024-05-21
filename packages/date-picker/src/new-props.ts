@@ -203,7 +203,91 @@ export const datePickerProps = {
 
 export type DatePickerProps = Readonly<ExtractPropTypes<typeof datePickerProps>>;
 
+export const timePickerProps = {
+  type: {
+    type: String as PropType<PickerTypeType>,
+    default: 'time',
+    validator(value) {
+      const validList: PickerTypeType[] = ['time', 'timerange'];
+      if (validList.indexOf(value) < 0) {
+        console.error(`type property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
+  },
+  allowCrossDay: {
+    type: Boolean,
+    default: false,
+  },
+  showNow: {
+    type: Boolean,
+    default: false,
+  },
+};
+
+export type TimePickerProps = Readonly<ExtractPropTypes<typeof timePickerProps>>;
+
 export const timePanelProps = {
+  value: {
+    type: [Date, String, Number, Array] as PropType<DatePickerValueType | null>,
+  },
+  type: {
+    type: String as PropType<PickerTypeType>,
+    default: 'time',
+    validator(value) {
+      const validList: PickerTypeType[] = ['time', 'timerange'];
+      if (validList.indexOf(value) < 0) {
+        console.error(`type property is not valid: '${value}'`);
+        return false;
+      }
+      return true;
+    },
+  },
+  shortcuts: {
+    type: Array as PropType<DatePickerShortcutsType>,
+    default: () => [],
+  },
+  multiple: {
+    type: Boolean,
+    default: false,
+  },
+  clearable: {
+    type: Boolean,
+    default: true,
+  },
+  shortcutClose: {
+    type: Boolean,
+    default: false,
+  },
+  startDate: {
+    type: Date,
+  },
+  confirm: {
+    type: Boolean,
+    default: false,
+  },
+  disabledDate: {
+    // type: Function,
+    type: Function as PropType<DisabledDateType>,
+    default: () => false,
+  },
+  timePickerOptions: {
+    type: Object as PropType<Record<string, any>>,
+    default: () => ({}),
+  },
+  opened: {
+    type: Boolean,
+    default: false,
+  },
+
+  format: String,
+
+  showNow: {
+    type: Boolean,
+    default: false,
+  },
+
   // 禁止选择的小时
   disabledHours: {
     type: Array,
@@ -236,27 +320,6 @@ export const timePanelProps = {
 } as const;
 
 export type TimePanelProps = Readonly<ExtractPropTypes<typeof timePanelProps>>;
-
-export const timePickerProps = {
-  type: {
-    type: String as PropType<PickerTypeType>,
-    default: 'time',
-    validator(value) {
-      const validList: PickerTypeType[] = ['time', 'timerange'];
-      if (validList.indexOf(value) < 0) {
-        console.error(`type property is not valid: '${value}'`);
-        return false;
-      }
-      return true;
-    },
-  },
-  allowCrossDay: {
-    type: Boolean,
-    default: false,
-  },
-};
-
-export type TimePickerProps = Readonly<ExtractPropTypes<typeof timePickerProps>>;
 
 export const selectYearProps = {
   placement: {
