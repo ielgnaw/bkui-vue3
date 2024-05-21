@@ -44,7 +44,6 @@ export const datePickerProps = {
         'year',
         'quarter',
         'month',
-        'monthrange',
         'date',
         'daterange',
         'datetime',

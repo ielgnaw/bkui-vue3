@@ -248,6 +248,10 @@ export const typeValueResolver = {
     formatter: (value, format) => dateFormat(value, format),
     parser: (text, format) => fecha.parse(text, format || 'yyyy-MM-dd'),
   },
+  yearrange: {
+    formatter: rangeFormatter,
+    parser: rangeParser,
+  },
   multiple: {
     formatter(value, format) {
       return value
@@ -533,7 +537,15 @@ export const isInRange = (time, a, b) => {
   if (!a || !b) {
     return false;
   }
-  const [start, end] = [a, b].sort();
+  const [start, end] = [a, b].sort((x, y) => {
+    if (x - y > 0) {
+      return 1;
+    }
+    if (x - y < 0) {
+      return -1;
+    }
+    return 0;
+  });
   return time >= start && time <= end;
 };
 

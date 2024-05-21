@@ -75,7 +75,7 @@ export default (
 
   const settings = computed(() => formatData.value.settings);
 
-  const { isShiftKeyDown, getStore, setStore } = useShiftKey(props);
+  const { isShiftKeyDown, getStore, setStore, setStoreStart, clearStoreStart } = useShiftKey(props);
 
   // const activeSortIndex = ref(null);
 
@@ -520,6 +520,14 @@ export default (
         tableResp.setRowSelectionAll(value);
         context.emit(EMIT_EVENTS.ROW_SELECT_ALL, { checked: value, data: props.data });
         return;
+      }
+
+      if (!isShiftKeyDown.value) {
+        if (value) {
+          setStoreStart(row, index);
+        } else {
+          clearStoreStart();
+        }
       }
 
       tableResp.setRowSelection(row, value);

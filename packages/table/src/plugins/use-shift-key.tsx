@@ -47,6 +47,14 @@ export default (props: TablePropTypes) => {
     }
   };
 
+  const setStoreStart = (row?, index?) => {
+    store.start = { index: index ?? null, row: row ?? null };
+  };
+
+  const clearStoreStart = () => {
+    setStoreStart();
+  };
+
   const setStore = (row: any, index: number) => {
     if (store.start === null && store.end === null) {
       store.start = { index, row };
@@ -81,5 +89,7 @@ export default (props: TablePropTypes) => {
     setStore,
     getStore,
     clearStore,
+    setStoreStart,
+    clearStoreStart,
   };
 };

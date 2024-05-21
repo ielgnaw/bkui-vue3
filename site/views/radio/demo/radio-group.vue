@@ -19,7 +19,7 @@
   function handleBeforeChange(item) {
       if (hasPackage.value && !flag.value) {
         InfoBox({
-          title: ('确认要切换类型吗？'),
+          title: ('确认要切换类型吗'),
           subTitle: ('before-change 配置项示例'),
           confirmText: ('确认'),
           cancelText: ('取消'),
