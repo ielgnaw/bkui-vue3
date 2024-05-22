@@ -27,7 +27,7 @@
 import { computed, defineComponent, PropType, ref, toRefs } from 'vue';
 
 import Button from '@bkui-vue/button';
-import { useLocale } from '@bkui-vue/config-provider';
+import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { Del, Plus, Upload } from '@bkui-vue/icon';
 import Progress from '@bkui-vue/progress';
 import { classes } from '@bkui-vue/shared';
@@ -50,9 +50,11 @@ export default defineComponent({
   emits: ['change', 'remove'],
   setup(props, { slots, emit }) {
     const t = useLocale('upload');
+    const { resolveClassName } = usePrefix();
+
     const { theme, disabled, file, multiple, accept } = toRefs(props);
 
-    const classBlock = `${CLASS_PREFIX}-trigger`;
+    const classBlock = `${resolveClassName(CLASS_PREFIX)}-trigger`;
 
     const isButton = computed<boolean>(() => theme.value === EThemes.BUTTON);
     const isDrag = computed<boolean>(() => theme.value === EThemes.DRAGGABLE);

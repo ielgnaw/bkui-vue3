@@ -28,7 +28,7 @@ import { ExtractPropTypes } from 'vue';
 
 import uploadProps from './props';
 
-export const CLASS_PREFIX = 'bk-upload';
+export const CLASS_PREFIX = 'upload';
 
 export const enum EThemes {
   BUTTON = 'button',

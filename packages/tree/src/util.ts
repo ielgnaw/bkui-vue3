@@ -151,7 +151,7 @@ export const getNodeItemClass = (item: any, schema: WeakMap<Object, any>, props:
   const { __is_root, __is_open } = schema.get(item) || {};
   return {
     'is-root': __is_root,
-    'bk-tree-node': true,
+    [resolveClassName('tree-node')]: true,
     'is-open': __is_open,
     'is-virtual-render': props.virtualRender,
     'level-line': props.levelLine && showTree,

@@ -49,6 +49,7 @@ export default defineComponent({
   emits: ['update:modelValue'],
   setup(props, { emit }) {
     const t = useLocale('cascader');
+    const { resolveClassName } = usePrefix();
 
     const { store } = props;
     const menus = reactive({
@@ -195,7 +196,11 @@ export default defineComponent({
     };
 
     const iconRender = node =>
-      node.loading ? <Spinner class='icon-spinner'></Spinner> : <AngleRight class='icon-angle-right'></AngleRight>;
+      node.loading ? (
+        <Spinner class={resolveClassName('icon-spinner')}></Spinner>
+      ) : (
+        <AngleRight class={resolveClassName('icon-angle-right')}></AngleRight>
+      );
 
     watch(
       () => props.modelValue,
@@ -211,8 +216,6 @@ export default defineComponent({
         menus.list = [value.getNodes()];
       },
     );
-
-    const { resolveClassName } = usePrefix();
 
     return {
       menus,

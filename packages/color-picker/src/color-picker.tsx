@@ -297,7 +297,7 @@ export default defineComponent({
               </div>
             ) : undefined}
             <div class={`${resolveClassName('color-picker-icon')}`}>
-              <AngleUp class='icon-angle-down'></AngleUp>
+              <AngleUp class={resolveClassName('icon-angle-down')}></AngleUp>
             </div>
           </>
         )}

@@ -29,7 +29,7 @@ import { computed, defineComponent, ref, toRaw, toRefs, watch } from 'vue';
 
 import Checkbox, { BkCheckboxGroup } from '@bkui-vue/checkbox';
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
-import { AngleLeft, AngleRight, ArrowsRight, Error, Search, Transfer } from '@bkui-vue/icon/';
+import { AngleLeft, AngleRight, ArrowsRight, Error, Search, Transfer } from '@bkui-vue/icon';
 import Input from '@bkui-vue/input';
 
 import { ArrayType } from './const';
@@ -350,9 +350,11 @@ export default defineComponent({
           {!multiple && (
             <span class='icon-wrapper'>
               {isLeft ? (
-                <ArrowsRight class={`${this.resolveClassName('icon')} icon-move`} />
+                // <ArrowsRight class={`${this.resolveClassName('icon')} icon-move`} />
+                <ArrowsRight class={this.resolveClassName('icon')} />
               ) : (
-                <Error class={`${this.resolveClassName('icon')} icon-delete`} />
+                // <Error class={`${this.resolveClassName('icon')} icon-delete`} />
+                <Error class={[this.resolveClassName('icon'), this.resolveClassName('icon-delete')]} />
               )}
             </span>
           )}
@@ -410,7 +412,7 @@ export default defineComponent({
               placeholder={this.searchPlaceholder || this.t.search}
             >
               {{
-                prefix: () => <Search class='icon-search' />,
+                prefix: () => <Search class={this.resolveClassName('icon-search')} />,
               }}
             </Input>
           )}
@@ -432,7 +434,7 @@ export default defineComponent({
             </div>
           </div>
         ) : (
-          <Transfer class='transfer' />
+          <Transfer class={this.resolveClassName('transfer-icon')} />
         )}
         <div class='target-list'>
           {getHeaderHtml('right-header')}
