@@ -98,8 +98,6 @@
   }
 }
 
-
-
 .@{bk-prefix}-time-picker-cells-list {
   position: relative;
   float: left;
@@ -172,6 +170,17 @@
       }
     }
 
+  }
+}
+
+.@{bk-prefix}-date-picker-time-wrapper {
+  &.in-date-picker {
+    .@{bk-prefix}-time-picker-cells-list {
+      max-height: 220px;
+      .@{bk-prefix}-time-picker-cells-ul {
+        padding: 0 0 188px 0;
+      }
+    }
   }
 }
 

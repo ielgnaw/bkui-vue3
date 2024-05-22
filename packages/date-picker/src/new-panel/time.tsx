@@ -34,12 +34,7 @@ import TimeSpinner from '../new-base/time-spinner';
 // import Confirm from '../base/confirm';
 import type { DatePickerValueType } from '../new-interface';
 import { timePanelProps } from '../new-props';
-import {
-  ALL_YEARS,
-  // formatDateLabels,
-  PANEL_WIDTH,
-  // timePickerKey
-} from '../utils';
+import { ALL_YEARS, PANEL_WIDTH } from '../utils';
 
 // import Time from './time';
 
@@ -53,6 +48,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const t = useLocale('datePicker');
     const { resolveClassName } = usePrefix();
+
     // const dateWrapperRef = ref<HTMLElement>(null);
     const timeWrapperRef = ref<HTMLElement>(null);
 
@@ -76,13 +72,6 @@ export default defineComponent({
       Object.keys(val).forEach(type => newDate[`set${capitalize(type)}`](val[type]));
       dates.value = [newDate];
       emit('pick', newDate);
-    };
-
-    const handlePick = value => {
-      const val = new Date(value);
-
-      dates.value = [val];
-      emit('pick', val);
     };
 
     // const handleToggleDateTime = (idx: string) => {
@@ -135,7 +124,6 @@ export default defineComponent({
       showSeconds,
 
       handleChange,
-      handlePick,
       // handleToggleDateTime,
     };
   },
@@ -165,22 +153,13 @@ export default defineComponent({
                 hours={this.selectedHours}
                 minutes={this.selectedMinutes}
                 seconds={this.selectedSeconds}
+                showNow={this.showNow}
                 // disabledHours={this.disabledHMS.disabledHours}
                 // disabledMinutes={this.disabledHMS.disabledMinutes}
                 // disabledSeconds={this.disabledHMS.disabledSeconds}
                 // hideDisabledOptions={this.hideDisabledOptions}
                 onChange={this.handleChange}
               />
-              {this.showNow ? (
-                <>
-                  <div
-                    class={this.resolveClassName('picker-today-shortcut')}
-                    onClick={() => this.handlePick(new Date())}
-                  >
-                    {this.t.now}
-                  </div>
-                </>
-              ) : null}
             </div>
           </div>
         </div>

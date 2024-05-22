@@ -64,12 +64,13 @@ export type TimeSpinnerProps = Readonly<ExtractPropTypes<typeof timeSpinnerProps
 export default defineComponent({
   name: 'TimeSpinner',
   props: {
-    ...timeSpinnerProps,
     ...timePanelProps,
+    ...timeSpinnerProps,
   },
-  emits: ['change', 'pickClick'],
+  emits: ['change'],
   setup(props, { emit }) {
     const t = useLocale('datePicker');
+
     const hoursRef = ref(null);
     const minutesRef = ref(null);
     const secondsRef = ref(null);
@@ -83,7 +84,6 @@ export default defineComponent({
 
     const emitChange = changes => {
       emit('change', changes);
-      emit('pickClick');
     };
 
     const getCellCls = cell => {
@@ -105,23 +105,15 @@ export default defineComponent({
       emitChange(data);
     };
 
-    // const scrollActiveOptionIntoView = () => {
-    //   const yearSelectedNode = hoursRef.value?.querySelectorAll?.(
-    //     `.${resolveClassName('time-picker-cells-cell-selected')}`,
-    //   );
-    //   yearSelectedNode?.[0]?.scrollIntoView({
-    //     block: 'center',
-    //     behavior: 'instant',
-    //   });
-    //   const monthSelectedNode = minutesRef.value?.querySelectorAll?.(
-    //     `.${resolveClassName('time-picker-cells-cell-selected')}`,
-    //   );
-    //   console.error(monthSelectedNode);
-    //   monthSelectedNode?.[0]?.scrollIntoView({
-    //     block: 'center',
-    //     behavior: 'instant',
-    //   });
-    // };
+    const handlePick = value => {
+      const val = new Date(value);
+      const data = {
+        hours: val.getHours(),
+        minutes: val.getMinutes(),
+        seconds: val.getSeconds(),
+      };
+      emitChange(data);
+    };
 
     const getDomRef = type => {
       let domRef;
@@ -274,53 +266,20 @@ export default defineComponent({
       () => props.hours,
       _val => {
         scrollIdx(['hours']);
-        // scroll(
-        //   'hours',
-        //   hoursList.value.findIndex(obj => obj.text === val),
-        // );
-        // if (!compiled.value) {
-        //   return;
-        // }
-        // scroll(
-        //   'hours',
-        //   hoursList.value.findIndex(obj => obj.text === val),
-        // );
       },
     );
 
     watch(
       () => props.minutes,
       _val => {
-        // if (!compiled.value) {
-        //   return;
-        // }
-        // scroll(
-        //   'minutes',
-        //   minutesList.value.findIndex(obj => obj.text === val),
-        // );
         scrollIdx(['minutes']);
-        // scroll(
-        //   'minutes',
-        //   minutesList.value.findIndex(obj => obj.text === val),
-        // );
       },
     );
 
     watch(
       () => props.seconds,
       _val => {
-        // if (!compiled.value) {
-        //   return;
-        // }
-        // scroll(
-        //   'seconds',
-        //   minutesList.value.findIndex(obj => obj.text === val),
-        // );
         scrollIdx(['seconds']);
-        // scroll(
-        //   'seconds',
-        //   secondsList.value.findIndex(obj => obj.text === val),
-        // );
       },
     );
 
@@ -332,35 +291,8 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      console.error('onmound');
       scrollIdx(['hours', 'minutes', 'seconds']);
     });
-
-    // onMounted(() => {
-    //   nextTick(() => {
-    //     scrollIdx(['hours', 'minutes', 'seconds']);
-    //   });
-    //   // setTimeout(() => {
-    //   //   // compiled.value = true;
-    //   //   // bindWheelEvent();
-
-    //   //   scroll(
-    //   //     'hours',
-    //   //     hoursList.value.findIndex(obj => obj.text === props.hours),
-    //   //   );
-    //   //   scroll(
-    //   //     'minutes',
-    //   //     minutesList.value.findIndex(obj => obj.text === props.minutes),
-    //   //   );
-    //   //   scroll(
-    //   //     'seconds',
-    //   //     secondsList.value.findIndex(obj => obj.text === props.seconds),
-    //   //   );
-    //   // }, 500);
-    //   // setTimeout(() => {
-    //   //   scrollActiveOptionIntoView();
-    //   // }, 2000);
-    // });
 
     return {
       hoursRef,
@@ -375,6 +307,7 @@ export default defineComponent({
 
       getCellCls,
       handleClick,
+      handlePick,
 
       hoursList,
       minutesList,
@@ -383,86 +316,98 @@ export default defineComponent({
   },
   render() {
     return (
-      <div
-        class={[
-          this.resolveClassName('time-picker-cells'),
-          this.showSeconds ? this.resolveClassName('time-picker-cells-with-seconds') : '',
-        ]}
-      >
-        <div class={this.resolveClassName('time-picker-cells-title-wrapper')}>
-          <div
-            class={[this.resolveClassName('time-picker-cells-title'), this.focusedColumn === 0 ? 'active' : '']}
-            style={this.styles}
-          >
-            {this.t.hour}
+      <>
+        <div
+          class={[
+            this.resolveClassName('time-picker-cells'),
+            this.showSeconds ? this.resolveClassName('time-picker-cells-with-seconds') : '',
+          ]}
+        >
+          <div class={this.resolveClassName('time-picker-cells-title-wrapper')}>
+            <div
+              class={[this.resolveClassName('time-picker-cells-title'), this.focusedColumn === 0 ? 'active' : '']}
+              style={this.styles}
+            >
+              {this.t.hour}
+            </div>
+            <div
+              class={[this.resolveClassName('time-picker-cells-title'), this.focusedColumn === 1 ? 'active' : '']}
+              style={this.styles}
+            >
+              {this.t.min}
+            </div>
+            <div
+              class={[this.resolveClassName('time-picker-cells-title'), this.focusedColumn === 2 ? 'active' : '']}
+              v-show={this.showSeconds}
+              style={this.styles}
+            >
+              {this.t.sec}
+            </div>
           </div>
           <div
-            class={[this.resolveClassName('time-picker-cells-title'), this.focusedColumn === 1 ? 'active' : '']}
+            class={this.resolveClassName('time-picker-cells-list')}
+            ref='hoursRef'
             style={this.styles}
           >
-            {this.t.min}
+            <ul class={this.resolveClassName('time-picker-cells-ul')}>
+              {this.hoursList.map(item => (
+                <li
+                  class={this.getCellCls(item)}
+                  v-show={!item.hide}
+                  onClick={() => this.handleClick('hours', item)}
+                >
+                  {pad(item.text)}
+                </li>
+              ))}
+            </ul>
           </div>
           <div
-            class={[this.resolveClassName('time-picker-cells-title'), this.focusedColumn === 2 ? 'active' : '']}
+            class={this.resolveClassName('time-picker-cells-list')}
+            ref='minutesRef'
+            style={this.styles}
+          >
+            <ul class={this.resolveClassName('time-picker-cells-ul')}>
+              {this.minutesList.map(item => (
+                <li
+                  class={this.getCellCls(item)}
+                  v-show={!item.hide}
+                  onClick={() => this.handleClick('minutes', item)}
+                >
+                  {pad(item.text)}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div
+            class={this.resolveClassName('time-picker-cells-list')}
             v-show={this.showSeconds}
+            ref='secondsRef'
             style={this.styles}
           >
-            {this.t.sec}
+            <ul class={this.resolveClassName('time-picker-cells-ul')}>
+              {this.secondsList.map(item => (
+                <li
+                  class={this.getCellCls(item)}
+                  v-show={!item.hide}
+                  onClick={() => this.handleClick('seconds', item)}
+                >
+                  {pad(item.text)}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-        <div
-          class={this.resolveClassName('time-picker-cells-list')}
-          ref='hoursRef'
-          style={this.styles}
-        >
-          <ul class={this.resolveClassName('time-picker-cells-ul')}>
-            {this.hoursList.map(item => (
-              <li
-                class={this.getCellCls(item)}
-                v-show={!item.hide}
-                onClick={() => this.handleClick('hours', item)}
-              >
-                {pad(item.text)}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div
-          class={this.resolveClassName('time-picker-cells-list')}
-          ref='minutesRef'
-          style={this.styles}
-        >
-          <ul class={this.resolveClassName('time-picker-cells-ul')}>
-            {this.minutesList.map(item => (
-              <li
-                class={this.getCellCls(item)}
-                v-show={!item.hide}
-                onClick={() => this.handleClick('minutes', item)}
-              >
-                {pad(item.text)}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div
-          class={this.resolveClassName('time-picker-cells-list')}
-          v-show={this.showSeconds}
-          ref='secondsRef'
-          style={this.styles}
-        >
-          <ul class={this.resolveClassName('time-picker-cells-ul')}>
-            {this.secondsList.map(item => (
-              <li
-                class={this.getCellCls(item)}
-                v-show={!item.hide}
-                onClick={() => this.handleClick('seconds', item)}
-              >
-                {pad(item.text)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+        {this.showNow ? (
+          <>
+            <div
+              class={this.resolveClassName('picker-today-shortcut')}
+              onClick={() => this.handlePick(new Date())}
+            >
+              {this.t.now}
+            </div>
+          </>
+        ) : null}
+      </>
     );
   },
 });

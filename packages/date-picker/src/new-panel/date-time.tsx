@@ -36,23 +36,8 @@ import DateTable from '../new-base/date-table';
 import SelectYearMonth from '../new-base/select-year-month';
 import TimeSpinner from '../new-base/time-spinner';
 // import Confirm from '../base/confirm';
-import type {
-  DatePickerShortcutsType,
-  DatePickerValueType,
-  DisabledDateType,
-  PickerTypeType,
-  // SelectionModeType,
-} from '../new-interface';
-import {
-  ALL_YEARS,
-  iconBtnCls,
-  pad,
-  // formatDateLabels,
-  PANEL_WIDTH,
-  PICKER_TYPE_LIST,
-  siblingMonth,
-  // timePickerKey
-} from '../utils';
+import type { DatePickerShortcutsType, DatePickerValueType, DisabledDateType, PickerTypeType } from '../new-interface';
+import { ALL_YEARS, iconBtnCls, pad, PANEL_WIDTH, PICKER_TYPE_LIST, siblingMonth } from '../utils';
 
 // import Time from './time';
 
@@ -128,6 +113,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const t = useLocale('datePicker');
     const { resolveClassName } = usePrefix();
+
     const triggerRef = ref<HTMLElement>(null);
     const dateWrapperRef = ref<HTMLElement>(null);
     const timeWrapperRef = ref<HTMLElement>(null);
@@ -398,6 +384,7 @@ export default defineComponent({
                 hours={this.selectedHours}
                 minutes={this.selectedMinutes}
                 seconds={this.selectedSeconds}
+                showNow={true}
                 // disabledHours={this.disabledHMS.disabledHours}
                 // disabledMinutes={this.disabledHMS.disabledMinutes}
                 // disabledSeconds={this.disabledHMS.disabledSeconds}
