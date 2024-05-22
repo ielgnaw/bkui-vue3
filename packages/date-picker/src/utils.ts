@@ -27,7 +27,7 @@
 import { format as dateFnsFormat, isDate, isValid, parse as dateFnsParse, toDate } from 'date-fns';
 import type { InjectionKey } from 'vue';
 
-import { resolveClassName } from '@bkui-vue/shared';
+import { usePrefix } from '@bkui-vue/config-provider';
 
 import fecha from './fecha';
 import type { IDatePickerCtx, ITimePickerCtx, PickerTypeType } from './new-interface';
@@ -435,6 +435,7 @@ export const timePickerKey: InjectionKey<ITimePickerCtx> = Symbol('time-picker')
 // }
 
 export function iconBtnCls(direction, type = '') {
+  const { resolveClassName } = usePrefix();
   return [
     resolveClassName('picker-panel-icon-btn'),
     resolveClassName(`date-picker-${direction}-btn`),

@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { resolveClassName } from '@bkui-vue/shared';
+import { usePrefix } from '@bkui-vue/config-provider';
 
 import { NODE_ATTRIBUTES } from './constant';
 import { TreePropTypes } from './props';
@@ -149,9 +149,10 @@ export const getNodeItemStyle: any = (item: any, props: TreePropTypes, flatData:
 export const getNodeItemClass = (item: any, schema: WeakMap<Object, any>, props: TreePropTypes, showTree = true) => {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { __is_root, __is_open } = schema.get(item) || {};
+  const { resolveClassName } = usePrefix();
   return {
     'is-root': __is_root,
-    [resolveClassName('tree-node')]: true,
+    [`${resolveClassName('tree-node')}`]: true,
     'is-open': __is_open,
     'is-virtual-render': props.virtualRender,
     'level-line': props.levelLine && showTree,
@@ -166,12 +167,13 @@ export const getNodeItemClass = (item: any, schema: WeakMap<Object, any>, props:
 export const getNodeRowClass = (item: any, schema: WeakMap<Object, any>) => {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { __is_checked, __is_selected } = schema.get(item) || {};
+  const { resolveClassName } = usePrefix();
   return {
     'is-checked': __is_checked,
     'is-selected': __is_selected,
     'node-folder': item.is_folder,
     'node-leaf': item.is_leaf,
-    [resolveClassName('node-row')]: true,
+    [`${resolveClassName('node-row')}`]: true,
   };
 };
 
