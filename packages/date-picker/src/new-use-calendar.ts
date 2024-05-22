@@ -498,6 +498,10 @@ export function useCalendar(props, _slots, emit) {
     () => internalValue.value,
     v => {
       const d = Array.isArray(v) ? v[0] : v;
+      if (!d) {
+        userInputValue.value = '';
+        return;
+      }
       userInputValue.value = formatDate(d, props.type, props.multiple, props.format);
     },
   );
