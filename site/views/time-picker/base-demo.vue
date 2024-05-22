@@ -5,6 +5,7 @@
     v-model="dateValue"
     clearable
     editable
+    show-now
     @change="handleChange"
   />
 </template>

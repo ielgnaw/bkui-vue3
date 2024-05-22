@@ -52,7 +52,7 @@ const zhCn: Language = {
     sec: '秒',
     toNow: '至今',
     today: '今天',
-    // now: '此刻',
+    now: '此刻',
   },
   dialog: {
     ok: '确定',

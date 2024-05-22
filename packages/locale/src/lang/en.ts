@@ -50,7 +50,7 @@ const en = {
     sec: 'Second',
     toNow: 'Now',
     today: 'Today',
-    // now: 'Now',
+    now: 'Now',
   },
   dialog: {
     ok: 'OK',

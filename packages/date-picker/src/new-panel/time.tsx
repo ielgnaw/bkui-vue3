@@ -49,7 +49,7 @@ export default defineComponent({
     clickoutside,
   },
   props: timePanelProps,
-  emits: ['pick', 'pick-success', 'pick-clear', 'pick-click', 'selection-mode-change'],
+  emits: ['pick'],
   setup(props, { emit }) {
     const t = useLocale('datePicker');
     const { resolveClassName } = usePrefix();
@@ -76,6 +76,13 @@ export default defineComponent({
       Object.keys(val).forEach(type => newDate[`set${capitalize(type)}`](val[type]));
       dates.value = [newDate];
       emit('pick', newDate);
+    };
+
+    const handlePick = value => {
+      const val = new Date(value);
+
+      dates.value = [val];
+      emit('pick', val);
     };
 
     // const handleToggleDateTime = (idx: string) => {
@@ -128,6 +135,7 @@ export default defineComponent({
       showSeconds,
 
       handleChange,
+      handlePick,
       // handleToggleDateTime,
     };
   },
@@ -165,7 +173,12 @@ export default defineComponent({
               />
               {this.showNow ? (
                 <>
-                  <div class={this.resolveClassName('picker-today-shortcut')}>{this.t.today}</div>
+                  <div
+                    class={this.resolveClassName('picker-today-shortcut')}
+                    onClick={() => this.handlePick(new Date())}
+                  >
+                    {this.t.now}
+                  </div>
                 </>
               ) : null}
             </div>
