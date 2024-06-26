@@ -140,7 +140,8 @@ export default defineComponent({
         mode = 'static';
 
         if (typeof props.column.explain === 'object') {
-          content = () => resolvePropVal(props.column.explain, 'content', [props.column, props.row]);
+          content = () =>
+            resolvePropVal(props.column.explain as Record<string, unknown>, 'content', [props.column, props.row]);
         }
       }
 
