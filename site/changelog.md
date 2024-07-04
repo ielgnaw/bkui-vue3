@@ -1,6 +1,15 @@
 ## 更新日志
 
 
+### 2.0.1-beta.33
+
+* **[feat]**:
+    - bugfix(select): 修复list模式下全选交互问题
+    - feat(search-select): 去除 `/` 分割
+    - feat(docs): progress/switcher/breadcrumb/overflow-title 文档优化
+    - docs(tab|notify): 文档补全
+
+
 ### 2.0.1-beta.32
 
 * **[feat]**:
