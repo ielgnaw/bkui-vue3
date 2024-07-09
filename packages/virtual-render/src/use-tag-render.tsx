@@ -31,12 +31,15 @@ import useScrollbar from './use-scrollbar';
 import { VisibleRender } from './v-virtual-render';
 
 export default (props: VirtualRenderProps, ctx) => {
-  const { renderAs } = props;
+  const { renderAs, contentAs } = props;
   const refRoot = ref(null);
+  const refContent = ref(null);
 
   const { init, scrollTo } = useScrollbar(props);
   const contentStyle = reactive({ x: 0, y: 0 });
-
+  const computedStyle = computed(() => ({
+    ...props.contentStyle,
+  }));
   /** 指令触发Scroll事件，计算当前startIndex & endIndex & scrollTop & translateY */
   const handleScrollCallback = (event, _startIndex, _endIndex, _scrollTop, translateY, scrollLeft, pos) => {
     const { scrollbar } = pos;
@@ -75,7 +78,7 @@ export default (props: VirtualRenderProps, ctx) => {
     scrollTo,
     fixToTop,
     refRoot,
-    refContent: refRoot,
+    refContent,
   });
 
   onMounted(() => {
@@ -99,6 +102,14 @@ export default (props: VirtualRenderProps, ctx) => {
     return [props.className];
   });
 
+  const contentClassNames = computed(() => {
+    if (props.scrollbar.enabled) {
+      return [props.contentClassName];
+    }
+
+    return [props.contentClassName];
+  });
+
   return {
     rendAsTag: () =>
       h(
@@ -111,9 +122,19 @@ export default (props: VirtualRenderProps, ctx) => {
         },
         [
           ctx.slots.beforeContent?.() ?? '',
-          ctx.slots.default?.({
-            data: props.list,
-          }) ?? '',
+          h(
+            contentAs,
+            {
+              class: contentClassNames.value,
+              style: computedStyle.value,
+              ref: refContent,
+            },
+            [
+              ctx.slots.default?.({
+                data: props.list,
+              }) ?? '',
+            ],
+          ),
           ctx.slots.afterContent?.() ?? '',
           ctx.slots.afterSection?.() ?? '',
         ],
