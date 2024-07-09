@@ -103,7 +103,7 @@ export default defineComponent({
     /** 实际高度，根据行高和总行数计算出来的实际高度 */
     const innerHeight = ref(0);
 
-    const virtualRoot: Ref<VirtualElement> = ref(null);
+    const virtualRoot: Ref<Partial<HTMLElement> & Partial<VirtualElement>> = ref(null);
 
     const { init, scrollTo, updateScrollHeight } = useScrollbar(props);
 
@@ -155,7 +155,7 @@ export default defineComponent({
           delegateElement: refRoot.value,
           scrollHeight: innerHeight.value,
           onScollCallback: handleScrollBarCallback,
-        });
+        }) as Partial<HTMLElement> & Partial<VirtualElement>;
         init(virtualRoot);
         updateScrollHeight(contentHeight.value);
         instance.executeThrottledRender.call(instance, { offset: { x: 0, y: 0 } });

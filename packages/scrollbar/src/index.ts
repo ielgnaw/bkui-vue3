@@ -239,7 +239,7 @@ export default class BkScrollbar {
    * @param {Partial<ISettingPropType>} userSettings - 用户配置
    */
   constructor(
-    element: (Partial<Element> & Partial<VirtualElement>) | string,
+    element: (Partial<HTMLElement> & Partial<VirtualElement>) | string,
     userSettings: Partial<ISettingPropType> = {},
   ) {
     if (typeof element === 'string') {
@@ -253,38 +253,39 @@ export default class BkScrollbar {
     this.settings = { ...defaultSettings(), ...userSettings };
 
     this.element = element;
+    const htmlElement = element as HTMLElement;
     this.cls = new Cls(this.settings.classPrefix);
-    element.classList.add(this.cls.main);
+    htmlElement.classList.add(this.cls.main);
 
     this.containerWidth = null;
     this.containerHeight = null;
     this.contentWidth = null;
     this.contentHeight = null;
 
-    const focus = () => element.classList.add(this.cls.state.focus);
-    const blur = () => element.classList.remove(this.cls.state.focus);
+    const focus = () => htmlElement.classList.add(this.cls.state.focus);
+    const blur = () => htmlElement.classList.remove(this.cls.state.focus);
 
-    this.isRtl = CSS.get(element).direction === 'rtl';
+    this.isRtl = CSS.get(htmlElement).direction === 'rtl';
     if (this.isRtl) {
-      element.classList.add(this.cls.rtl);
+      htmlElement.classList.add(this.cls.rtl);
     }
 
     this.isNegativeScroll = (() => {
-      const originalScrollLeft = element.scrollLeft;
+      const originalScrollLeft = htmlElement.scrollLeft;
       let result = null;
-      element.scrollLeft = -1;
-      result = element.scrollLeft < 0;
-      element.scrollLeft = originalScrollLeft;
+      htmlElement.scrollLeft = -1;
+      result = htmlElement.scrollLeft < 0;
+      htmlElement.scrollLeft = originalScrollLeft;
       return result;
     })();
 
-    this.negativeScrollAdjustment = this.isNegativeScroll ? element.scrollWidth - element.clientWidth : 0;
+    this.negativeScrollAdjustment = this.isNegativeScroll ? htmlElement.scrollWidth - htmlElement.clientWidth : 0;
     this.event = new EventManager();
-    this.ownerDocument = element.ownerDocument || document;
+    this.ownerDocument = htmlElement.ownerDocument || document;
 
     this.scrollbarXRail = DOM.div(this.cls.element.rail('x'));
     this.scrollbarXRail.classList.add(this.cls.element.size(this.settings.scrollSize));
-    element.appendChild(this.scrollbarXRail);
+    htmlElement.appendChild(this.scrollbarXRail);
     this.scrollbarX = DOM.div(this.cls.element.thumb('x'));
     this.scrollbarXRail.appendChild(this.scrollbarX);
     this.scrollbarX.setAttribute('tabindex', '0');
@@ -312,7 +313,7 @@ export default class BkScrollbar {
 
     this.scrollbarYRail = DOM.div(this.cls.element.rail('y'));
     this.scrollbarYRail.classList.add(this.cls.element.size(this.settings.scrollSize));
-    element.appendChild(this.scrollbarYRail);
+    htmlElement.appendChild(this.scrollbarYRail);
     this.scrollbarY = DOM.div(this.cls.element.thumb('y'));
     this.scrollbarYRail.appendChild(this.scrollbarY);
     this.scrollbarY.setAttribute('tabindex', '0');
@@ -373,7 +374,7 @@ export default class BkScrollbar {
     }
 
     if (virtaulElement?.isVirtualElement) {
-      this.element = virtaulElement;
+      this.element = virtaulElement as Partial<VirtualElement> & Partial<HTMLElement>;
     }
 
     this.negativeScrollAdjustment = this.isNegativeScroll ? this.element.scrollWidth - this.element.clientWidth : 0;

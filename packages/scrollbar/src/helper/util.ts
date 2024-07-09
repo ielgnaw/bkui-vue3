@@ -65,5 +65,5 @@ export const env = {
   isChrome: typeof navigator !== 'undefined' && /Chrome/i.test(navigator?.userAgent),
 };
 
-export const getElement = (element: Partial<Element> & Partial<VirtualElement>) =>
+export const getElement = (element: Partial<HTMLElement> & Partial<VirtualElement>) =>
   (element.isVirtualElement ? element.delegateElement : element) as Element;

@@ -26,7 +26,7 @@
 import { VirtualElement } from '..';
 import { getElement } from './util';
 
-export function get(element: Partial<Element> & Partial<VirtualElement>) {
+export function get(element: Partial<HTMLElement> & Partial<VirtualElement>) {
   return getComputedStyle(getElement(element));
 }
 

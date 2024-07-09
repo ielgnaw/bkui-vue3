@@ -33,7 +33,7 @@ import { VirtualRenderProps } from './props';
 export default (props: VirtualRenderProps) => {
   let instance: BkScrollbar = null;
 
-  const init = (target: Ref<Partial<Element> & Partial<VirtualElement>>) => {
+  const init = (target: Ref<Partial<HTMLElement> & Partial<VirtualElement>>) => {
     instance = new BkScrollbar(target.value, {
       scrollingThreshold: 120,
       scrollSize: props.scrollbar?.size as IScrollbarSize,

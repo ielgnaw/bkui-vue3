@@ -129,7 +129,7 @@ function getThumbSize(i, thumbSize) {
   return thumbSize;
 }
 
-function updateCss(element: Partial<Element> & Partial<VirtualElement>, i) {
+function updateCss(element: Partial<HTMLElement> & Partial<VirtualElement>, i) {
   const xRailOffset: Placement & { width: number } = {
     width: i.railXWidth,
   };
