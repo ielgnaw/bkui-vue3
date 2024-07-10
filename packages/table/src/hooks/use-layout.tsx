@@ -235,6 +235,7 @@ export default (props: TablePropTypes, ctx) => {
     const scrollWidth = refBody.value?.refRoot?.scrollWidth ?? 0;
     const offsetWidth = refBody.value?.refRoot?.offsetWidth ?? 0;
     offsetRight.value = scrollWidth - offsetWidth - translateX?.value ?? 0;
+    setFixedColumnShawdow();
   };
 
   const setLineHeight = (val: number) => {
