@@ -1,6 +1,6 @@
 {
   "name": "bkui-vue",
-  "version": "2.0.1-beta.34.scrollbar.2",
+  "version": "2.0.1-beta.34.scrollbar.3",
   "private": true,
   "workspaces": [
     "packages/**",
