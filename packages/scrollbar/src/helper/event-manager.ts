@@ -27,7 +27,7 @@
 import { VirtualElement } from '..';
 
 class EventElement {
-  element: Element & VirtualElement;
+  element: Element | VirtualElement;
   handlers: Record<string, ((...args) => void)[]>;
   constructor(element: Element & VirtualElement) {
     this.element = element;
@@ -39,7 +39,7 @@ class EventElement {
       this.handlers[eventName] = [];
     }
     this.handlers[eventName].push(handler);
-    this.element.addEventListener(eventName, handler, false);
+    (this.element as HTMLElement).addEventListener(eventName, handler, false);
   }
 
   unbind(eventName, target?) {
@@ -47,7 +47,7 @@ class EventElement {
       if (target && handler !== target) {
         return true;
       }
-      this.element.removeEventListener(eventName, handler, false);
+      (this.element as HTMLElement).removeEventListener(eventName, handler, false);
       return false;
     });
   }

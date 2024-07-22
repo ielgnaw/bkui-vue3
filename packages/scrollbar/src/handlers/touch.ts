@@ -37,7 +37,7 @@ export default function (i: BkScrollbar & { isInitialized: boolean }) {
 
   function shouldPrevent(deltaX, deltaY) {
     const scrollTop = Math.floor(element.scrollTop);
-    const scrollLeft = element.scrollLeft;
+    const scrollLeft = (element as HTMLElement).scrollLeft;
     const magnitudeX = Math.abs(deltaX);
     const magnitudeY = Math.abs(deltaY);
 
@@ -60,7 +60,7 @@ export default function (i: BkScrollbar & { isInitialized: boolean }) {
   }
 
   function applyTouchMove(differenceX, differenceY) {
-    element.scrollLeft -= differenceX;
+    (element as HTMLElement).scrollLeft -= differenceX;
     element.scrollTop -= differenceY;
 
     updateGeometry(i);
@@ -111,7 +111,7 @@ export default function (i: BkScrollbar & { isInitialized: boolean }) {
   }
 
   function shouldBeConsumedByChild(target, deltaX, deltaY) {
-    if (!element.contains(target)) {
+    if (!(element as HTMLElement).contains(target)) {
       return false;
     }
 

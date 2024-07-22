@@ -182,16 +182,16 @@ export class VirtualElement {
     }
   }
 
-  scrollTo({ top, left, behavior }: ScrollToOptions) {
-    this.delegateElement.scrollLeft = left;
-    this.scrollTop = top;
-    this.delegateElement.scrollTo({ top, left, behavior });
+  scrollTo({ x, y }) {
+    this.delegateElement.scrollLeft = x;
+    this.scrollTop = y;
+    this.delegateElement.scrollTo(x, y);
   }
 }
 
 // 自定义滚动条类
 export default class BkScrollbar {
-  element: Partial<HTMLElement> & Partial<VirtualElement>;
+  element: Partial<HTMLElement> | Partial<VirtualElement>;
   containerWidth: number;
   containerHeight: number;
   contentWidth: number;
@@ -239,52 +239,54 @@ export default class BkScrollbar {
    * @param {Partial<ISettingPropType>} userSettings - 用户配置
    */
   constructor(
-    element: (Partial<Element> & Partial<VirtualElement>) | string,
+    element: (Partial<Element> | Partial<VirtualElement>) | string,
     userSettings: Partial<ISettingPropType> = {},
   ) {
     if (typeof element === 'string') {
       element = document.querySelector(element);
     }
 
-    if (!element?.nodeName && !element?.isVirtualElement) {
+    if (!(element as HTMLElement)?.nodeName && !(element as VirtualElement)?.isVirtualElement) {
       throw new Error('no element is specified to initialize PerfectScrollbar');
     }
 
     this.settings = { ...defaultSettings(), ...userSettings };
 
-    this.element = element;
+    this.element = element as Partial<Element> | Partial<VirtualElement>;
     this.cls = new Cls(this.settings.classPrefix);
-    element.classList.add(this.cls.main);
+    (element as HTMLElement).classList.add(this.cls.main);
 
     this.containerWidth = null;
     this.containerHeight = null;
     this.contentWidth = null;
     this.contentHeight = null;
 
-    const focus = () => element.classList.add(this.cls.state.focus);
-    const blur = () => element.classList.remove(this.cls.state.focus);
+    const focus = () => (element as HTMLElement).classList.add(this.cls.state.focus);
+    const blur = () => (element as HTMLElement).classList.remove(this.cls.state.focus);
 
     this.isRtl = CSS.get(element).direction === 'rtl';
     if (this.isRtl) {
-      element.classList.add(this.cls.rtl);
+      (element as HTMLElement).classList.add(this.cls.rtl);
     }
 
     this.isNegativeScroll = (() => {
-      const originalScrollLeft = element.scrollLeft;
+      const originalScrollLeft = (element as HTMLElement).scrollLeft;
       let result = null;
-      element.scrollLeft = -1;
-      result = element.scrollLeft < 0;
-      element.scrollLeft = originalScrollLeft;
+      (element as HTMLElement).scrollLeft = -1;
+      result = (element as HTMLElement).scrollLeft < 0;
+      (element as HTMLElement).scrollLeft = originalScrollLeft;
       return result;
     })();
 
-    this.negativeScrollAdjustment = this.isNegativeScroll ? element.scrollWidth - element.clientWidth : 0;
+    this.negativeScrollAdjustment = this.isNegativeScroll
+      ? (element as HTMLElement).scrollWidth - (element as HTMLElement).clientWidth
+      : 0;
     this.event = new EventManager();
-    this.ownerDocument = element.ownerDocument || document;
+    this.ownerDocument = (element as HTMLElement).ownerDocument || document;
 
     this.scrollbarXRail = DOM.div(this.cls.element.rail('x'));
     this.scrollbarXRail.classList.add(this.cls.element.size(this.settings.scrollSize));
-    element.appendChild(this.scrollbarXRail);
+    (element as HTMLElement).appendChild(this.scrollbarXRail);
     this.scrollbarX = DOM.div(this.cls.element.thumb('x'));
     this.scrollbarXRail.appendChild(this.scrollbarX);
     this.scrollbarX.setAttribute('tabindex', '0');
@@ -312,7 +314,7 @@ export default class BkScrollbar {
 
     this.scrollbarYRail = DOM.div(this.cls.element.rail('y'));
     this.scrollbarYRail.classList.add(this.cls.element.size(this.settings.scrollSize));
-    element.appendChild(this.scrollbarYRail);
+    (element as HTMLElement).appendChild(this.scrollbarYRail);
     this.scrollbarY = DOM.div(this.cls.element.thumb('y'));
     this.scrollbarYRail.appendChild(this.scrollbarY);
     this.scrollbarY.setAttribute('tabindex', '0');
@@ -341,9 +343,9 @@ export default class BkScrollbar {
 
     this.reach = {
       x:
-        element.scrollLeft <= 0
+        (element as HTMLElement).scrollLeft <= 0
           ? 'start'
-          : element.scrollLeft >= (this.contentWidth ?? 0) - this.containerWidth
+          : (element as HTMLElement).scrollLeft >= (this.contentWidth ?? 0) - this.containerWidth
             ? 'end'
             : null,
       y:
@@ -359,7 +361,7 @@ export default class BkScrollbar {
     this.settings.handlers.forEach(handlerName => handlers[handlerName](this));
 
     this.lastScrollTop = Math.floor(element.scrollTop);
-    this.lastScrollLeft = element.scrollLeft;
+    this.lastScrollLeft = (element as HTMLElement).scrollLeft;
     this.event.bind(this.element, 'scroll', e => this.onScroll(e));
     updateGeometry(this);
   }
@@ -376,7 +378,9 @@ export default class BkScrollbar {
       this.element = virtaulElement;
     }
 
-    this.negativeScrollAdjustment = this.isNegativeScroll ? this.element.scrollWidth - this.element.clientWidth : 0;
+    this.negativeScrollAdjustment = this.isNegativeScroll
+      ? (this.element as HTMLElement).scrollWidth - (this.element as HTMLElement).clientWidth
+      : 0;
 
     CSS.set(this.scrollbarXRail, { display: 'block' });
     CSS.set(this.scrollbarYRail, { display: 'block' });
@@ -408,15 +412,15 @@ export default class BkScrollbar {
 
     updateGeometry(this);
     processScrollDiff(this, 'top', this.element.scrollTop - this.lastScrollTop);
-    processScrollDiff(this, 'left', this.element.scrollLeft - this.lastScrollLeft);
+    processScrollDiff(this, 'left', (this.element as HTMLElement).scrollLeft - this.lastScrollLeft);
 
     this.lastScrollTop = Math.floor(this.element.scrollTop);
-    this.lastScrollLeft = this.element.scrollLeft;
+    this.lastScrollLeft = (this.element as HTMLElement).scrollLeft;
   }
 
-  scrollTo({ left, top }) {
-    this.element.scrollTop = top;
-    this.element.scrollLeft = left;
+  scrollTo({ x, y }) {
+    this.element.scrollTop = y;
+    (this.element as HTMLElement).scrollLeft = x;
     updateGeometry(this);
   }
 
@@ -448,7 +452,7 @@ export default class BkScrollbar {
    * 移除滚动条相关的类名
    */
   removePsClasses() {
-    this.element.className = this.element.className
+    (this.element as HTMLElement).className = (this.element as HTMLElement).className
       .split(' ')
       .filter(name => !name.match(new RegExp(`^${this.settings.classPrefix}([-_].+|)$`)))
       .join(' ');

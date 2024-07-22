@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import BkScrollbar from '..';
+import BkScrollbar, { VirtualElement } from '..';
 import updateGeometry from '../update-geometry';
 
 export default function (i: BkScrollbar) {
@@ -32,10 +32,10 @@ export default function (i: BkScrollbar) {
     const positionTop = e.pageY - window.pageYOffset - i.scrollbarYRail.getBoundingClientRect().top;
     const direction = positionTop > i.scrollbarYTop ? 1 : -1;
 
-    if (!i.element.isVirtualElement) {
+    if (!(i.element as VirtualElement).isVirtualElement) {
       i.element.scrollTop += direction * i.containerHeight;
     } else {
-      i.element.scrollTop = positionTop / (i.element.offsetHeight / i.element.scrollHeight);
+      i.element.scrollTop = positionTop / ((i.element as HTMLElement).offsetHeight / i.element.scrollHeight);
     }
 
     i.element.scrollTop += direction * i.containerHeight;
@@ -49,7 +49,7 @@ export default function (i: BkScrollbar) {
     const positionLeft = e.pageX - window.pageXOffset - i.scrollbarXRail.getBoundingClientRect().left;
     const direction = positionLeft > i.scrollbarXLeft ? 1 : -1;
 
-    i.element.scrollLeft += direction * i.containerWidth;
+    (i.element as HTMLElement).scrollLeft += direction * i.containerWidth;
 
     updateGeometry(i);
 

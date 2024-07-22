@@ -38,23 +38,23 @@ export type Placement = {
 export default function (i: BkScrollbar) {
   const element = i.element;
   const roundedScrollTop = Math.floor(element.scrollTop);
-  const rect = element.getBoundingClientRect();
+  const rect = (element as HTMLElement).getBoundingClientRect();
 
   i.containerWidth = Math.round(rect.width);
   i.containerHeight = Math.round(rect.height);
 
-  i.contentWidth = element.scrollWidth;
+  i.contentWidth = (element as HTMLElement).scrollWidth;
   i.contentHeight = element.scrollHeight;
 
-  if (!element.contains(i.scrollbarXRail)) {
+  if (!(element as HTMLElement).contains(i.scrollbarXRail)) {
     // clean up and append
     DOM.queryChildren(element, i.cls.element.rail('x')).forEach(el => DOM.remove(el));
-    element.appendChild(i.scrollbarXRail);
+    (element as HTMLElement).appendChild(i.scrollbarXRail);
   }
-  if (!element.contains(i.scrollbarYRail)) {
+  if (!(element as HTMLElement).contains(i.scrollbarYRail)) {
     // clean up and append
     DOM.queryChildren(element, i.cls.element.rail('y')).forEach(el => DOM.remove(el));
-    element.appendChild(i.scrollbarYRail);
+    (element as HTMLElement).appendChild(i.scrollbarYRail);
   }
 
   if (!i.settings.suppressScrollX && i.containerWidth + i.settings.scrollXMarginOffset < i.contentWidth) {
@@ -63,7 +63,7 @@ export default function (i: BkScrollbar) {
     i.railXRatio = i.containerWidth / i.railXWidth;
     i.scrollbarXWidth = getThumbSize(i, toInt((i.railXWidth * i.containerWidth) / i.contentWidth));
     i.scrollbarXLeft = toInt(
-      ((i.negativeScrollAdjustment + element.scrollLeft) * (i.railXWidth - i.scrollbarXWidth)) /
+      ((i.negativeScrollAdjustment + (element as HTMLElement).scrollLeft) * (i.railXWidth - i.scrollbarXWidth)) /
         (i.contentWidth - i.containerWidth),
     );
   } else {
@@ -76,7 +76,7 @@ export default function (i: BkScrollbar) {
     i.railYRatio = i.containerHeight / i.railYHeight;
 
     i.scrollbarYHeight = getThumbSize(i, toInt((i.railYHeight * i.containerHeight) / i.contentHeight));
-    i.scrollbarYTop = i.element.isVirtualElement
+    i.scrollbarYTop = (i.element as VirtualElement).isVirtualElement
       ? getThumbTop(i)
       : toInt((roundedScrollTop * (i.railYHeight - i.scrollbarYHeight)) / (i.contentHeight - i.containerHeight));
   } else {
@@ -93,17 +93,17 @@ export default function (i: BkScrollbar) {
   updateCss(element, i);
 
   if (i.scrollbarXActive) {
-    element.classList.add(i.cls.state.active('x'));
+    (element as HTMLElement).classList.add(i.cls.state.active('x'));
   } else {
-    element.classList.remove(i.cls.state.active('x'));
+    (element as HTMLElement).classList.remove(i.cls.state.active('x'));
     i.scrollbarXWidth = 0;
     i.scrollbarXLeft = 0;
-    element.scrollLeft = i.isRtl === true ? i.contentWidth : 0;
+    (element as HTMLElement).scrollLeft = i.isRtl === true ? i.contentWidth : 0;
   }
   if (i.scrollbarYActive) {
-    element.classList.add(i.cls.state.active('y'));
+    (element as HTMLElement).classList.add(i.cls.state.active('y'));
   } else {
-    element.classList.remove(i.cls.state.active('y'));
+    (element as HTMLElement).classList.remove(i.cls.state.active('y'));
     i.scrollbarYHeight = 0;
     i.scrollbarYTop = 0;
     element.scrollTop = 0;
@@ -129,16 +129,17 @@ function getThumbSize(i, thumbSize) {
   return thumbSize;
 }
 
-function updateCss(element: Partial<Element> & Partial<VirtualElement>, i) {
+function updateCss(element: Partial<Element> | Partial<VirtualElement>, i) {
   const xRailOffset: Placement & { width: number } = {
     width: i.railXWidth,
   };
-  const roundedScrollTop = element.isVirtualElement ? 0 : Math.floor(element.scrollTop);
+  const roundedScrollTop = (element as VirtualElement).isVirtualElement ? 0 : Math.floor(element.scrollTop);
 
   if (i.isRtl) {
-    xRailOffset.left = i.negativeScrollAdjustment + element.scrollLeft + i.containerWidth - i.contentWidth;
+    xRailOffset.left =
+      i.negativeScrollAdjustment + (element as HTMLElement).scrollLeft + i.containerWidth - i.contentWidth;
   } else {
-    xRailOffset.left = element.scrollLeft;
+    xRailOffset.left = (element as HTMLElement).scrollLeft;
   }
   if (i.isScrollbarXUsingBottom) {
     xRailOffset.bottom = i.scrollbarXBottom - roundedScrollTop;
@@ -152,24 +153,24 @@ function updateCss(element: Partial<Element> & Partial<VirtualElement>, i) {
     if (i.isRtl) {
       yRailOffset.right =
         i.contentWidth -
-        (i.negativeScrollAdjustment + element.scrollLeft) -
+        (i.negativeScrollAdjustment + (element as HTMLElement).scrollLeft) -
         i.scrollbarYRight -
         i.scrollbarYOuterWidth -
         9;
     } else {
-      yRailOffset.right = i.scrollbarYRight - element.scrollLeft;
+      yRailOffset.right = i.scrollbarYRight - (element as HTMLElement).scrollLeft;
     }
   } else {
     if (i.isRtl) {
       yRailOffset.left =
         i.negativeScrollAdjustment +
-        element.scrollLeft +
+        (element as HTMLElement).scrollLeft +
         i.containerWidth * 2 -
         i.contentWidth -
         i.scrollbarYLeft -
         i.scrollbarYOuterWidth;
     } else {
-      yRailOffset.left = i.scrollbarYLeft + element.scrollLeft;
+      yRailOffset.left = i.scrollbarYLeft + (element as HTMLElement).scrollLeft;
     }
   }
   CSS.set(i.scrollbarYRail, yRailOffset);

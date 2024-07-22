@@ -156,7 +156,7 @@ export default defineComponent({
           scrollHeight: innerHeight.value,
           onScollCallback: handleScrollBarCallback,
         });
-        init(virtualRoot);
+        init(virtualRoot as Ref<Partial<Element> & Partial<VirtualElement>>);
         updateScrollHeight(contentHeight.value);
         instance.executeThrottledRender.call(instance, { offset: { x: 0, y: 0 } });
         return;

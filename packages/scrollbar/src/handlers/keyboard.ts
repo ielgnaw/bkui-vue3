@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import BkScrollbar from '..';
+import BkScrollbar, { VirtualElement } from '..';
 import * as DOM from '../helper/dom';
 import { isEditable } from '../helper/util';
 import updateGeometry from '../update-geometry';
@@ -45,7 +45,7 @@ export default function (i: BkScrollbar) {
       }
     }
 
-    const scrollLeft = element.scrollLeft;
+    const scrollLeft = (element as HTMLElement).scrollLeft;
     if (deltaY === 0) {
       if (!i.scrollbarXActive) {
         return false;
@@ -58,7 +58,7 @@ export default function (i: BkScrollbar) {
   }
 
   function getPageHeight() {
-    if (element.isVirtualElement) {
+    if ((element as VirtualElement).isVirtualElement) {
       return (i.containerHeight / i.element.scrollHeight) * i.containerHeight;
     }
 
@@ -66,7 +66,7 @@ export default function (i: BkScrollbar) {
   }
 
   function getContentHeight() {
-    if (element.isVirtualElement) {
+    if ((element as VirtualElement).isVirtualElement) {
       return i.containerHeight;
     }
 
@@ -171,7 +171,7 @@ export default function (i: BkScrollbar) {
 
     element.scrollTop -= deltaY;
 
-    element.scrollLeft += deltaX;
+    (element as HTMLElement).scrollLeft += deltaX;
     updateGeometry(i);
 
     if (shouldPreventDefault(deltaX, deltaY)) {

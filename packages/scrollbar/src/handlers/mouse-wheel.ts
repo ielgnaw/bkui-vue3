@@ -23,17 +23,17 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import BkScrollbar from '..';
+import BkScrollbar, { VirtualElement } from '..';
 import * as CSS from '../helper/css';
 import { env } from '../helper/util';
 import updateGeometry from '../update-geometry';
 
 export default function (i: BkScrollbar) {
-  const isVirtualElement = i.element.isVirtualElement;
-  const element = isVirtualElement ? i.element.delegateElement : i.element;
+  const isVirtualElement = (i.element as VirtualElement).isVirtualElement;
+  const element = isVirtualElement ? (i.element as VirtualElement).delegateElement : i.element;
 
   function shouldPreventDefault(deltaX, deltaY) {
-    const scrollTopValue = isVirtualElement ? i.element.virtualScrollTop : element.scrollTop;
+    const scrollTopValue = isVirtualElement ? (i.element as VirtualElement).virtualScrollTop : element.scrollTop;
     const roundedScrollTop = Math.floor(scrollTopValue);
 
     const isTop = scrollTopValue === 0;
@@ -42,10 +42,12 @@ export default function (i: BkScrollbar) {
         return roundedScrollTop + i.scrollbarYHeight >= i.railYHeight;
       }
 
-      return roundedScrollTop + i.element.offsetHeight === i.element.scrollHeight;
+      return roundedScrollTop + (i.element as HTMLElement).offsetHeight === i.element.scrollHeight;
     };
-    const isLeft = element.scrollLeft === 0;
-    const isRight = element.scrollLeft + (element as HTMLElement).offsetWidth === element.scrollWidth;
+    const isLeft = (element as HTMLElement).scrollLeft === 0;
+    const isRight =
+      (element as HTMLElement).scrollLeft + (element as HTMLElement).offsetWidth ===
+      (element as HTMLElement).scrollWidth;
 
     let hitsBound;
 
@@ -90,11 +92,11 @@ export default function (i: BkScrollbar) {
 
   function shouldBeConsumedByChild(target, deltaX, deltaY) {
     // FIXME: this is a workaround for <select> issue in FF and IE #571
-    if (!env.isWebKit && element.querySelector('select:focus')) {
+    if (!env.isWebKit && (element as HTMLElement).querySelector('select:focus')) {
       return true;
     }
 
-    if (!element.contains(target)) {
+    if (!(element as HTMLElement).contains(target)) {
       return false;
     }
 
@@ -133,7 +135,7 @@ export default function (i: BkScrollbar) {
   }
 
   const getMaxValue = () => {
-    return i.element.scrollHeight - i.element.offsetHeight;
+    return i.element.scrollHeight - (i.element as HTMLElement).offsetHeight;
   };
 
   function setScrollTop(diff) {
@@ -163,7 +165,7 @@ export default function (i: BkScrollbar) {
       // deltaX will only be used for horizontal scrolling and deltaY will
       // only be used for vertical scrolling - this is the default
       setScrollTop(deltaY * i.settings.wheelSpeed);
-      element.scrollLeft += deltaX * i.settings.wheelSpeed;
+      (element as HTMLElement).scrollLeft += deltaX * i.settings.wheelSpeed;
     } else if (i.scrollbarYActive && !i.scrollbarXActive) {
       // only vertical scrollbar is active and useBothWheelAxes option is
       // active, so let's scroll vertical bar using both mouse wheel axes
@@ -177,9 +179,9 @@ export default function (i: BkScrollbar) {
       // useBothWheelAxes and only horizontal bar is active, so use both
       // wheel axes for horizontal bar
       if (deltaX) {
-        element.scrollLeft += deltaX * i.settings.wheelSpeed;
+        (element as HTMLElement).scrollLeft += deltaX * i.settings.wheelSpeed;
       } else {
-        element.scrollLeft -= deltaY * i.settings.wheelSpeed;
+        (element as HTMLElement).scrollLeft -= deltaY * i.settings.wheelSpeed;
       }
       shouldPrevent = true;
     }
