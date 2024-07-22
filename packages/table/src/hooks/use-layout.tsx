@@ -54,9 +54,7 @@ export default (props: TablePropTypes, ctx) => {
   const headerRowCount = ref(1);
 
   const fixedBottomHeight = computed(() => {
-    return props.fixedBottom?.position === 'relative'
-      ? props.fixedBottom?.height ?? LINE_HEIGHT
-      : props.fixedBottom?.height ?? 0;
+    return props.fixedBottom?.position === 'relative' ? props.fixedBottom?.height ?? LINE_HEIGHT : 0;
   });
 
   const { resolveClassName } = usePrefix();

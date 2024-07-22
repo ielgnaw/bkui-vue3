@@ -142,6 +142,19 @@ export default ({ props, ctx, columns, rows, pagination, settings }: RenderType)
 
   /** **************************************** Rows Render ******************************* **/
 
+  const renderAppendLastRow = () => {
+    if (ctx.slots.appendLastRow) {
+      const rowId = 'append-last-row';
+      return (
+        <TableRow key={rowId}>
+          <tr key={rowId}>
+            <td colspan={columns.visibleColumns.length}>{ctx.slots.appendLastRow()}</td>
+          </tr>
+        </TableRow>
+      );
+    }
+  };
+
   /**
    * 渲染Table Body
    * @returns
@@ -158,6 +171,7 @@ export default ({ props, ctx, columns, rows, pagination, settings }: RenderType)
           preRow = row;
           return result;
         })}
+        {renderAppendLastRow()}
       </tbody>
     );
   };

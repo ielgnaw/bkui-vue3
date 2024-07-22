@@ -14,6 +14,11 @@
             {{ row.operateSource }}/{{ row.operator }}
           </template>
         </bk-table-column>
+        <template #appendLastRow>
+          <div>
+            LAST ROW
+          </div>
+        </template>
       </bk-table>
     </div>
   </div>
