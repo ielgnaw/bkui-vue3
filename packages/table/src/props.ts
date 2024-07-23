@@ -372,6 +372,11 @@ export type FixedBottomOption = {
   loading?: boolean;
 };
 
+// export enum BkScrollBehavior {
+//   AUTO = 'auto',
+
+// };
+
 export const tableProps = {
   /**
    * 渲染列表
@@ -668,6 +673,8 @@ export const tableProps = {
    * 启用Scrollbar
    */
   scrollbar: PropTypes.bool.def(true),
+
+  // scrollbehavior: toType<`${ScrollBehavior}`>('ScrollBehavior', {
 
   /**
    * 固定在底部的配置项
