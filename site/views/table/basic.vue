@@ -1,8 +1,8 @@
 <template>
   <bk-button @click="clearSelection">取消全选</bk-button>
   <div style="display: grid;">
-    <div>
-      <bk-table rowDraggable ref="refTable" max-height="464" :data="projectTable" height="300" stripe
+    <div style="height: 300px">
+      <bk-table rowDraggable ref="refTable" :data="projectTable" height="auto" max-height="100%" stripe
         :fixedBottom="fixedBottom" show-overflow-tooltip :pagination="pagination">
         <bk-table-column type="selection" :min-width="30" width="30" align="center" />
         <bk-table-column label="用户组" prop="groupName" :sort="true" />
@@ -14,11 +14,6 @@
             {{ row.operateSource }}/{{ row.operator }}
           </template>
         </bk-table-column>
-        <template #appendLastRow>
-          <div>
-            LAST ROW
-          </div>
-        </template>
       </bk-table>
     </div>
   </div>
