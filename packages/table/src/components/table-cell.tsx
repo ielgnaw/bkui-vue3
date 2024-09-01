@@ -40,6 +40,7 @@ export default defineComponent({
     parentSetting: IOverflowTooltipPropType,
     title: PropTypes.string.def(undefined),
     observerResize: PropTypes.bool.def(true),
+    intersectionObserver: PropTypes.bool.def(false),
     isHead: PropTypes.bool.def(false),
     isExpandChild: PropTypes.bool.def(false),
     headExplain: PropTypes.string,
@@ -51,6 +52,7 @@ export default defineComponent({
   setup(props, { slots }) {
     const refRoot = ref();
     const isTipsEnabled = ref(false);
+    const renderSlots = ref(!props.intersectionObserver);
 
     const cellStyle = computed(() => ({
       textAlign: props.column.textAlign as CSSProperties['textAlign'],
@@ -137,12 +139,23 @@ export default defineComponent({
        * 当表格中的字段或数据需要做解释说明时，可增加 [下划线] 提示，hover 可查看解释说明的 tooltips
        */
       if (props.column.explain) {
-        disabled = false;
+        // showTooltip默认为false，所以disabled默认为true，当设置showTooltip时才需要展示表格内容是否显示溢出效果
+        let isDisabled: ((col: Column, row: Record<string, object>) => boolean) | boolean = true;
+        if (typeof showOverflowTooltip === 'boolean') {
+          isDisabled = !showOverflowTooltip;
+        }
+
+        if (typeof showOverflowTooltip === 'object') {
+          isDisabled = showOverflowTooltip.disabled;
+        }
+        disabled = isDisabled;
         mode = 'static';
 
         if (typeof props.column.explain === 'object') {
+          // 这里需要处理content为空，提供defaultContent
           content = () =>
-            resolvePropVal(props.column.explain as Record<string, unknown>, 'content', [props.column, props.row]);
+            resolvePropVal(props.column.explain as Record<string, unknown>, 'content', [props.column, props.row]) ||
+            defaultContent;
         }
       }
 
@@ -205,12 +218,13 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
+    let resizeObserverIns = null;
+    const onComponentRender = () => {
       const { disabled, resizerWay, watchCellResize } = resolveTooltipOption();
       if (!disabled) {
         resolveOverflowTooltip();
         if (watchCellResize !== false && props.observerResize) {
-          let observerIns = observerResize(
+          resizeObserverIns = observerResize(
             refRoot.value,
             () => {
               resolveOverflowTooltip();
@@ -219,17 +233,52 @@ export default defineComponent({
             true,
             resizerWay,
           );
-          observerIns.start();
-          onBeforeUnmount(() => {
-            observerIns.disconnect();
-            observerIns = null;
-          });
+          resizeObserverIns.start();
         }
       }
+    };
+
+    let intersectionObserver = null;
+    const initObserver = () => {
+      if (!props.intersectionObserver) {
+        return;
+      }
+
+      intersectionObserver = new IntersectionObserver(
+        entries => {
+          if (entries[0].intersectionRatio <= 0) {
+            renderSlots.value = false;
+            bkEllipsisIns?.destroyInstance(refRoot.value);
+            return;
+          }
+
+          renderSlots.value = true;
+          onComponentRender();
+        },
+        {
+          threshold: 0.5,
+        },
+      );
+
+      intersectionObserver?.observe(refRoot.value);
+    };
+
+    onMounted(() => {
+      initObserver();
+
+      if (!renderSlots.value) {
+        return;
+      }
+
+      onComponentRender();
     });
 
     onBeforeUnmount(() => {
+      resizeObserverIns?.disconnect();
+      resizeObserverIns = null;
       bkEllipsisIns?.destroyInstance(refRoot.value);
+      intersectionObserver?.disconnect();
+      intersectionObserver = null;
     });
 
     const hasExplain = props.headExplain || props.column.explain;
@@ -239,7 +288,7 @@ export default defineComponent({
         style={cellStyle.value}
         class={['cell', props.column.type, hasExplain ? 'explain' : '']}
       >
-        {slots.default?.()}
+        {renderSlots.value ? slots.default?.() : '--'}
       </div>
     );
   },

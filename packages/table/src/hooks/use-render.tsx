@@ -33,7 +33,7 @@ import { v4 as uuidv4 } from 'uuid';
 import BodyEmpty from '../components/body-empty';
 import TableCell from '../components/table-cell';
 import TableRow from '../components/table-row';
-import { COLUMN_ATTRIBUTE, LINE_HEIGHT, TABLE_ROW_ATTRIBUTE } from '../const';
+import { COLUMN_ATTRIBUTE, TABLE_ROW_ATTRIBUTE } from '../const';
 import { EMIT_EVENTS } from '../events';
 import { Column, TablePropTypes } from '../props';
 import {
@@ -50,7 +50,6 @@ import { UseColumns } from './use-columns';
 import useHead from './use-head';
 import { UsePagination } from './use-pagination';
 import { UseRows } from './use-rows';
-import { UseSettings } from './use-settings';
 import useShiftKey from './use-shift-key';
 type RenderType = {
   props: TablePropTypes;
@@ -58,9 +57,8 @@ type RenderType = {
   columns: UseColumns;
   rows: UseRows;
   pagination: UsePagination;
-  settings: UseSettings;
 };
-export default ({ props, ctx, columns, rows, pagination, settings }: RenderType) => {
+export default ({ props, ctx, columns, rows, pagination }: RenderType) => {
   const t = useLocale('table');
 
   const uuid = uuidv4();
@@ -141,6 +139,50 @@ export default ({ props, ctx, columns, rows, pagination, settings }: RenderType)
   };
 
   /** **************************************** Rows Render ******************************* **/
+  const renderAppendLastRow = () => {
+    const rowId = 'append-last-row';
+    const rowStyle = [
+      ...formatPropAsArray(props.rowStyle, []),
+      {
+        '--row-height': `${getRowHeight(null, null, 'append-last-row')}px`,
+      },
+    ];
+    if (props.appendLastRow.type === 'default') {
+      if (ctx.slots.appendLastRow) {
+        return (
+          <TableRow key={rowId}>
+            <tr
+              key={rowId}
+              style={rowStyle}
+            >
+              <td colspan={columns.visibleColumns.length}>
+                {props.appendLastRow.cellRender?.(null, null) ?? ctx.slots.appendLastRow()}
+              </td>
+            </tr>
+          </TableRow>
+        );
+      }
+
+      return;
+    }
+
+    if (props.appendLastRow.type === 'summary') {
+      return (
+        <TableRow key={rowId}>
+          <tr
+            key={rowId}
+            style={rowStyle}
+          >
+            {columns.visibleColumns.map((column, index) => (
+              <td>
+                <TableCell>{props.appendLastRow.cellRender?.(column, index) ?? column.field ?? column.prop}</TableCell>
+              </td>
+            ))}
+          </tr>
+        </TableRow>
+      );
+    }
+  };
 
   /**
    * 渲染Table Body
@@ -158,22 +200,12 @@ export default ({ props, ctx, columns, rows, pagination, settings }: RenderType)
           preRow = row;
           return result;
         })}
+        {renderAppendLastRow()}
       </tbody>
     );
   };
 
-  const getRowHeight = (row?: Record<string, object>, rowIndex?: number) => {
-    if (typeof props.rowHeight === 'function' || /^\d+/.test(`${props.rowHeight}`)) {
-      return resolvePropVal(props, 'rowHeight', ['tbody', row, rowIndex]);
-    }
-
-    const { size, height, enabled } = settings.options;
-    if (enabled && height !== null && height !== undefined) {
-      return resolvePropVal(settings.options, 'height', ['tbody', row, rowIndex, size]);
-    }
-
-    return LINE_HEIGHT;
-  };
+  const getRowHeight = rows.getRowHeight;
 
   const setDragEvents = (events: Record<string, () => void>) => {
     dragEvents = events;
@@ -230,6 +262,11 @@ export default ({ props, ctx, columns, rows, pagination, settings }: RenderType)
     index: number,
     rows: Record<string, object>[],
   ) => {
+    const tagName = (e.target as HTMLElement)?.tagName;
+    // span标签中嵌套了input标签产生冒泡，会先后都触发一次click事件, 所以会调用两遍
+    if (tagName === 'INPUT') {
+      return;
+    }
     ctx.emit(EMIT_EVENTS.ROW_CLICK, e, row, index, rows);
   };
 
@@ -415,6 +452,7 @@ export default ({ props, ctx, columns, rows, pagination, settings }: RenderType)
                     class={tdCtxClass}
                     column={column}
                     data-id={cellKey}
+                    intersectionObserver={props.intersectionObserver}
                     isExpandChild={isChild}
                     observerResize={props.observerResize}
                     parentSetting={props.showOverflowTooltip}

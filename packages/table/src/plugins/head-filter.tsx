@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { computed, defineComponent, reactive, ref } from 'vue';
+import { computed, defineComponent, reactive, ref, watch } from 'vue';
 
 import Button from '@bkui-vue/button';
 import Checkbox, { BkCheckboxGroup } from '@bkui-vue/checkbox';
@@ -57,10 +57,23 @@ export default defineComponent({
     const filter = computed(() => props.column?.filter);
     const checked = computed(() => (filter.value as IFilterShape)?.checked ?? []);
     const searchValue = ref('');
+
     const state = reactive({
       isOpen: false,
-      checked: checked.value,
+      checked: [],
     });
+
+    state.checked.push(...checked.value);
+
+    watch(
+      () => checked,
+      () => {
+        state.checked.length = 0;
+        state.checked = [];
+        state.checked.push(...checked.value);
+      },
+      { deep: true },
+    );
 
     const headClass = computed(() =>
       classes({
@@ -95,14 +108,17 @@ export default defineComponent({
       const { list = [] } = filter.value as IFilterShape;
       const filterList = list.filter(l => {
         const reg = getRegExp(searchValue.value);
-        return reg.test(l.label) || reg.test(l.value);
+        return reg.test(l.label) || reg.test(l.text) || reg.test(l.value);
       });
       return filterList;
     });
 
     const maxLength = 5;
     const maxHeight = computed(() => (filter.value as IFilterShape)?.maxHeight ?? ROW_HEIGHT * maxLength);
-    const height = computed(() => (filter.value as IFilterShape)?.height || '100%');
+    const height = computed(() => {
+      const { height, list = [] } = filter.value as IFilterShape;
+      return height || list.length * ROW_HEIGHT;
+    });
     const minHeight = computed(() => {
       const defaultMin = ROW_HEIGHT * 2;
       if (localData.value.length > maxLength) {

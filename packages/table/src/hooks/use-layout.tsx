@@ -50,13 +50,15 @@ export default (props: TablePropTypes, ctx) => {
   const offsetRight = ref(0);
   const layout: { bottom?: number } = reactive({});
   const fixedColumns = reactive([]);
-  const lineHeight = ref(props.rowHeight ?? LINE_HEIGHT);
+  const lineHeight = ref(LINE_HEIGHT);
   const headerRowCount = ref(1);
 
   const fixedBottomHeight = computed(() => {
-    return props.fixedBottom?.position === 'relative'
-      ? props.fixedBottom?.height ?? LINE_HEIGHT
-      : props.fixedBottom?.height ?? 0;
+    if (ctx.slots?.fixedBottom) {
+      return props.fixedBottom?.position === 'relative' ? props.fixedBottom?.height ?? LINE_HEIGHT : 0;
+    }
+
+    return 0;
   });
 
   const { resolveClassName } = usePrefix();
@@ -93,7 +95,7 @@ export default (props: TablePropTypes, ctx) => {
   };
 
   const setRootStyleVars = throttle(() => {
-    refRoot.value?.style?.setProperty('--drag-offset-x', `${dragOffsetX.value}px`);
+    refRoot.value?.style?.setProperty('--drag-offset-x', `${dragOffsetX.value + translateX.value}px`);
     refRoot.value?.style?.setProperty('--drag-offset-h-x', `${dragOffsetX.value - 2}px`);
     refRoot.value?.style?.setProperty('--translate-y', `${translateY.value}px`);
     refRoot.value?.style?.setProperty('--translate-x', `${translateX.value}px`);
@@ -211,8 +213,21 @@ export default (props: TablePropTypes, ctx) => {
     return null;
   });
 
-  const setBodyHeight = (height: number) => {
-    bodyHeight.value = height - headHeight.value - fixedBottomHeight.value - footHeight.value;
+  const getBodyHeight = height => {
+    return height - headHeight.value - fixedBottomHeight.value - footHeight.value;
+  };
+
+  const setBodyHeight = (height: number, withHeadFoot = true) => {
+    if (withHeadFoot) {
+      bodyHeight.value = getBodyHeight(height);
+      return;
+    }
+
+    bodyHeight.value = height;
+  };
+
+  const setVirtualBodyHeight = (height: number) => {
+    bodyHeight.value = height;
   };
 
   const footHeight = ref(0);
@@ -237,8 +252,8 @@ export default (props: TablePropTypes, ctx) => {
     offsetRight.value = scrollWidth - offsetWidth - translateX?.value ?? 0;
   };
 
-  const setLineHeight = (val: number) => {
-    lineHeight.value = val;
+  const setLineHeight = (val: ((...args) => number) | number) => {
+    lineHeight.value = val as number;
   };
 
   const handleScrollChanged = (
@@ -278,12 +293,17 @@ export default (props: TablePropTypes, ctx) => {
     };
   });
 
-  const fixedWrapperClass = resolveClassName('table-fixed');
+  const fixedWrapperClass = computed(() => {
+    return {
+      [resolveClassName('table-fixed')]: true,
+      'has-virtual-scroll': props.virtualEnabled,
+    };
+  });
 
   const fixedBottomRow = resolveClassName('table-fixed-bottom');
 
   const fixedBottomLoadingStyle = computed(() => ({
-    minHeight: `${lineHeight.value}px`,
+    minHeight: `${props.fixedBottom?.minHeight ?? LINE_HEIGHT}px`,
     position: props.fixedBottom?.position ?? 'absolute',
     height: props.fixedBottom?.height ?? null,
   }));
@@ -331,7 +351,7 @@ export default (props: TablePropTypes, ctx) => {
           default: (scope: Record<string, object>) => childrend?.(scope?.data ?? []),
           afterSection: () => [
             <div class={resizeColumnClass}></div>,
-            <div class={fixedWrapperClass}>{fixedRows?.()}</div>,
+            <div class={fixedWrapperClass.value}>{fixedRows?.()}</div>,
           ],
         }}
       </VirtualRender>
@@ -365,7 +385,9 @@ export default (props: TablePropTypes, ctx) => {
     renderBody,
     renderFooter,
     renderFixedBottom,
+    getBodyHeight,
     setBodyHeight,
+    setVirtualBodyHeight,
     setFootHeight,
     setTranslateX,
     setDragOffsetX,

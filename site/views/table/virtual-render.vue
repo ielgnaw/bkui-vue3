@@ -5,7 +5,7 @@
         theme="primary"
         @click="handleRandomRows"
       >
-        随机1000-9999行数据
+        随机1000-9999行数据 | 自定义 row-height
       </bk-button>
       <span style="padding: 0 30px">当前行数：{{ randomRows.length }}</span>
     </div>
@@ -14,6 +14,7 @@
       :columns="columns"
       :data="randomRows"
       :height="300"
+      :row-height="getRowHeight"
       settings
       virtual-enabled
     />
@@ -37,6 +38,10 @@
       this.handleRandomRows();
     },
     methods: {
+      getRowHeight(...args) {
+        const hj = [40, 80, 100, 65];
+        return hj[(args[0].index ?? 0) % 3];
+      },
       handleRandomRows() {
         this.randomRows.splice(
           0,

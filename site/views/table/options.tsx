@@ -109,6 +109,7 @@ export const DATA_COLUMNS = [
     width: 350,
     minWidth: 80,
     sort: true,
+    fixed: true,
     showOverflowTooltip: {
       mode: 'static',
       content: '这是个静态的提示，限制最大宽度为200px，测试一下是否生效，长度不够，数字来凑，哈哈哈',
@@ -271,9 +272,10 @@ export const DATA_FIX_TABLE = [
 export const DATA_FIX_COLUMNS = [
   {
     type: 'selection',
-    width: 20,
-    minWidth: 20,
+    width: 40,
+    minWidth: 40,
     fixed: true,
+    acrossPage: true,
     showOverflowTooltip: {
       mode: 'static',
       content: (_column, _row) => 'xxx_uuu',
@@ -321,7 +323,7 @@ export const DATA_FIX_COLUMNS = [
     label: '状态',
     field: 'status',
     width: 180,
-    fixed: 'right',
+    // fixed: 'right',
   },
   {
     label: '操作',
@@ -329,7 +331,7 @@ export const DATA_FIX_COLUMNS = [
       return <bk-input v-model={data.status}></bk-input>;
     },
     width: 180,
-    fixed: 'right',
+    // fixed: 'right',
   },
 ];
 

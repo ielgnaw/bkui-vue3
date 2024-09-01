@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { DirectiveBinding, h, ObjectDirective, render, VNode } from 'vue';
+import { DirectiveBinding, h, ObjectDirective, render, VNode, nextTick } from 'vue';
 
 import { bkZIndexManager, resolveClassName } from '@bkui-vue/shared';
 import { createPopper, ModifierPhases, Placement } from '@popperjs/core';
@@ -49,10 +49,14 @@ const nodeList = new WeakMap();
 const tooltips: ObjectDirective = {
   beforeMount(el: HTMLElement, binding: DirectiveBinding) {
     const opts = getOpts(binding);
-    const { trigger } = opts;
+    const { trigger, showOnInit } = opts;
     const popper = renderContent(opts);
     let delayTimeout = null;
-
+    if (showOnInit) {
+      nextTick(() => {
+        show(el);
+      });
+    }
     if (trigger === 'hover') {
       let hideTimeout = null;
       el.addEventListener('mouseenter', () => {
@@ -170,7 +174,8 @@ function renderContent(opts): HTMLElement {
   const isLight = theme === 'light';
   const zIndex = bkZIndexManager.getPopperIndex();
   const content = document.createElement('div');
-  content.className = `${resolveClassName('popper')} ${isLight ? 'light' : 'dark'} ${extCls}`;
+  const prefix = document.documentElement.style.getPropertyValue('--bk-prefix') || 'bk';
+  content.className = `${resolveClassName('popper', prefix)} ${isLight ? 'light' : 'dark'} ${extCls}`;
   content.innerText = value;
   content.style.zIndex = String(zIndex);
   renderContext(value, content);
@@ -188,7 +193,8 @@ function renderContent(opts): HTMLElement {
  */
 function renderArrow(): HTMLElement {
   const arrow = document.createElement('div');
-  arrow.className = resolveClassName('popper-arrow');
+  const prefix = document.documentElement.style.getPropertyValue('--bk-prefix') || 'bk';
+  arrow.className = resolveClassName('popper-arrow', prefix);
   arrow.setAttribute('data-popper-arrow', '');
   return arrow;
 }
@@ -201,7 +207,7 @@ function renderArrow(): HTMLElement {
  */
 function createPopperInstance(el: HTMLElement, popper: HTMLElement) {
   const { opts } = nodeList.get(el);
-  const { placement, distance, showOnInit, sameWidth } = opts;
+  const { placement, distance, sameWidth } = opts;
   const popperInstance = createPopper(el, popper, {
     placement,
     modifiers: [
@@ -230,8 +236,6 @@ function createPopperInstance(el: HTMLElement, popper: HTMLElement) {
         : []),
     ],
   });
-
-  if (showOnInit) show(el);
   return popperInstance;
 }
 

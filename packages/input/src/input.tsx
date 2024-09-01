@@ -136,6 +136,7 @@ export default defineComponent({
     );
     const { class: cls, style, ...inputAttrs } = ctx.attrs;
 
+    const parentRef = ref();
     const inputRef = ref();
     const innerInputValue = ref<{ value?: number | string }>(
       typeof props.modelValue === 'undefined' || props.modelValue === null
@@ -195,7 +196,25 @@ export default defineComponent({
       };
     };
 
+    const dragTextareaResize = () => {
+      return () => {
+        // 必须是autosize才能实现拖拽，且设置了maxRows还是会覆盖原有默认高度出现滚动条
+        if (!isTextArea.value || !props.autosize) return;
+        const isElHidden = parentRef.value?.offsetParent === null;
+        if (!isElHidden) {
+          inputRef.value?.style?.setProperty('height', `${parentRef.value?.offsetHeight}px`);
+          textareaCalcStyle.value = Object.assign(textareaCalcStyle.value, {
+            height: `${parentRef.value?.offsetHeight}px`,
+          });
+          if (parentRef.value?.offsetWidth > parentRef.value?.parentNode?.offsetWidth) {
+            parentRef.value?.style?.setProperty('width', `${parentRef.value?.parentNode?.offsetWidth}px`);
+          }
+        }
+      };
+    };
+
     const onceInitSizeTextarea = createOnceInitResize(resizeTextarea);
+    const onDragSizeTextarea = dragTextareaResize();
     const suffixCls = getCls('suffix-icon');
     const suffixIconMap = {
       search: () => <Search />,
@@ -297,6 +316,7 @@ export default defineComponent({
 
     const resizeObserver = new ResizeObserver(() => {
       onceInitSizeTextarea();
+      onDragSizeTextarea();
       setOverflow();
     });
 
@@ -317,7 +337,10 @@ export default defineComponent({
         innerInputValue.value = {
           value: val,
         };
-        nextTick(() => resizeTextarea());
+        nextTick(() => {
+          resizeTextarea();
+          onDragSizeTextarea();
+        });
         setOverflow();
       },
     );
@@ -365,7 +388,7 @@ export default defineComponent({
       ctx.emit(EVENTS.CLEAR);
     }
 
-    function handleFocus(e) {
+    function handleFocus(e: FocusEvent) {
       isFocused.value = true;
       ctx.emit(EVENTS.FOCUS, e);
     }
@@ -435,23 +458,26 @@ export default defineComponent({
       handleInput(e);
     }
 
+    function isNum(num): boolean {
+      return typeof num === 'number' && !Number.isNaN(num);
+    }
+
     function handleNumber(modelValue: number, step: number, INC = true) {
       const numStep = Number(step);
+      const factor = isNum(numStep) ? numStep : 1;
       const precision = Number.isInteger(props.precision) ? props.precision : 0;
       const val = Number(modelValue);
 
-      const factor = Number.isInteger(numStep) ? numStep : 1;
       if (Number.isNaN(val)) {
-        return Number.isInteger(props.min) ? props.min : 0;
+        return isNum(props.min) ? props.min : 0;
       }
       let newVal = val + (INC ? factor : -1 * factor);
-      if (Number.isInteger(props.max)) {
+      if (isNum(props.max)) {
         newVal = Math.min(newVal, props.max);
       }
-      if (Number.isInteger(props.min)) {
+      if (isNum(props.min)) {
         newVal = Math.max(newVal, props.min);
       }
-
       return +newVal.toFixed(precision);
     }
 
@@ -485,6 +511,7 @@ export default defineComponent({
         disabled: props.disabled,
       };
     });
+
     const eventListener = {
       onInput: handleInput,
       onFocus: handleFocus,
@@ -499,6 +526,7 @@ export default defineComponent({
     };
     return () => (
       <div
+        ref={parentRef}
         style={style as any}
         class={inputCls.value}
         v-bk-tooltips={tooltips.value}
@@ -535,7 +563,8 @@ export default defineComponent({
             {...innerInputValue.value}
           />
         )}
-        {!isTextArea.value && props.clearable && !!props.modelValue && (
+        {/* {!isTextarea.value && props.clearable && !!props.modelValue && ( */}
+        {props.clearable && !!props.modelValue && (
           <span
             class={clearCls.value}
             onClick={clear}

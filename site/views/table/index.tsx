@@ -133,7 +133,7 @@ export default defineComponent({
       },
       {
         attrs: {
-          title: '多表头',
+          title: '多表头 & append-last-row实现统计功能',
           subtitle: '基础用法，用于表单内容的录入',
           desc: 'props: 支持 `field` 和 `prop`两种配置，配置效果一样',
           componentName: 'table',

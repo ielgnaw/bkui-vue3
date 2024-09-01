@@ -146,6 +146,10 @@ export const useCheckbox = () => {
 
   // 值更新
   const handleChange = (event: Event) => {
+    if (props.readonly) {
+      return;
+    }
+
     const $targetInput = event.target as HTMLInputElement;
     if (isDisabled.value || isPrechecking.value) {
       return;
@@ -161,7 +165,8 @@ export const useCheckbox = () => {
           return Promise.reject();
         }
       })
-      .catch(() => {
+      .catch(err => {
+        console.error(err);
         $targetInput.checked = isChecked.value;
       })
       .finally(() => {
