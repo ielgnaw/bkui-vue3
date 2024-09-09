@@ -249,7 +249,7 @@ export default defineComponent({
     });
 
     const setRowsBodyHeight = () => {
-      if (props.height === '100%' || props.height === 'auto') {
+      if (props.virtualEnabled && (props.height === '100%' || props.height === 'auto')) {
         const rowsHeight = rows.getCurrentPageRowsHeight();
         let bodyHeight = rowsHeight;
         if (/^\d+\.?\d*(px)?$/.test(`${props.maxHeight}`)) {
@@ -331,14 +331,12 @@ export default defineComponent({
 
     const pageListLength = computed(() => rows.pageRowList.length);
 
-    watch(pageListLength,
-      (val, old) => {
-        if (val < old) {
-          refBody?.value?.updateScroll?.();
-          scrollTo(undefined, 0);
-        }
-      },
-    );
+    watch(pageListLength, (val, old) => {
+      if (val < old) {
+        refBody?.value?.updateScroll?.();
+        scrollTo(undefined, 0);
+      }
+    });
 
     ctx.expose({
       setRowExpand: rows.setRowExpand,
