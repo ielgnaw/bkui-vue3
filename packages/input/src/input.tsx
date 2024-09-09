@@ -277,10 +277,11 @@ export default defineComponent({
     const maxLimitScrollHeight = computed(() => maxLimitRef.value?.scrollHeight ?? 0);
 
     const resizeObserver = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-        const { blockSize } = contentBoxSize || {};
-        if (props.resize) {
+      if (props.resize) {
+        for (const entry of entries) {
+          const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
+          const { blockSize } = contentBoxSize || {};
+
           nextTick(() => {
             textareaCalcStyle.value = {
               height: `${blockSize - maxLimitScrollHeight.value}px`,
