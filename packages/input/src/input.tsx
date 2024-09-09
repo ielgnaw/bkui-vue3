@@ -175,7 +175,7 @@ export default defineComponent({
         };
 
         nextTick(() => {
-          textareaCalcStyle.value = textareaStyle;
+          textareaCalcStyle.value = props.resize ? { ...textareaStyle, ...{ height: '100%' } } : textareaStyle;
         });
       } else {
         textareaCalcStyle.value = {
@@ -198,17 +198,11 @@ export default defineComponent({
 
     const dragTextareaResize = () => {
       return () => {
-        // 必须是autosize才能实现拖拽，且设置了maxRows还是会覆盖原有默认高度出现滚动条
+        // 设置拖拽宽度不允许超过父节点宽度
         if (!isTextArea.value || !props.autosize) return;
         const isElHidden = parentRef.value?.offsetParent === null;
-        if (!isElHidden) {
-          inputRef.value?.style?.setProperty('height', `${parentRef.value?.offsetHeight}px`);
-          textareaCalcStyle.value = Object.assign(textareaCalcStyle.value, {
-            height: `${parentRef.value?.offsetHeight}px`,
-          });
-          if (parentRef.value?.offsetWidth > parentRef.value?.parentNode?.offsetWidth) {
-            parentRef.value?.style?.setProperty('width', `${parentRef.value?.parentNode?.offsetWidth}px`);
-          }
+        if (!isElHidden && parentRef.value?.offsetWidth > parentRef.value?.parentNode?.offsetWidth) {
+          parentRef.value?.style?.setProperty('width', `${parentRef.value?.parentNode?.offsetWidth}px`);
         }
       };
     };
@@ -339,7 +333,6 @@ export default defineComponent({
         };
         nextTick(() => {
           resizeTextarea();
-          onDragSizeTextarea();
         });
         setOverflow();
       },
