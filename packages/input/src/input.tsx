@@ -24,17 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import {
-  computed,
-  defineComponent,
-  ExtractPropTypes,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  StyleValue,
-  watch,
-} from 'vue';
+import { computed, defineComponent, ExtractPropTypes, nextTick, onMounted, ref, StyleValue, watch } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { bkTooltips } from '@bkui-vue/directives';
@@ -149,9 +139,7 @@ export default defineComponent({
     );
     const { class: cls, style, ...inputAttrs } = ctx.attrs;
 
-    const parentRef = ref();
     const inputRef = ref();
-    const maxLimitRef = ref();
     const innerInputValue = ref<{ value?: number | string }>(
       typeof props.modelValue === 'undefined' || props.modelValue === null
         ? {}
@@ -274,22 +262,6 @@ export default defineComponent({
     const showMaxLimit = computed(() => {
       return typeof props.maxlength === 'number' || typeof props.maxcharacter === 'number';
     });
-    const maxLimitScrollHeight = computed(() => maxLimitRef.value?.scrollHeight ?? 0);
-
-    const resizeObserver = new ResizeObserver(entries => {
-      if (props.resize) {
-        for (const entry of entries) {
-          const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-          const { blockSize } = contentBoxSize || {};
-
-          nextTick(() => {
-            textareaCalcStyle.value = {
-              height: `${blockSize - maxLimitScrollHeight.value}px`,
-            };
-          });
-        }
-      }
-    });
 
     watch(
       () => props.type,
@@ -312,16 +284,11 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      resizeObserver.observe(parentRef.value);
       nextTick(onResize);
       // Hack: 修复autofocus属性失效问题 原生autofocus属性只在页面加载时生效
       if (Object.prototype.hasOwnProperty.call(ctx.attrs, 'autofocus')) {
         inputRef.value?.focus?.();
       }
-    });
-
-    onBeforeUnmount(() => {
-      resizeObserver.disconnect();
     });
 
     ctx.expose({
@@ -359,7 +326,7 @@ export default defineComponent({
         });
       } else {
         textareaCalcStyle.value = {
-          minHeight: calcTextareaHeight(inputRef.value, parentRef.value).minHeight,
+          minHeight: calcTextareaHeight(inputRef.value).minHeight,
         };
       }
     }
@@ -520,7 +487,6 @@ export default defineComponent({
     };
     return () => (
       <div
-        ref={parentRef}
         style={style as StyleValue}
         class={inputCls.value}
         v-bk-tooltips={tooltips.value}
@@ -568,10 +534,7 @@ export default defineComponent({
         )}
         {suffixIcon.value}
         {showMaxLimit.value && (props.showWordLimit || isTextArea.value) && (
-          <p
-            ref={maxLimitRef}
-            class={maxLengthCls.value}
-          >
+          <p class={maxLengthCls.value}>
             {props.overMaxLengthLimit ? (
               ceilMaxLength.value - modelValueLength.value
             ) : (
