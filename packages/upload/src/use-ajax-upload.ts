@@ -33,7 +33,7 @@ const errMsg = 'An error occurred during upload';
 function getRes(xhr: XMLHttpRequest): XMLHttpRequestResponseType {
   const res = xhr.responseText || xhr.response;
   if (!res) {
-    return res;
+    return res || {};
   }
 
   try {
@@ -92,8 +92,12 @@ export const ajaxUpload: UploadRequestHandler = option => {
   }
 
   xhr.addEventListener('error', () => {
+    let msg = new Error(errMsg);
     const responseText = getRes(xhr);
-    let msg = new Error(responseText || errMsg);
+    if (responseText) {
+      msg = new Error((responseText as { message?: string }).message || errMsg);
+    }
+    console.log(responseText, msg);
     option.onError(msg);
     // option.onError(new Error('An error occurred during upload'));
   });
@@ -101,7 +105,11 @@ export const ajaxUpload: UploadRequestHandler = option => {
   xhr.addEventListener('load', () => {
     if (xhr.status < 200 || xhr.status >= 300) {
       const responseText = getRes(xhr);
-      return option.onError(new Error(responseText || errMsg));
+      let msg = new Error(errMsg);
+      if (responseText) {
+        msg = new Error((responseText as { message?: string }).message || errMsg);
+      }
+      return option.onError(msg);
     }
     option.onSuccess(getRes(xhr));
   });
@@ -173,7 +181,11 @@ export const ajaxSliceUpload: UploadRequestHandler = async option => {
       if (req.readyState === 4) {
         const responseText = getRes(req);
         if (req.status < 200 || req.status >= 300) {
-          return option.onError(new Error(responseText || errMsg));
+          let msg = new Error(errMsg);
+          if (responseText) {
+            msg = new Error((responseText as { message?: string }).message || errMsg);
+          }
+          return option.onError(msg);
         }
         option.onSuccess(responseText);
       }
@@ -242,7 +254,11 @@ const sliceSend = (
           const responseText = getRes(xhr);
           if (xhr.status < 200 || xhr.status >= 300) {
             reject(responseText);
-            option.onError(new Error(responseText || errMsg));
+            let msg = new Error(errMsg);
+            if (responseText) {
+              msg = new Error((responseText as { message?: string }).message || errMsg);
+            }
+            option.onError(msg);
           } else {
             resolve('reponseText');
           }

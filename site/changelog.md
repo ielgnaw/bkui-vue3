@@ -1,6 +1,19 @@
 ## 更新日志
 
 
+### 2.0.1-beta.69
+
+* **[feat]**:
+    - fix: 修复upload组件下error事件的message提示object问题
+
+
+### 2.0.1-beta.68
+
+* **[feat]**:
+    - bugfix(select): 修复select tag key没有设置问题
+    - fix: searchSelect组件设置maxHeight不生效
+
+
 ### 2.0.1-beta.67
 
 * **[feat]**:
