@@ -28,6 +28,8 @@ import SparkMD5 from 'spark-md5';
 
 import type { UploadProgressEvent, UploadRequestHandler, UploadRequestOptions } from './upload.type';
 
+const errMsg = 'An error occurred during upload';
+
 function getRes(xhr: XMLHttpRequest): XMLHttpRequestResponseType {
   const res = xhr.responseText || xhr.response;
   if (!res) {
@@ -90,12 +92,16 @@ export const ajaxUpload: UploadRequestHandler = option => {
   }
 
   xhr.addEventListener('error', () => {
-    option.onError(new Error('An error occurred during upload'));
+    const responseText = getRes(xhr);
+    let msg = new Error(responseText || errMsg);
+    option.onError(msg);
+    // option.onError(new Error('An error occurred during upload'));
   });
 
   xhr.addEventListener('load', () => {
     if (xhr.status < 200 || xhr.status >= 300) {
-      return option.onError(new Error('An error occurred during upload'));
+      const responseText = getRes(xhr);
+      return option.onError(new Error(responseText || errMsg));
     }
     option.onSuccess(getRes(xhr));
   });
@@ -165,10 +171,11 @@ export const ajaxSliceUpload: UploadRequestHandler = async option => {
     req.open(option.method, option.mergeUrl, true);
     req.onreadystatechange = () => {
       if (req.readyState === 4) {
+        const responseText = getRes(req);
         if (req.status < 200 || req.status >= 300) {
-          return option.onError(new Error('An error occurred during upload'));
+          return option.onError(new Error(responseText || errMsg));
         }
-        option.onSuccess(getRes(req));
+        option.onSuccess(responseText);
       }
     };
 
@@ -232,10 +239,10 @@ const sliceSend = (
 
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
-          const res = getRes(xhr);
+          const responseText = getRes(xhr);
           if (xhr.status < 200 || xhr.status >= 300) {
-            reject(res);
-            option.onError(new Error('An error occurred during upload'));
+            reject(responseText);
+            option.onError(new Error(responseText || errMsg));
           } else {
             resolve('reponseText');
           }
@@ -317,7 +324,7 @@ const hashFile = (file: File, chunkSize: number) =>
       }
     };
     fileReader.onerror = () => {
-      reject(new Error('File slcie failed'));
+      reject(new Error('File slice failed'));
     };
     loadNext();
   }).catch(err => {

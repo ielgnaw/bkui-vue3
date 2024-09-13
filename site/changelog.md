@@ -1,6 +1,20 @@
 ## 更新日志
 
 
+### 2.0.1-beta.67
+
+* **[feat]**:
+    - fix(input): 自适应高度 autosize 异常
+    - bugfix(table): 表头过滤弹窗期望默认支持 '超出...' 的规范
+    - feature(upload): 支持error事件的错误信息返回的是上传接口返回的message信息
+
+
+### 2.0.1-beta.66
+
+* **[feat]**:
+    - feat(table): 导出 setRowSelection 方法
+
+
 ### 2.0.1-beta.65
 
 * **[feat]**:
