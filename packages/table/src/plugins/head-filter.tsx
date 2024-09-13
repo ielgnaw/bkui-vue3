@@ -28,6 +28,7 @@ import { computed, defineComponent, reactive, ref, watch } from 'vue';
 import Button from '@bkui-vue/button';
 import Checkbox, { BkCheckboxGroup } from '@bkui-vue/checkbox';
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
+import { bkTooltips } from '@bkui-vue/directives';
 import { Funnel } from '@bkui-vue/icon';
 import Input from '@bkui-vue/input';
 import Popover from '@bkui-vue/popover';
@@ -45,6 +46,9 @@ const ROW_HEIGHT = 32;
 
 export default defineComponent({
   name: 'HeadFilter',
+  directives: {
+    bkTooltips,
+  },
   props: {
     column: IColumnType,
     height: PropTypes.number.def(ROW_HEIGHT),
@@ -56,7 +60,10 @@ export default defineComponent({
     const t = useLocale('table');
     const filter = computed(() => props.column?.filter);
     const checked = computed(() => (filter.value as IFilterShape)?.checked ?? []);
+
     const searchValue = ref('');
+    const filterPopoverRef = ref();
+    const allTextRef = ref([]);
 
     const state = reactive({
       isOpen: false,
@@ -165,6 +172,63 @@ export default defineComponent({
       return { disabled, text };
     };
 
+    const resolveOverflowTips = (payload: Record<string, string>) => {
+      const labelRef = allTextRef.value[`list-item-${payload.value}-ref`];
+      const checkBoxLabelRef = filterPopoverRef.value?.querySelector('.bk-checkbox-label');
+      if (labelRef && checkBoxLabelRef) {
+        const CHECKBOX_WIDTH = 16;
+        const labelStyles = renderDomStyles(labelRef);
+        const checkBoxLabel = renderDomStyles(checkBoxLabelRef);
+        const filterPopoverStyles = renderDomStyles(filterPopoverRef.value);
+        // 获取每个item项的margin、padding、 border
+        const allTipStyles =
+          labelRef?.offsetWidth +
+          labelStyles?.borderSize +
+          labelStyles?.marginSize +
+          labelStyles?.paddingSize +
+          filterPopoverStyles?.borderSize +
+          filterPopoverStyles?.marginSize +
+          filterPopoverStyles?.paddingSize +
+          checkBoxLabel?.marginSize +
+          checkBoxLabel?.paddingSize;
+        if (
+          labelRef?.offsetWidth > filterPopoverRef.value?.offsetWidth ||
+          CHECKBOX_WIDTH + allTipStyles > filterPopoverRef.value?.offsetWidth
+        ) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    const renderDomStyles = (el: HTMLElement) => {
+      if (!el) {
+        return {
+          paddingSize: 0,
+          borderSize: 0,
+          marginSize: 0,
+        };
+      }
+      const styles = getComputedStyle(el);
+      const paddingSize =
+        Number.parseFloat(styles.getPropertyValue('padding-left')) +
+        Number.parseFloat(styles.getPropertyValue('padding-right'));
+
+      const borderSize =
+        Number.parseFloat(styles.getPropertyValue('border-left-width')) +
+        Number.parseFloat(styles.getPropertyValue('border-right-width'));
+
+      const marginSize =
+        Number.parseFloat(styles.getPropertyValue('margin-left')) +
+        Number.parseFloat(styles.getPropertyValue('margin-right'));
+
+      return {
+        paddingSize,
+        borderSize,
+        marginSize,
+      };
+    };
+
     const { btnSave, btnReset } = filter.value as IFilterShape;
 
     const renderSaveBtn = () => {
@@ -218,10 +282,16 @@ export default defineComponent({
 
     const renderFilterList = scope => {
       if (scope.data.length) {
-        return scope.data.map((item: { value: string; text: string }) => (
+        return scope.data.map((item: { value: string; text: string; tipKey?: string }) => (
           <div
             key={item.value}
+            ref={filterPopoverRef}
             class='list-item'
+            v-bk-tooltips={{
+              content: item.tipKey || item.text,
+              placement: 'right',
+              disabled: resolveOverflowTips(item),
+            }}
           >
             <Checkbox
               checked={state.checked.includes(item.value)}
@@ -230,7 +300,7 @@ export default defineComponent({
               modelValue={state.checked.includes(item.value)}
               onChange={val => handleValueChange(val, item)}
             >
-              {`${item.text}`}
+              <span ref={el => (allTextRef.value[`list-item-${item.value}-ref`] = el)}>{`${item.text}`}</span>
             </Checkbox>
           </div>
         ));

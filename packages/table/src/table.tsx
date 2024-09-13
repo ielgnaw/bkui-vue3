@@ -348,6 +348,7 @@ export default defineComponent({
       toggleAllSelection: rows.toggleAllSelection,
       toggleRowSelection: rows.toggleRowSelection,
       getSelection: rows.getRowSelection,
+      setRowSelection: rows.setRowSelection,
       clearSort: columns.clearColumnSort,
       scrollTo,
       getRoot: () => refRoot.value,
