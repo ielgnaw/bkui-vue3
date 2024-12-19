@@ -1,5 +1,12 @@
 ## 更新日志
 
+### 2.0.1-beta.86
+
+* **[feat]**:
+    - feat(menu): sub-menu 支持 title slot([#2219](https://github.com/TencentBlueKing/bkui-vue3/issues/2219))
+    - perf(datePicker|timePicker): 新增 blur,focus 事件([#2214](https://github.com/TencentBlueKing/bkui-vue3/issues/2214))
+    - feat(table): table 组件下架提醒([#2220](https://github.com/TencentBlueKing/bkui-vue3/issues/2220))
+
 
 ### 2.0.1-beta.85
 
