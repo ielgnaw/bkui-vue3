@@ -450,6 +450,7 @@ export default defineComponent({
     };
 
     const handleBlur = e => {
+      emit('blur');
       if (state.internalFocus) {
         state.internalFocus = false;
         return;
@@ -465,7 +466,6 @@ export default defineComponent({
       reset();
       pickerPanelRef?.value?.onToggleVisibility(false);
       formItem?.validate?.('blur');
-      emit('blur');
     };
 
     const handleKeydown = (e: KeyboardEvent) => {
