@@ -48,6 +48,9 @@ export default defineComponent({
   props: tableProps,
   emits: EMIT_EVENT_TYPES,
   setup(props, ctx: SetupContext) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('BkTable 组件后续将不再维护，请迁移至新组件 @blueking/table');
+    }
     const columns = useColumns(props);
     const rows = useRows(props);
     const pagination = usePagination(props);
