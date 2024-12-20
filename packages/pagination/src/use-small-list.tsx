@@ -59,6 +59,9 @@ export default () => {
   watch(
     () => proxy.modelValue,
     modelValue => {
+      if (!proxy.small) {
+        return;
+      }
       // nextTick延后执行，保证proxy.totalPageNum计算正确
       nextTick(() => {
         if (modelValue >= 1 && modelValue <= proxy.totalPageNum) {
@@ -81,6 +84,9 @@ export default () => {
     watch(
       () => proxy.totalPageNum,
       totalPageNum => {
+        if (!proxy.small) {
+          return;
+        }
         if (localCurrent.value > totalPageNum) {
           localCurrent.value = totalPageNum;
         }
