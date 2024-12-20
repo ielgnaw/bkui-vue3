@@ -1,5 +1,11 @@
 ## 更新日志
 
+### 2.0.1-beta.87
+
+* **[feat]**:
+    - bugfix(pagination): 分页逻辑重复执行([#2223](https://github.com/TencentBlueKing/bkui-vue3/issues/2223))
+
+
 ### 2.0.1-beta.86
 
 * **[feat]**:
