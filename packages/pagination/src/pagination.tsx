@@ -90,6 +90,9 @@ export default defineComponent({
       },
     );
     watch(listCurrent, listCurrent => {
+      if (props.small) {
+        return;
+      }
       context.emit('update:modelValue', listCurrent);
       context.emit('change', listCurrent);
     });
