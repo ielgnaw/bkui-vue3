@@ -123,6 +123,13 @@ export default defineComponent({
       return localIsShow.value;
     });
 
+    // 点击 content 收起面板，dropdown 那边需要
+    const handleClickContent = () => {
+      if (props.trigger !== 'manual' && !props.always && props.clickContentAutoHide) {
+        localIsShow.value = false;
+      }
+    };
+
     const renderContent = () => {
       if (props.allowHtml) {
         const { vNode } = contentAsHTMLElement(props.content);
@@ -141,6 +148,7 @@ export default defineComponent({
       content: props.content,
       theme: props.theme,
       transBoundary,
+      handleClickContent,
       handleClickOutside,
       updatePopover,
       resetPopover,
@@ -180,6 +188,7 @@ export default defineComponent({
             maxHeight={this.maxHeight}
             maxWidth={this.maxWidth}
             visible={this.localIsShow}
+            onClick={this.handleClickContent}
           >
             {this.contentIsShow ? this.$slots.content?.() ?? this.renderContent() : ''}
           </Content>

@@ -44,6 +44,8 @@ export const PopoverProps = {
   isShow: PropTypes.bool.def(false),
   always: PropTypes.bool.def(false),
   disabled: PropTypes.bool.def(false),
+  // 非 manual 模式，点击 content 自动隐藏面板
+  clickContentAutoHide: PropTypes.bool.def(false),
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).def('auto'),
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).def('auto'),
   maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).def('auto'),
