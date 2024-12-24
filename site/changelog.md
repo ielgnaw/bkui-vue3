@@ -3,6 +3,12 @@
 ### 2.0.1-beta.87
 
 * **[feat]**:
+    - bugfix(dropdown): 点击下拉选项后，下拉面板未自动收起([#2226](https://github.com/TencentBlueKing/bkui-vue3/issues/2226))
+
+
+### 2.0.1-beta.87
+
+* **[feat]**:
     - bugfix(pagination): 分页逻辑重复执行([#2223](https://github.com/TencentBlueKing/bkui-vue3/issues/2223))
 
 
