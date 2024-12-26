@@ -243,6 +243,20 @@ const props: IPropsTableItem[] = [
     * 如果设置为0，则不启用此设置`,
     optional: [],
   },
+  {
+    name: 'clickContentAutoHide',
+    type: 'Boolean',
+    default: 'false',
+    desc: '非 manual 模式，点击 content 自动隐藏面板',
+    optional: ['true', 'false'],
+  },
+  {
+    name: 'renderDirective',
+    type: 'String',
+    default: 'if',
+    desc: '渲染方式，值为 show 时，气泡内容 dom 元素不会销毁',
+    optional: ['if', 'show'],
+  },
 ];
 
 const events: IPropsTableItem[] = [

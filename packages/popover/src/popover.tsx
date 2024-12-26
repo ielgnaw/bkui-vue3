@@ -106,15 +106,8 @@ export default defineComponent({
     onMounted(onMountedFn);
     onBeforeUnmount(onUnmountedFn);
 
-    const transBoundary = computed(() => localIsShow.value && !props.disableTeleport);
-    const show = () => {
-      showFn();
-    };
-
-    const hide = () => {
-      hideFn();
-    };
-
+    const isRenderModeShow = computed(() => props.renderDirective === 'show');
+    const transBoundary = computed(() => isRenderModeShow.value || (localIsShow.value && !props.disableTeleport));
     const contentIsShow = computed(() => {
       if (props.renderType === RenderType.AUTO) {
         return true;
@@ -123,7 +116,15 @@ export default defineComponent({
       return localIsShow.value;
     });
 
-    // 点击 content 收起面板，dropdown 那边需要
+    const show = () => {
+      showFn();
+    };
+
+    const hide = () => {
+      hideFn();
+    };
+
+    // 点击 content 收起面板
     const handleClickContent = () => {
       if (props.trigger !== 'manual' && !props.always && props.clickContentAutoHide) {
         localIsShow.value = false;
@@ -147,6 +148,7 @@ export default defineComponent({
       refArrow,
       content: props.content,
       theme: props.theme,
+      isRenderModeShow,
       transBoundary,
       handleClickContent,
       handleClickOutside,
@@ -190,7 +192,7 @@ export default defineComponent({
             visible={this.localIsShow}
             onClick={this.handleClickContent}
           >
-            {this.contentIsShow ? this.$slots.content?.() ?? this.renderContent() : ''}
+            {this.isRenderModeShow || this.contentIsShow ? this.$slots.content?.() ?? this.renderContent() : ''}
           </Content>
         </Teleport>
       </Root>

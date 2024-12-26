@@ -26,7 +26,14 @@
 import { ExtractPropTypes } from 'vue';
 import { toType } from 'vue-types';
 
-import { PlacementEnum, placementType, PropTypes, renderType, triggerType } from '@bkui-vue/shared';
+import {
+  PlacementEnum,
+  placementType,
+  PropTypes,
+  renderType,
+  triggerType,
+  renderDirectiveType,
+} from '@bkui-vue/shared';
 
 export const EventProps = {
   onAfterHidden: () => {},
@@ -44,13 +51,13 @@ export const PopoverProps = {
   isShow: PropTypes.bool.def(false),
   always: PropTypes.bool.def(false),
   disabled: PropTypes.bool.def(false),
-  // 非 manual 模式，点击 content 自动隐藏面板
   clickContentAutoHide: PropTypes.bool.def(false),
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).def('auto'),
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).def('auto'),
   maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).def('auto'),
   maxHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).def('auto'),
   content: toType<IContent>('IContent', {}).def(''),
+  renderDirective: renderDirectiveType().def('if'),
 
   target: PropTypes.oneOfType([
     PropTypes.string,
