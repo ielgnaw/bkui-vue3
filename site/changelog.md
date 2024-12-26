@@ -1,6 +1,12 @@
 ## 更新日志
 
-### 2.0.1-beta.87
+### 2.0.1-beta.89
+
+* **[feat]**:
+    - bugfix(popover): 收起面板后dom元素需要保留([#2230](https://github.com/TencentBlueKing/bkui-vue3/issues/2230))
+
+
+### 2.0.1-beta.88
 
 * **[feat]**:
     - bugfix(dropdown): 点击下拉选项后，下拉面板未自动收起([#2226](https://github.com/TencentBlueKing/bkui-vue3/issues/2226))
