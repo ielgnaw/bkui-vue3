@@ -370,7 +370,7 @@ export default (props: PopoverPropTypes, ctx, { refReference, refContent, refArr
   };
 
   const handlePopContentMouseEnter = (e: MouseEvent) => {
-    if (props.trigger !== 'hover') {
+    if (!['hover', 'click-hover'].includes(props.trigger)) {
       return;
     }
 
@@ -410,29 +410,36 @@ export default (props: PopoverPropTypes, ctx, { refReference, refContent, refArr
 
   const resolveTriggerEvents = () => {
     const triggerEvents = {
-      hover: {
-        content: [
-          ['mouseenter', handlePopContentMouseEnter],
-          ['mouseleave', handlePopContentMouseLeave],
-        ],
-        reference: [
-          ['mouseenter', showPopover],
-          ['mouseleave', hidePopover],
-          ['focus', showPopover],
-          ['blur', hidePopover],
-        ],
-      },
-      click: [['click', handleClickRef]],
-      manual: {
-        content: [
-          ['mouseenter', emitPopContentMouseEnter],
-          ['mouseleave', emitPopContentMouseLeave],
-        ],
-        reference: [[]],
-      },
+      hover: [
+        {
+          content: [
+            ['mouseenter', handlePopContentMouseEnter],
+            ['mouseleave', handlePopContentMouseLeave],
+          ],
+          reference: [
+            ['mouseenter', showPopover],
+            ['mouseleave', hidePopover],
+            ['focus', showPopover],
+            ['blur', hidePopover],
+          ],
+        }
+      ],
+      click: [[['click', handleClickRef]]],
+      manual: [
+        {
+          content: [
+            ['mouseenter', emitPopContentMouseEnter],
+            ['mouseleave', emitPopContentMouseLeave],
+          ],
+          reference: [[]],
+        }
+      ],
     };
 
-    return triggerEvents[props.trigger] ?? [];
+    return props.trigger === 'click-hover' ? [
+      ...triggerEvents.click,
+      ...triggerEvents.hover,
+    ] : triggerEvents[props.trigger] ?? [];
   };
 
   const updateFullscreenTarget = (val?: HTMLElement) => {

@@ -135,9 +135,9 @@ const props: IPropsTableItem[] = [
   {
     name: 'trigger',
     type: 'String',
-    default: 'click hover manual',
+    default: 'hover',
     desc: ' 触发方式',
-    optional: ['click', 'hover', 'manual'],
+    optional: ['click', 'hover', 'click-hover', 'manual'],
   },
   {
     name: 'renderType',

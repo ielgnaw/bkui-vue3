@@ -80,7 +80,6 @@ export const PopoverProps = {
    * 支持 click hover manual
    * manual： 通过isShow控制显示、隐藏
    */
-  // trigger: triggerType(),
   trigger: triggerType(),
 
   /**
