@@ -75,13 +75,15 @@ export default (props, ctx, { refReference, refContent, refArrow, refRoot }) => 
   const addEventToPopTargetEl = () => {
     const { elReference, elContent } = resolvePopElements();
     storeEvents = resolveTriggerEvents();
-    if (Array.isArray(storeEvents)) {
-      addEventToTargetEl(elReference, storeEvents);
-    } else {
-      const { content, reference } = storeEvents;
-      addEventToTargetEl(elReference, reference);
-      addEventToTargetEl(elContent, content);
-    }
+    storeEvents.forEach((storeEvent) => {
+      if (Array.isArray(storeEvent)) {
+        addEventToTargetEl(elReference, storeEvent);
+      } else {
+        const { content, reference } = storeEvent;
+        addEventToTargetEl(elReference, reference);
+        addEventToTargetEl(elContent, content);
+      }
+    })
   };
 
   const addEventToTargetEl = (target: HTMLElement, evets: any[]) => {

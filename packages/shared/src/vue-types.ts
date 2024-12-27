@@ -116,6 +116,7 @@ export function placementType() {
 export enum TriggerEnum {
   CLICK = 'click',
   HOVER = 'hover',
+  CLICK_HOVER = 'click-hover',
   MANUAL = 'manual',
 }
 export function triggerType() {
