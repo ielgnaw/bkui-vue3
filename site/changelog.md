@@ -3,6 +3,12 @@
 ### 2.0.1-beta.89
 
 * **[feat]**:
+    - bugfix(popover): 需要同时支持click和hover都能弹出面板([#2234](https://github.com/TencentBlueKing/bkui-vue3/issues/2234))
+
+
+### 2.0.1-beta.89
+
+* **[feat]**:
     - bugfix(popover): 收起面板后dom元素需要保留([#2230](https://github.com/TencentBlueKing/bkui-vue3/issues/2230))
 
 
