@@ -96,13 +96,31 @@ export default (props, ctx, { refReference, refContent, refArrow, refRoot }) => 
 
   const removeEventListener = () => {
     if (storeEvents?.length) {
-      const { elReference } = resolvePopElements();
+      const { elReference, elContent } = resolvePopElements();
       if (elReference) {
-        storeEvents.forEach(([event, listener]) => {
-          if (event && typeof listener === 'function') {
-            elReference.removeEventListener(event, listener);
+        storeEvents.forEach((storeEvent) => {
+          if (Array.isArray(storeEvent)) {
+            storeEvent.forEach(([event, listener]) => {
+              if (event && typeof listener === 'function') {
+                elReference.removeEventListener(event, listener);
+              }
+            });
+          } else {
+            const { content, reference } = storeEvent;
+            content.forEach(([event, listener]) => {
+              if (event && typeof listener === 'function') {
+                if (elContent) {
+                  elContent.removeEventListener(event, listener);
+                }
+              }
+            });
+            reference.forEach(([event, listener]) => {
+              if (event && typeof listener === 'function') {
+                elReference.removeEventListener(event, listener);
+              }
+            });
           }
-        });
+        })
       }
 
       storeEvents = null;
