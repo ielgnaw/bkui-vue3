@@ -1,6 +1,12 @@
 ## 更新日志
 
-### 2.0.1-beta.89
+### 2.0.1-beta.91
+
+* **[feat]**:
+    - bugfix(popover): 需要同时支持click和hover都能弹出面板([#2234](https://github.com/TencentBlueKing/bkui-vue3/issues/2234))
+
+
+### 2.0.1-beta.90
 
 * **[feat]**:
     - bugfix(popover): 需要同时支持click和hover都能弹出面板([#2234](https://github.com/TencentBlueKing/bkui-vue3/issues/2234))
