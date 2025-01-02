@@ -374,19 +374,23 @@ export default (props: PopoverPropTypes, ctx, { refReference, refContent, refArr
     if (!['hover', 'click-hover'].includes(props.trigger)) {
       return;
     }
-    isMouseenter = true;
-    // 设置settimeout的延时为delay, 避免出现同时触发mouseenter mouseleave事件
+    if (!isMouseenter) {
+      isMouseenter = true;
+    }
+    // 设置setTimeout的延时为delay, 避免出现同时触发mouseenter mouseleave事件
     const delay = resolvePopoverDelay()[1];
-    clearTimeout(popHideTimerId);
-    setTimeout(() => {
-      popHideTimerId = undefined;
-    }, delay);
+    if (popHideTimerId) {
+      clearTimeout(popHideTimerId);
+      setTimeout(() => {
+        popHideTimerId = undefined;
+      }, delay);
+    }
     emitPopContentMouseEnter(e);
   };
 
   const handlePopContentMouseLeave = (e: MouseEvent) => {
     // 处理底部触发mouseleave事件，popShowTimerId有值代表处于hover状态
-    if (isMouseenter && popShowTimerId && !popHideTimerId) {
+    if (popShowTimerId && !popHideTimerId) {
       hidePopover();
     }
     emitPopContentMouseLeave(e);
