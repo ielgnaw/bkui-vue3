@@ -338,6 +338,7 @@ export default (props: PopoverPropTypes, ctx, { refReference, refContent, refArr
     const delay = resolvePopoverDelay()[1];
     popHideTimerId = setTimeout(() => {
       popShowTimerId && clearTimeout(popShowTimerId);
+      isMouseenter = false;
       localIsShow.value = false;
     }, delay);
   };
@@ -373,23 +374,26 @@ export default (props: PopoverPropTypes, ctx, { refReference, refContent, refArr
     if (!['hover', 'click-hover'].includes(props.trigger)) {
       return;
     }
-
-    if (popHideTimerId) {
+    if (!isMouseenter) {
       isMouseenter = true;
-      clearTimeout(popHideTimerId);
-      popHideTimerId = undefined;
     }
-
+    // 设置setTimeout的延时为delay, 避免出现同时触发mouseenter mouseleave事件
+    const delay = resolvePopoverDelay()[1];
+    if (popHideTimerId) {
+      clearTimeout(popHideTimerId);
+      setTimeout(() => {
+        popHideTimerId = undefined;
+      }, delay);
+    }
     emitPopContentMouseEnter(e);
   };
 
   const handlePopContentMouseLeave = (e: MouseEvent) => {
     // 处理底部触发mouseleave事件，popShowTimerId有值代表处于hover状态
-    if (isMouseenter && !popShowTimerId) {
+    if (popShowTimerId && !popHideTimerId) {
       hidePopover();
-      isMouseenter = false;
-      emitPopContentMouseLeave(e);
     }
+    emitPopContentMouseLeave(e);
   };
 
   /**
@@ -422,7 +426,7 @@ export default (props: PopoverPropTypes, ctx, { refReference, refContent, refArr
             ['focus', showPopover],
             ['blur', hidePopover],
           ],
-        }
+        },
       ],
       click: [[['click', handleClickRef]]],
       manual: [
@@ -432,14 +436,13 @@ export default (props: PopoverPropTypes, ctx, { refReference, refContent, refArr
             ['mouseleave', emitPopContentMouseLeave],
           ],
           reference: [[]],
-        }
+        },
       ],
     };
 
-    return props.trigger === 'click-hover' ? [
-      ...triggerEvents.click,
-      ...triggerEvents.hover,
-    ] : triggerEvents[props.trigger] ?? [];
+    return props.trigger === 'click-hover'
+      ? [...triggerEvents.click, ...triggerEvents.hover]
+      : triggerEvents[props.trigger] ?? [];
   };
 
   const updateFullscreenTarget = (val?: HTMLElement) => {
