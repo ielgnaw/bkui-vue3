@@ -1,5 +1,11 @@
 ## 更新日志
 
+### 2.0.1-beta.92
+
+* **[feat]**:
+    - bugfix(popover): 鼠标从 popover 内容中移出时，内容不消失([#2233](https://github.com/TencentBlueKing/bkui-vue3/issues/2233))
+
+
 ### 2.0.1-beta.91
 
 * **[feat]**:
