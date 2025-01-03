@@ -70,6 +70,12 @@ const menuGroupPropsJson: IPropsTableItem[] = [
     default: '',
     desc: 'group name',
   },
+  {
+    name: 'foldName',
+    type: 'String | undefined',
+    default: 'undefined',
+    desc: '折叠后显示的分组名',
+  },
 ];
 
 const menuItemPropsJson = [

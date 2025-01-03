@@ -9,7 +9,7 @@
     </bk-radio-group>
     <bk-navigation
       class="navigation-demo-content"
-      :default-open="collapse"
+      :default-open="!collapse"
       :navigation-type="navigationType"
       side-title="监控平台"
       @toggle="handleCollapse"
@@ -24,13 +24,13 @@
           <bk-menu-item key="腾讯视频"> 腾讯视频 </bk-menu-item>
           <bk-menu-item key="微信"> 微信 </bk-menu-item>
           <bk-menu-item key="QQ"> QQ </bk-menu-item>
-          <bk-menu-group name="光子">
+          <bk-menu-group name="光子" foldName="GX">
             <bk-menu-item key="和平精英"> 和平精英 </bk-menu-item>
             <bk-menu-item key="黎明觉醒"> 黎明觉醒 </bk-menu-item>
             <bk-menu-item key="自由幻想"> 自由幻想 </bk-menu-item>
             <bk-menu-item key="欢乐斗地主"> 欢乐斗地主 </bk-menu-item>
           </bk-menu-group>
-          <bk-menu-group name="天美">
+          <bk-menu-group name="天美世界" foldName="TiMi">
             <bk-menu-item key="王者荣耀"> 王者荣耀 </bk-menu-item>
             <bk-menu-item key="QQ飞车"> QQ飞车 </bk-menu-item>
             <bk-menu-item key="天天酷跑"> 天天酷跑 </bk-menu-item>
@@ -73,7 +73,7 @@
   import { ref } from 'vue';
 
   import { TreeApplicationShape } from 'bkui-vue/lib/icon';
-  const collapse = ref(false);
+  const collapse = ref(true);
   const navigationType = ref('left-right');
   const handleCollapse = v => {
     collapse.value = !v;
