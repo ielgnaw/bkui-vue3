@@ -1,5 +1,11 @@
 ## 更新日志
 
+### 2.0.1-beta.94
+
+* **[feat]**:
+    - bugfix(table): Table settings checkbox 文案超出会被遮挡([#2244](https://github.com/TencentBlueKing/bkui-vue3/issues/2244))
+
+
 ### 2.0.1-beta.93
 
 * **[feat]**:
