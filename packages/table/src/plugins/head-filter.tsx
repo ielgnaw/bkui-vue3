@@ -34,7 +34,8 @@ import Input from '@bkui-vue/input';
 import Popover from '@bkui-vue/popover';
 import { classes, PropTypes, RenderType } from '@bkui-vue/shared';
 
-import { Column, IColumnType, IFilterShape } from '../props';
+import useCheckboxToolTip from '../hooks/use-checkbox-tooltip';
+import { Column, IColumnType, IFilterShape, IHeadFilter } from '../props';
 
 type IHeadFilterPropType = {
   column: Column;
@@ -56,7 +57,9 @@ export default defineComponent({
 
   setup(props: IHeadFilterPropType, { emit }) {
     const { resolveClassName } = usePrefix();
+    const { resolveOverflowTips } = useCheckboxToolTip();
     const t = useLocale('table');
+
     const filter = computed(() => props.column?.filter);
     const checked = computed(() => (filter.value as IFilterShape)?.checked ?? []);
 
@@ -101,7 +104,7 @@ export default defineComponent({
       state.isOpen = isOpen;
       isOpen &&
         setTimeout(() => {
-          refVirtualRender.value.reset();
+          refVirtualRender.value?.reset();
         });
 
       if (!isOpen) {
@@ -177,63 +180,6 @@ export default defineComponent({
       return { disabled, text };
     };
 
-    const resolveOverflowTips = (payload: Record<string, string>) => {
-      const labelRef = allTextRef.value[`list-item-${payload.value}-ref`];
-      const checkBoxLabelRef = filterPopoverRef.value?.querySelector('.bk-checkbox-label');
-      if (labelRef && checkBoxLabelRef) {
-        const CHECKBOX_WIDTH = 16;
-        const labelStyles = renderDomStyles(labelRef);
-        const checkBoxLabel = renderDomStyles(checkBoxLabelRef);
-        const filterPopoverStyles = renderDomStyles(filterPopoverRef.value);
-        // 获取每个item项的margin、padding、 border
-        const allTipStyles =
-          labelRef?.offsetWidth +
-          labelStyles?.borderSize +
-          labelStyles?.marginSize +
-          labelStyles?.paddingSize +
-          filterPopoverStyles?.borderSize +
-          filterPopoverStyles?.marginSize +
-          filterPopoverStyles?.paddingSize +
-          checkBoxLabel?.marginSize +
-          checkBoxLabel?.paddingSize;
-        if (
-          labelRef?.offsetWidth > filterPopoverRef.value?.offsetWidth ||
-          CHECKBOX_WIDTH + allTipStyles > filterPopoverRef.value?.offsetWidth
-        ) {
-          return false;
-        }
-      }
-      return true;
-    };
-
-    const renderDomStyles = (el: HTMLElement) => {
-      if (!el) {
-        return {
-          paddingSize: 0,
-          borderSize: 0,
-          marginSize: 0,
-        };
-      }
-      const styles = getComputedStyle(el);
-      const paddingSize =
-        Number.parseFloat(styles.getPropertyValue('padding-left')) +
-        Number.parseFloat(styles.getPropertyValue('padding-right'));
-
-      const borderSize =
-        Number.parseFloat(styles.getPropertyValue('border-left-width')) +
-        Number.parseFloat(styles.getPropertyValue('border-right-width'));
-
-      const marginSize =
-        Number.parseFloat(styles.getPropertyValue('margin-left')) +
-        Number.parseFloat(styles.getPropertyValue('margin-right'));
-
-      return {
-        paddingSize,
-        borderSize,
-        marginSize,
-      };
-    };
-
     const { btnSave, btnReset } = filter.value as IFilterShape;
 
     const renderSaveBtn = () => {
@@ -272,7 +218,7 @@ export default defineComponent({
       );
     };
 
-    const handleValueChange = (val: boolean, item: Record<string, string>) => {
+    const handleValueChange = (val: boolean, item: Record<string, boolean | string>) => {
       const setValue = new Set(state.checked);
       if (val) {
         setValue.add(item.value);
@@ -286,9 +232,20 @@ export default defineComponent({
       handleFilterChange();
     };
 
-    const renderFilterList = scope => {
+    const renderDisplayTooltip = async () => {
+      // 异步延迟解决dom实例加载响应
+      await new Promise(resolve => setTimeout(resolve, 0));
+      localData.value.forEach((item: IHeadFilter) => {
+        if (!Object.prototype.hasOwnProperty.call(item, 'showOverflowTooltip')) {
+          item.showOverflowTooltip = resolveOverflowTips(`list-item-${item.value}-ref`, filterPopoverRef, allTextRef);
+        }
+      });
+    };
+
+    const renderFilterList = (scope: IHeadFilter[]) => {
       if (scope.length) {
-        return scope.map((item: { value: string; text: string; tipKey?: string }) => (
+        renderDisplayTooltip();
+        return scope.map((item: IHeadFilter) => (
           <div
             key={item.value}
             ref={filterPopoverRef}
@@ -296,7 +253,7 @@ export default defineComponent({
             v-bk-tooltips={{
               content: item.tipKey || item.text,
               placement: 'right',
-              disabled: resolveOverflowTips(item),
+              disabled: !item.showOverflowTooltip,
             }}
           >
             <Checkbox
