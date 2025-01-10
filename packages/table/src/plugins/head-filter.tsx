@@ -236,7 +236,9 @@ export default defineComponent({
       // 异步延迟解决dom实例加载响应
       await new Promise(resolve => setTimeout(resolve, 0));
       localData.value.forEach((item: IHeadFilter) => {
-        item.showOverflowTooltip = resolveOverflowTips(`list-item-${item.value}-ref`, filterPopoverRef, allTextRef);
+        if (!Object.prototype.hasOwnProperty.call(item, 'showOverflowTooltip')) {
+          item.showOverflowTooltip = resolveOverflowTips(`list-item-${item.value}-ref`, filterPopoverRef, allTextRef);
+        }
       });
     };
 

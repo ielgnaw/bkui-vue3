@@ -229,11 +229,13 @@ const useSettings = (props: TablePropTypes, ctx: SetupContext, columns: UseColum
     // 异步延迟解决dom实例加载响应
     await new Promise(resolve => setTimeout(resolve, 0));
     renderFields.value.forEach((item, index) => {
-      item.showOverflowTooltip = resolveOverflowTips(
-        `field-item-${resolvePropVal(item, ['id', 'field', 'type'], [item, index])}-ref`,
-        filterPopoverRef,
-        allTextRef,
-      );
+      if (!Object.prototype.hasOwnProperty.call(item, 'showOverflowTooltip')) {
+        item.showOverflowTooltip = resolveOverflowTips(
+          `field-item-${resolvePropVal(item, ['id', 'field', 'type'], [item, index])}-ref`,
+          filterPopoverRef,
+          allTextRef,
+        );
+      }
     });
   };
 
@@ -296,7 +298,7 @@ const useSettings = (props: TablePropTypes, ctx: SetupContext, columns: UseColum
                         ] = el)
                       }
                       v-bk-tooltips={{
-                        placement: 'right',
+                        placement: 'top-start',
                         content: resolvePropVal(item, ['name', 'label'], [item, index]),
                         disabled: !item.showOverflowTooltip,
                       }}
