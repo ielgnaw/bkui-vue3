@@ -103,10 +103,13 @@
             margin-top: 16px;
             line-height: 16px;
 
-            > label {
+            > label,
+            .bk-checkbox-label {
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
+              word-break: break-all;
+              max-width: calc(100% - 22px);
             }
           }
         }
