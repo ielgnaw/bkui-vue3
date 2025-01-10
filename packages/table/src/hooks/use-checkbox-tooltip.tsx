@@ -44,7 +44,7 @@ const useCheckboxToolTip = () => {
         .map(item => Number.parseFloat(item));
       // 根据值的数量来确定如何解析
       if (distanceValues.length === 1) {
-        // 只有一个值，表示四个方向的内边距都相同
+        // 只有一个值，表示四个方向的边距都相同
         return {
           distanceLeft: distanceValues.at(0),
           distanceRight: distanceValues.at(0),
