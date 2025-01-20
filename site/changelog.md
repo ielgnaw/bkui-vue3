@@ -1,5 +1,12 @@
 ## 更新日志
 
+### 2.0.1-beta.95
+
+* **[feat]**:
+    - feat(menu): add disabled state to menu items and improve styling([#2249](https://github.com/TencentBlueKing/bkui-vue3/issues/2249))
+    - feat(notify): 优化文档 & message 支持Vnode #2246
+
+
 ### 2.0.1-beta.94
 
 * **[feat]**:
