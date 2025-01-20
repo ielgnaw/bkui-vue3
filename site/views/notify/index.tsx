@@ -59,9 +59,9 @@ const props: IPropsTableItem[] = [
   },
   {
     name: 'message',
-    type: 'String | Function',
+    type: 'String | Function | VNode',
     default: '',
-    desc: '组件显示的文字内容',
+    desc: '组件显示的文字内容，支持字符串、函数、VNode',
     optional: [],
   },
   {
