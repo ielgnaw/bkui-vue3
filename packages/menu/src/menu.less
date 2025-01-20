@@ -11,9 +11,9 @@
 
 .@{bk-prefix}-menu {
   display: flex;
+  flex-direction: column;
   width: @menu-width;
   background-color: @menu-bg-color;
-  flex-direction: column;
   transition: width .3s ease-out;
 
   &.is-collapse {
@@ -22,12 +22,12 @@
 
   &-submenu {
     display: flex;
-    align-items: center;
     flex-direction: column;
+    align-items: center;
+    align-items: center;
     overflow: hidden;
     text-overflow: clip;
     white-space: nowrap;
-    align-items: center;
     transition: width .3s ease-out;
 
     &.is-opened {
@@ -41,9 +41,9 @@
 
     .submenu-header {
       display: flex;
+      align-items: center;
       width: 100%;
       height: 40px;
-      align-items: center;
 
       &.is-collapse {
         color: @menu-active-color;
@@ -52,11 +52,11 @@
 
       &-icon {
         display: flex;
-        height: 100%;
-        font-size: 18px;
         flex: 0 0 @menu-collapse-width;
         align-items: center;
         justify-content: center;
+        height: 100%;
+        font-size: 18px;
 
         .menu-icon {
           .icon-size(16px, 16px);
@@ -66,9 +66,9 @@
 
       &-content {
         display: flex;
-        height: 100%;
-        align-items: center;
         flex: 1;
+        align-items: center;
+        height: 100%;
         color: #acb9d1
       }
 
@@ -76,8 +76,8 @@
         .icon-size(16px, 16px);
         margin-right: 16px;
         color: #acb9d1;
-        transform: rotate(-90deg);
         transition: transform .3s ease-out;
+        transform: rotate(-90deg);
 
         &.is-collapse {
           transform: rotate(0deg);
@@ -87,11 +87,11 @@
 
     .submenu-list {
       display: flex;
+      flex: 1;
+      flex-direction: column;
       width: 100%;
       padding: 0;
       margin: 0;
-      flex-direction: column;
-      flex: 1;
 
       /* stylelint-disable-next-line declaration-no-important */
       transition-property: all !important;
@@ -100,6 +100,7 @@
 
   &-item {
     display: flex;
+    align-items: center;
     width: 100%;
     height: 40px;
     min-height: 40px;
@@ -109,7 +110,6 @@
     color: @menu-color;
     text-overflow: clip;
     white-space: nowrap;
-    align-items: center;
     transition: width .3s ease-in-out;
 
     &:hover {
@@ -122,13 +122,28 @@
       background: @menu-active-bg-color;
     }
 
+    &.is-disabled {
+      color: @menu-group-color;
+      cursor: not-allowed;
+      
+      &:hover {
+        color: @menu-group-color;
+        cursor: not-allowed;
+        background: none;
+      }
+      
+      .default-icon {
+        opacity: 0.4;
+      }
+    }
+
     .item-icon {
       display: flex;
-      height: 100%;
-      font-size: 18px;
       flex: 0 0 @menu-collapse-width;
       align-items: center;
       justify-content: center;
+      height: 100%;
+      font-size: 18px;
 
       .default-icon {
         display: inline-block;
@@ -142,9 +157,9 @@
 
     .item-content {
       display: flex;
-      height: 100%;
-      align-items: center;
       flex: 1;
+      align-items: center;
+      height: 100%;
     }
   }
 
@@ -154,6 +169,8 @@
 
     .group-name {
       display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
       height: 40px;
       margin: 0 18px;
       overflow: hidden;
@@ -162,8 +179,6 @@
       color: @menu-group-color;
       text-overflow: clip;
       white-space: nowrap;
-      flex-wrap: nowrap;
-      align-items: center;
     }
 
     .group-wrap {
