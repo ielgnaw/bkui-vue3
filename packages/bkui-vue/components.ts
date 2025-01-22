@@ -40,7 +40,6 @@ export { default as Collapse } from '@bkui-vue/collapse';
 export { default as ColorPicker } from '@bkui-vue/color-picker';
 export { default as ConfigProvider } from '@bkui-vue/config-provider';
 export { default as Container } from '@bkui-vue/container';
-export { default as containerProps } from '@bkui-vue/container';
 export { default as DatePicker } from '@bkui-vue/date-picker';
 export { default as Dialog } from '@bkui-vue/dialog';
 export { default as Divider } from '@bkui-vue/divider';
@@ -83,7 +82,6 @@ export { default as Table } from '@bkui-vue/table';
 export { default as Tag } from '@bkui-vue/tag';
 export { default as TagInput } from '@bkui-vue/tag-input';
 export { default as TimePicker } from '@bkui-vue/time-picker';
-export { default as TimeLine } from '@bkui-vue/timeline'; // 兼容以往版本
 export { default as Timeline } from '@bkui-vue/timeline';
 export { default as Transfer } from '@bkui-vue/transfer';
 export { default as Tree } from '@bkui-vue/tree';

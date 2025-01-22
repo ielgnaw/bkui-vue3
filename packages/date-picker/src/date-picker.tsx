@@ -70,6 +70,8 @@ export default defineComponent({
     'shortcut-change',
     'pick-success',
     'pick-first',
+    'blur',
+    'focus',
   ],
   // slots: ['header'],
   slots: Object as SlotsType<{
@@ -443,6 +445,7 @@ export default defineComponent({
 
       teleportTo.value = getFullscreenRoot();
       state.isFocused = true;
+      emit('focus');
       if (e && e.type === 'focus') {
         return;
       }
@@ -457,6 +460,7 @@ export default defineComponent({
     };
 
     const handleBlur = e => {
+      emit('blur');
       if (state.internalFocus) {
         state.internalFocus = false;
         return;

@@ -65,11 +65,12 @@ export default defineComponent({
     size: PropTypes.size().def(SizeEnum.DEFAULT),
     clearable: PropTypes.bool.def(true),
     loading: PropTypes.bool.def(false),
-    filterable: PropTypes.bool.def(true), // 是否支持搜索
+    filterable: PropTypes.bool.def(false), // 是否支持搜索
     remoteMethod: PropTypes.func,
     scrollHeight: PropTypes.number.def(204), // 最大高度
     minHeight: PropTypes.number, // 最小高度
     showAll: PropTypes.bool.def(false), // 全部
+    allOptionText: PropTypes.string.def(''), // 全部选项文本
     allOptionId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]), // 全部选项ID
     showSelectAll: PropTypes.bool.def(false), // 全选
     popoverMinWidth: PropTypes.number.def(0), // popover最小宽度
@@ -109,6 +110,7 @@ export default defineComponent({
       type: String as PropType<'default' | 'manual'>,
       default: 'default',
     }, // content显示和隐藏方式
+    disableScrollToSelectedOption: PropTypes.bool.def(false), // 是否禁用滚动到选中option的功能
   },
   emits: [
     'update:modelValue',
@@ -160,9 +162,13 @@ export default defineComponent({
       highlightKeyword,
       disableFocusBehavior,
       trigger,
+      disableScrollToSelectedOption,
     } = toRefs(props);
 
     const virtualRenderRef = ref(null);
+    const displayAllText = computed(() => {
+      return props.allOptionText;
+    });
     const localNoDataText = computed(() => {
       if (props.noDataText === undefined) {
         return t.value.noData;
@@ -206,6 +212,7 @@ export default defineComponent({
     const triggerRef = ref<HTMLElement>();
     const contentRef = ref<HTMLElement>();
     const searchRef = ref<HTMLElement>();
+    const scrollContainerRef = ref<HTMLElement>();
     const selectTagInputRef = ref<SelectTagInputType>();
     const popoverRef = ref();
     const optionsMap = ref<Map<PropertyKey, OptionInstanceType>>(new Map());
@@ -216,11 +223,16 @@ export default defineComponent({
     );
     const groupsMap = ref<Map<string, GroupInstanceType>>(new Map());
     const selected = ref<ISelected[]>([]);
-    const selectedMap = computed<Record<PropertyKey, string>>(() =>
-      selected.value.reduce((pre, item) => {
-        pre[item.value] = item.label;
-        return pre;
-      }, {}),
+    const selectedCacheMap = computed(() =>
+      selected.value.reduce<Record<PropertyKey, number | string>>(
+        (pre, item) => {
+          pre[item.value] = item.label;
+          return pre;
+        },
+        {
+          [`${allOptionId.value}`]: t.value.all,
+        },
+      ),
     );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const activeOptionValue = ref<any>(); // 当前悬浮的option
@@ -402,11 +414,10 @@ export default defineComponent({
     });
     // 滚动到当前选中的options中
     const scrollActiveOptionIntoView = () => {
-      if (isEnableVirtualRender.value) return;
+      if (isEnableVirtualRender.value || disableScrollToSelectedOption.value) return;
       const optionsDom = contentRef.value?.querySelectorAll?.('.is-selected');
       optionsDom?.[0]?.scrollIntoView({
         block: 'center',
-        // behavior: 'smooth',
       });
     };
 
@@ -468,6 +479,7 @@ export default defineComponent({
 
     // 派发search change事件
     watch(searchValue, () => {
+      scrollContainerRef.value.scrollTop = 0;
       emit('search-change', searchValue.value);
     });
 
@@ -477,6 +489,8 @@ export default defineComponent({
 
       emit('update:modelValue', val, modelValue.value);
       emit('change', val, modelValue.value);
+      // 重置Selected 以model-value为主
+      handleSetSelectedData();
     };
     // 派发toggle事件
     const handleTogglePopover = () => {
@@ -668,7 +682,7 @@ export default defineComponent({
         emit('tag-remove', val);
       }
     };
-    // options存在 > 上一次选择的label > 当前值
+    // 优先级: option name属性 > list模式 > 上一次选择的label > 当前值
     const handleGetLabelByValue = (value: PropertyKey) => {
       // 处理options value为对象类型，引用类型变更后，回显不对问题
       let tmpValue = value;
@@ -683,7 +697,7 @@ export default defineComponent({
       return (
         optionsMap.value?.get(tmpValue)?.optionName ||
         listMap.value[tmpValue] ||
-        selectedMap.value[tmpValue] ||
+        selectedCacheMap.value[tmpValue] ||
         tmpValue
       );
     };
@@ -819,6 +833,7 @@ export default defineComponent({
       triggerRef,
       contentRef,
       searchRef,
+      scrollContainerRef,
       selectTagInputRef,
       popoverRef,
       searchLoading,
@@ -839,6 +854,7 @@ export default defineComponent({
       popoverConfig,
       isAllSelected,
       isAll,
+      displayAllText,
       focusInput,
       setHover,
       cancelHover,
@@ -939,6 +955,14 @@ export default defineComponent({
         </li>
       );
     };
+    // 全部icon支持自定义
+    const renderAllIcon = () => {
+      return this.$slots?.allOptionIcon?.() || <TextAll class='select-all-icon' />;
+    };
+    // 全部选项文案支持自定义
+    const renderAllText = () => {
+      return <span>{this.displayAllText || this.t.all}</span>;
+    };
     // 全部
     const renderAll = () => {
       if (!this.isShowAll) return;
@@ -951,8 +975,8 @@ export default defineComponent({
             ]}
             onClick={this.toggleAll}
           >
-            <TextAll class='select-all-icon' />
-            <span>{this.t.all}</span>
+            {renderAllIcon()}
+            {renderAllText()}
           </div>
         </div>
       );
@@ -1097,6 +1121,7 @@ export default defineComponent({
         )}
         <div class={this.resolveClassName('select-content')}>
           <div
+            ref='scrollContainerRef'
             style={{ maxHeight: `${this.scrollHeight}px`, minHeight: `${this.minHeight}px` }}
             class={this.isEnableVirtualRender ? '' : this.resolveClassName('select-dropdown')}
             onScroll={this.handleScroll}

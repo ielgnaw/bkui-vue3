@@ -109,6 +109,13 @@ const propsJson: IPropsTableItem[] = [
     optional: ['true', 'false'],
   },
   {
+    name: 'clear-text-space',
+    type: 'Boolean',
+    default: 'true',
+    desc: '自定义标签是否允许字符中间存在空格',
+    optional: ['true', 'false'],
+  },
+  {
     name: 'clearable',
     type: 'Boolean',
     default: 'false',

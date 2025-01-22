@@ -24,9 +24,10 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
+import { useMenuInject } from './utils';
 
 export default defineComponent({
   name: 'MenuGroup',
@@ -35,12 +36,25 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    foldName: {
+      type: String,
+      default: undefined,
+    },
   },
   setup(props, { slots }) {
+    const { collapse } = useMenuInject();
     const { resolveClassName } = usePrefix();
+    const displayTitle = computed(() => {
+      if (collapse.value) {
+        // 收起
+        return props.foldName !== undefined ? props.foldName : props.name;
+      }
+
+      return props.name;
+    })
     return () => (
       <div class={`${resolveClassName('menu-group')}`}>
-        <div class='group-name'>{props.name}</div>
+        <div class='group-name'>{displayTitle.value}</div>
         <ul class='group-wrap'>{slots.default?.()}</ul>
       </div>
     );

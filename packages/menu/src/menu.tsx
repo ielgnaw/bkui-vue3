@@ -29,6 +29,7 @@ import { computed, defineComponent, PropType, ref, watch, watchEffect } from 'vu
 import { usePrefix } from '@bkui-vue/config-provider';
 
 import { IMenuInfo, MenuMode, useMenuProvider } from './utils';
+
 export const menuProps = {
   activeKey: String,
   collapse: Boolean,

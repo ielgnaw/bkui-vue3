@@ -27,7 +27,7 @@ import { customRef, markRaw, reactive, Ref, ref, toRefs, watch } from 'vue';
 
 import type { TagProps } from './tag-props';
 
-export const INPUT_MIN_WIDTH = 12;
+export const INPUT_MIN_WIDTH = 10;
 
 export function useDebouncedRef<T>(value, delay = 200) {
   let timeout;

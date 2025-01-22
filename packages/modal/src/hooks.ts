@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { nextTick, onBeforeUnmount, onMounted, type Ref, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, type Ref, ref, watch } from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import throttle from 'lodash/throttle';
@@ -62,9 +62,8 @@ export const useContentResize = (
 
     isContentScroll.value = windowInnerHeight < headerHeight + contentHeight + footerHeight + footerMarginTop;
     if (isContentScroll.value || props.fullscreen) {
-      const fixedFooterHeight = 48;
       contentStyles.value = {
-        height: `${windowInnerHeight - headerHeight - fixedFooterHeight}px`,
+        height: `${windowInnerHeight - headerHeight - 48}px`,
         overflow: 'auto',
         'scrollbar-gutter': 'stable',
       };
@@ -80,17 +79,19 @@ export const useContentResize = (
     () => {
       let observer: ResizeObserver;
       if (props.isShow) {
-        nextTick(() => {
+        // 有动画效果导致 resizeTarget DOM 找不到
+        setTimeout(() => {
           if (!resizeTarget.value) {
             return;
           }
+
           observer = new ResizeObserver(() => {
             calcContentScroll();
           });
 
           observer.observe(resizeTarget.value);
           calcContentScroll();
-        });
+        }, 100);
       } else {
         if (observer) {
           observer.disconnect();

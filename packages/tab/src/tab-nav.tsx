@@ -24,13 +24,30 @@
  * IN THE SOFTWARE.
  */
 
-import { ComponentInternalInstance, computed, CSSProperties, defineComponent, h, ref } from 'vue';
+import {
+  computed,
+  CSSProperties,
+  defineComponent,
+  h,
+  ref,
+  type Ref,
+  type ComponentInternalInstance,
+  type ExtractPropTypes,
+} from 'vue';
 
 import { usePrefix } from '@bkui-vue/config-provider';
 import { bkTooltips } from '@bkui-vue/directives';
-import { Close, Plus } from '@bkui-vue/icon/';
+import { Close, Plus } from '@bkui-vue/icon';
 
 import { PositionEnum, tabNavProps, TabTypeEnum, TabPanelProps } from './props';
+
+export type TabNavProps = ExtractPropTypes<typeof tabNavProps & ComponentInternalInstance>;
+
+export type StringOrFunction = ((...args: unknown[]) => unknown) | string;
+
+interface Props extends TabNavProps {
+  guid?: string;
+}
 
 export default defineComponent({
   name: 'TabNav',
@@ -38,14 +55,15 @@ export default defineComponent({
     bkTooltips,
   },
   props: tabNavProps,
-  setup(props: Record<string, any>) {
-    const activeRef = ref<HTMLElement>(null);
+  setup(props: Props) {
+    const activeRef: Ref<HTMLElement | null> = ref(null);
     const activeBarStyle = computed<CSSProperties>(() => {
       const initStyle: CSSProperties = { width: 0, height: 0, bottom: 0, left: 0 };
       if (!activeRef.value) {
         return initStyle;
       }
-      if ([PositionEnum.LEFT, PositionEnum.RIGHT].includes(props.tabPosition)) {
+      const positionArr: string[] = [PositionEnum.LEFT, PositionEnum.RIGHT];
+      if (positionArr.includes(props.tabPosition)) {
         const { clientHeight, offsetTop } = activeRef.value;
         const style: CSSProperties = {
           width: `${props.activeBarSize}px`,
@@ -72,14 +90,15 @@ export default defineComponent({
       }
       return initStyle;
     });
-    const navs = computed(() => {
+    const tableNavList = computed(() => {
       if (!Array.isArray(props.panels) || !props.panels.length) {
         return [];
       }
 
       const list = [];
       let hasFindActive = false;
-      props.panels.filter((item: ComponentInternalInstance, index: number) => {
+      const panels = props.panels as unknown[];
+      panels.filter((item: Partial<ComponentInternalInstance>, index: number) => {
         if (!item.props) {
           return null;
         }
@@ -90,11 +109,11 @@ export default defineComponent({
         if (props.active === name) {
           hasFindActive = true;
         }
-        const renderLabel = (label: any) => {
+        const renderLabel = (label: StringOrFunction) => {
           if (item.slots.label) {
             return h(item.slots.label);
           }
-          if ([undefined, ''].includes(label)) {
+          if ([undefined, ''].includes(label as string)) {
             return `选项卡${index + 1}`;
           }
           if (typeof label === 'string') {
@@ -113,7 +132,7 @@ export default defineComponent({
           sortable,
           tips,
           numDisplayType,
-          tabLabel: renderLabel(label),
+          tabLabel: renderLabel(label as StringOrFunction),
           tabNum: num,
         });
         return true;
@@ -135,7 +154,7 @@ export default defineComponent({
        * @param e {event}  触发的元素
        * @return {boolean}
        */
-      handleTabAdd(e) {
+      handleTabAdd(e: MouseEvent) {
         props.tabAdd(e);
       },
       dragstart(index: number, $event: DragEvent) {
@@ -146,7 +165,7 @@ export default defineComponent({
         // $event.dataTransfer.setData('text/plain', index)
         props.tabDrag(index, $event);
       },
-      dragenter(index) {
+      dragenter(index: number) {
         // 缓存目标元素索引，方便添加样式
         if (distinctRoots(draggingEle.value, props.guid)) {
           dragenterIndex.value = index;
@@ -157,7 +176,7 @@ export default defineComponent({
         dragStartIndex.value = -1;
         draggingEle.value = null;
       },
-      drop(index, sortType) {
+      drop(index: number, sortType: string) {
         // 不是同一个tab，返回——暂时不支持跨tab拖动
         if (!distinctRoots(draggingEle.value, props.guid)) {
           return false;
@@ -167,7 +186,7 @@ export default defineComponent({
       handleTabChange(name: string) {
         props.tabChange(name);
       },
-      handleTabRemove(index: number, panel) {
+      handleTabRemove(index: number, panel: TabPanelProps) {
         props.tabRemove(index, panel);
       },
     };
@@ -178,7 +197,7 @@ export default defineComponent({
       ...methods,
       activeRef,
       activeBarStyle,
-      navs,
+      tableNavList,
       dragenterIndex,
       dragStartIndex,
       draggingEle,
@@ -189,7 +208,7 @@ export default defineComponent({
   render() {
     const { active, closable, addable, sortable, sortType, labelHeight, dragstart, dragenter, dragend, drop } = this;
     const renderNavs = () =>
-      this.navs.map((item, index) => {
+      this.tableNavList.map((item, index) => {
         if (!item) {
           return null;
         }
@@ -217,11 +236,11 @@ export default defineComponent({
             ''
           );
         };
-        const getNumType = () =>  ['bracket'].includes(numDisplayType) ? `(${tabNum})` : tabNum;
+        const getNumType = () => (['bracket'].includes(numDisplayType) ? `(${tabNum})` : tabNum);
         return (
           <div
             key={name}
-            ref={active === name ? 'activeRef' : ''}
+            ref={active === name ? 'activeRef' : 'tabLabelRef'}
             class={getNavItemClass()}
             v-bk-tooltips={{ content: item.tips || '', disabled: !item.tips }}
             draggable={getValue(item.sortable, sortable)}
@@ -250,9 +269,7 @@ export default defineComponent({
               <div class={this.resolveClassName('tab-header--has-num')}>
                 <div class={this.resolveClassName('tab-header--has-num-left')}>{tabLabel}</div>
                 <div class={this.resolveClassName('tab-header--has-num-right')}>
-                  <div class={this.resolveClassName(`tab-header--has-num-${numDisplayType}`)}>
-                    {getNumType()}
-                  </div>
+                  <div class={this.resolveClassName(`tab-header--has-num-${numDisplayType}`)}>{getNumType()}</div>
                   {getCloseTag?.(item, index)}
                 </div>
               </div>

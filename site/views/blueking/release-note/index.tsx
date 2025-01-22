@@ -29,8 +29,8 @@ import { defineComponent } from 'vue';
 import DemoBox from '../../../components/demo-box';
 import DemoTitle from '../../../components/demo-title';
 import PropsBox from '../../../components/props-box';
-import BaseDemo from './base-demo.vue';
 import AsyncLoadingDemo from './async-loading-demo.vue';
+import BaseDemo from './base-demo.vue';
 import SlotDemo from './slot-demo.vue';
 
 const propsJson = [
@@ -117,9 +117,8 @@ const propsJson = [
     default: '当前版本/Current',
     desc: '当前版本文本，用于标识当前版本',
     optional: [],
-  }
+  },
 ];
-
 
 const slotsJson = [
   {
@@ -144,14 +143,12 @@ const eventJson = [
   {
     name: 'showChange',
     desc: '日志弹窗打开、关闭时触发',
-    params:
-      "value: boolean"
+    params: 'value: boolean',
   },
   {
     name: 'selected',
     desc: '左侧版本列表选中版本时触发',
-    params:
-      "value: string"
+    params: 'value: string',
   },
 ];
 

@@ -38,7 +38,9 @@ export default defineComponent({
   emits: ['click'],
   setup(props, { emit }) {
     const handleClick = (evt: MouseEvent) => {
-      evt.stopPropagation();
+      // 取消冒泡是为了 popover 那边能检测到 content 被点击了，实现按需 content 点击后隐藏面板的功能
+      // content 那边会阻止冒泡，这里取消应该没啥影响
+      // evt.stopPropagation();
       emit('click', evt);
     };
     const { resolveClassName } = usePrefix();

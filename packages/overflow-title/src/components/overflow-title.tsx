@@ -25,8 +25,9 @@
  */
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
 
-import Popover from '@bkui-vue/popover';
+import Popover, { PopoverPropTypes } from '@bkui-vue/popover';
 import { debounce, hasOverflowEllipsis } from '@bkui-vue/shared';
+import merge from 'lodash/merge';
 
 import props from '../props';
 
@@ -89,18 +90,20 @@ export default defineComponent({
     };
   },
   render() {
+    /** popover 基础配置 */
+    const basePopoverOptions: Partial<PopoverPropTypes> = {
+      boundary: this.boundary || document.body,
+      placement: this.placement,
+      popoverDelay: [200, 0],
+      disabled: this.type === 'title' || !this.isShowTips,
+    };
+    const popoverOptions: Partial<PopoverPropTypes> = merge(basePopoverOptions, this.popoverOptions);
     return (
       <div
         ref='boxRef'
         class='position-relative'
       >
-        <Popover
-          boundary={this.boundary || document.body}
-          placement={this.placement}
-          popoverDelay={[200, 0]}
-          {...props.popoverOptions}
-          disabled={this.type === 'title' || !this.isShowTips}
-        >
+        <Popover {...popoverOptions}>
           {{
             default: () => (
               <div

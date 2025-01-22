@@ -33,6 +33,7 @@ import {
   ref,
   ShallowRef,
   shallowRef,
+  VNode,
   watch,
 } from 'vue';
 import { type SlotsType } from 'vue';
@@ -41,7 +42,7 @@ import { useLocale, usePrefix } from '@bkui-vue/config-provider';
 import { clickoutside } from '@bkui-vue/directives';
 import { Close, ExclamationCircleShape, Search } from '@bkui-vue/icon';
 import { debounce } from '@bkui-vue/shared';
-import { addListener, removeListener } from 'resize-detector';
+import { addListener, removeListener } from '@blueking/fork-resize-detector';
 
 import SearchSelectInput from './input';
 import SearchSelected from './selected';
@@ -116,9 +117,9 @@ export default defineComponent({
   emits: ['update:modelValue', 'search', 'selectKey'],
   slots: Object as SlotsType<{
     menu: MenuSlotParams;
-    prepend: void;
-    append: void;
-    validate: void;
+    prepend: () => VNode;
+    append: () => VNode;
+    validate: () => VNode;
   }>,
   setup(props, { emit }) {
     const t = useLocale('searchSelect');
@@ -149,9 +150,9 @@ export default defineComponent({
       () => props.data,
       () => {
         copyData.value = JSON.parse(JSON.stringify(props.data));
-        copyData.value?.forEach(item => {
-          item.isSelected = props.uniqueSelect && !!props.modelValue.some(set => set.id === item.id);
-        });
+        for (const item of copyData.value || []) {
+          item.isSelected = props.uniqueSelect && props.modelValue.some(set => set.id === item.id);
+        }
       },
       {
         immediate: true,
@@ -163,13 +164,13 @@ export default defineComponent({
       (v: ISearchValue[]) => {
         if (!v?.length) {
           selectedList.value = [];
-          copyData.value?.forEach(item => {
+          for (const item of copyData.value || []) {
             item.isSelected = false;
-          });
+          }
           return;
         }
         const list = [];
-        v.forEach(item => {
+        for (const item of v) {
           const selected = selectedList.value.find(set => set.id === item.id && set.name === item.name);
           if (selected?.toValueKey() === JSON.stringify(item)) {
             selected.values = item.values || [];
@@ -180,7 +181,9 @@ export default defineComponent({
             let searchType: SearchItemType = 'default';
             if (!searchItem) {
               searchItem = props.conditions.find(set => set.id === item.id);
-              searchItem && (searchType = 'condition');
+              if (searchItem) {
+                searchType = 'condition';
+              }
             }
             if (!searchItem && !item.values?.length) {
               searchType = 'text';
@@ -190,12 +193,12 @@ export default defineComponent({
             newSelected.logical = item.logical || SearchLogical.OR;
             list.push(newSelected);
           }
-        });
+        }
         selectedList.value = list;
         copyData.value = JSON.parse(JSON.stringify(props.data || []));
-        copyData.value.forEach(item => {
+        for (const item of copyData.value) {
           item.isSelected = props.uniqueSelect && !!list.some(set => set.id === item.id);
-        });
+        }
       },
       {
         immediate: true,
@@ -209,6 +212,7 @@ export default defineComponent({
         wrapRef.value.querySelector(`.${resolveClassName('search-select-container')}`) as HTMLElement,
         debounceResize,
       );
+      debounceResize();
     });
     onBeforeUnmount(() => {
       removeListener(
@@ -310,7 +314,9 @@ export default defineComponent({
       );
     }
     function handleInputFocus(v: boolean) {
-      v && (overflowIndex.value = -1);
+      if (v) {
+        overflowIndex.value = -1;
+      }
       if (v === false) {
         wrapRef.value.querySelector(`.${resolveClassName('search-select-container')}`)?.scrollTo(0, 0);
       }
@@ -348,7 +354,7 @@ export default defineComponent({
     };
   },
   render() {
-    const maxHeight = `${this.isFocus ? this.maxHeight : INPUT_MIN_HEIGHT}px`;
+    const maxHeight = `${this.isFocus ? this.maxHeight : INPUT_MIN_HEIGHT}`.replace('px', '');
     const showCondition = !!this.selectedList.length && this.selectedList.slice(-1)[0].type !== 'condition';
     const menuSlots = Object.assign(
       {},

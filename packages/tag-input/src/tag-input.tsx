@@ -33,6 +33,7 @@ import Loading, { BkLoadingSize } from '@bkui-vue/loading';
 import Popover from '@bkui-vue/popover';
 import { useFormItem } from '@bkui-vue/shared';
 import debounce from 'lodash/debounce';
+import trim from 'lodash/trim';
 
 import { getCharLength, INPUT_MIN_WIDTH, useFlatList, usePage, useTagsOverflow } from './common';
 import ListTagRender from './list-tag-render';
@@ -77,6 +78,7 @@ export default defineComponent({
     const tagListRef = ref(null);
     const tagInputItemRef = ref(null);
     const selectorListRef = ref(null);
+    const inputValueRef = ref<HTMLElement>();
     const timer: Ref<ReturnType<typeof setTimeout>> = ref(null);
 
     // 是否展示tag close
@@ -123,16 +125,18 @@ export default defineComponent({
     const renderList = computed(() => {
       if (props.useGroup) {
         const groupMap = {};
-        pageState.curPageList.forEach((item: any, index: number) => {
+        pageState.curPageList.forEach((item: Record<string, unknown>, index: number) => {
+          const curGroupId = (item.group as { groupId?: number | string })?.groupId;
+          const curGroupName = (item.group as { groupName?: string })?.groupName;
           item.__index__ = index;
-          if (!groupMap[item.group.groupId]) {
-            groupMap[item.group.groupId] = {
-              id: item.group.groupId,
-              name: item.group.groupName,
+          if (curGroupId && !groupMap[curGroupId]) {
+            groupMap[curGroupId] = {
+              id: curGroupId,
+              name: curGroupName,
               children: [],
             };
           }
-          groupMap[item.group.groupId].children.push(item);
+          groupMap?.[curGroupId]?.children.push(item);
         });
         return Object.keys(groupMap).map((key: string) => groupMap[key]);
       }
@@ -320,7 +324,7 @@ export default defineComponent({
         initPage(listState.localList);
         return;
       }
-      let filterData: any[] = [];
+      let filterData: unknown[] = [];
       if (typeof filterCallback === 'function') {
         filterData = filterCallback(lowerCaseValue, searchKey, listState.localList) || [];
       } else {
@@ -366,6 +370,7 @@ export default defineComponent({
 
     const clearInput = () => {
       curInputValue.value = '';
+      tagInputRef.value.style.width = `${INPUT_MIN_WIDTH}px`;
     };
 
     /**
@@ -377,7 +382,8 @@ export default defineComponent({
         return 0;
       }
       const childNodes = getSelectedTagNodes();
-      const index = childNodes.findIndex(({ id }) => id === 'tagInputItem');
+      // 聚焦的时候会存在空节点，导致backspace需要点击多次才能删除tag
+      const index = childNodes.filter(item => item.className !== '').findIndex(({ id }) => id === 'tagInputItem');
       return index >= 0 ? index : 0;
     };
 
@@ -401,12 +407,14 @@ export default defineComponent({
 
         if (charLen) {
           filterData(value);
-          // 如果按最小宽度计算，空白区域会比较大，这里先按一半宽度处理
-          tagInputRef.value.style.width = `${charLen * (INPUT_MIN_WIDTH / 2)}px`;
+          nextTick(() => {
+            // getBoundingClientRect获取宽度在中文输入法输入的时候会存在为0的情况，导致不显示输入的内容，按回车以后光标在最前面，所以需要提供默认值
+            const tagInputWidth = inputValueRef.value!.getBoundingClientRect().width || charLen * INPUT_MIN_WIDTH;
+            tagInputRef.value.style.width = `${tagInputWidth}px`;
+          });
         } else {
           if (trigger === 'focus') {
             filterData();
-            tagInputRef.value.style.width = `${INPUT_MIN_WIDTH}px`;
           }
         }
       } else {
@@ -567,15 +575,13 @@ export default defineComponent({
       swapElementPositions(tagInputItemRef.value, nodes[index - 1]);
       listState.selectedTagList.splice(index - 1, 1);
       focusInputTrigger();
-
-      const isExistInit = saveKeyMap.value[target[props.saveKey]];
+      const isExistInit = target && saveKeyMap.value[target[props.saveKey]];
 
       // 将删除的项加入加列表
       if (((props.allowCreate && isExistInit) || !props.allowCreate) && !isSingleSelect.value) {
         listState.localList.push(target);
       }
-
-      tagInputRef.value = `${INPUT_MIN_WIDTH}px`;
+      tagInputRef.value.style.width = `${INPUT_MIN_WIDTH}px`;
       handleChange('remove');
     };
 
@@ -669,16 +675,13 @@ export default defineComponent({
       }
     };
 
-    const defaultPasteFn = (value: string): any[] => {
+    const defaultPasteFn = (value: string) => {
       const target = [];
       const textArr = value.split(';');
-      const regx = /^[a-zA-Z][a-zA-Z_]*/g;
 
       textArr.forEach(item => {
-        const matchValue = item.match(regx);
-        if (matchValue) {
-          const finalItem = matchValue.join('');
-          target.push({ [props.saveKey]: finalItem, [props.displayKey]: finalItem });
+        if (trim(item)) {
+          target.push({ [props.saveKey]: item, [props.displayKey]: item });
         }
       });
       return target;
@@ -687,15 +690,12 @@ export default defineComponent({
     const handlePaste = (e: ClipboardEvent) => {
       e.preventDefault();
 
-      // 单选禁止复制粘贴，防止粘贴多个tag
-      if (isSingleSelect.value) {
-        return false;
-      }
-
       const { maxData, saveKey, displayKey, pasteFn, allowCreate } = props;
       const value = e.clipboardData.getData('text');
+
       const valArr = pasteFn ? pasteFn(value) : defaultPasteFn(value);
       let tags = valArr.map((value: string) => value[saveKey]);
+
       if (tags.length) {
         const nodes = getSelectedTagNodes();
         const index = getTagInputItemSite();
@@ -735,6 +735,8 @@ export default defineComponent({
           focusInputTrigger();
         }
       }
+
+      clearInput();
     };
 
     /**
@@ -759,7 +761,7 @@ export default defineComponent({
       // 不允许超过最大可选数量
       if (listState.selectedTagList.length >= props.maxData && props.maxData !== -1) return;
 
-      const { separator, saveKey, displayKey, createTagValidator } = props;
+      const { separator, saveKey, displayKey, createTagValidator, clearTextSpace } = props;
       const targetIndex = getTagInputItemSite();
       let moveCount = 1;
       let isSelected = false;
@@ -792,7 +794,9 @@ export default defineComponent({
         } else {
           const isObject = typeof item === 'object';
           newValue = isObject ? item[saveKey] : item.trim();
-          newValue = newValue.replace(/\s+/g, '');
+          if (clearTextSpace) {
+            newValue = newValue.replace(/\s+/g, '');
+          }
           if (newValue !== undefined && !tagList.value.includes(newValue) && validateTag(newValue)) {
             const localItem =
               saveKeyMap.value[newValue] || (isObject ? item : { [saveKey]: newValue, [displayKey]: newValue });
@@ -878,6 +882,7 @@ export default defineComponent({
       bkTagSelectorRef,
       tagListRef,
       tagInputItemRef,
+      inputValueRef,
       selectorListRef,
       triggerClass,
       overflowTagIndex,
@@ -921,7 +926,7 @@ export default defineComponent({
                   style={{ marginLeft: `${this.leftSpace}px` }}
                   class='tag-list'
                 >
-                  {this.selectedTagList.map((item: any, index: number) => {
+                  {this.selectedTagList.map((item: unknown, index: number) => {
                     const isOverflow =
                       this.localCollapseTags && this.overflowTagIndex && index >= this.overflowTagIndex;
                     return (
@@ -957,6 +962,7 @@ export default defineComponent({
                       ref='tagInputRef'
                       class='tag-input'
                       v-model={this.curInputValue}
+                      spellcheck='false'
                       type='text'
                       onBlur={this.handleBlur}
                       onFocus={this.handleFocus}
@@ -975,6 +981,13 @@ export default defineComponent({
                       </div>
                     </li>
                   )}
+                  <div
+                    key='inputValuePlaceholder'
+                    ref='inputValueRef'
+                    style='position: absolute; white-space: nowrap; border-box; visibility: hidden; z-index: 1'
+                  >
+                    {this.curInputValue}
+                  </div>
                 </ul>
                 <p
                   class='placeholder'

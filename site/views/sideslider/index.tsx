@@ -92,7 +92,7 @@ const SideSliserPropsJson: IPropsTableItem[] = [
     type: 'Boolean',
     default: 'false',
     desc: '控制 sidslider 是否出现在 body 内',
-    optional: ['false', 'true'],
+    optional: ['false', 'true', 'DOM 选择器'],
   },
   {
     name: 'zIndex',
@@ -106,6 +106,13 @@ const SideSliserPropsJson: IPropsTableItem[] = [
     type: 'String',
     default: '',
     desc: '内容区背景颜色',
+  },
+  {
+    name: 'render-directive',
+    type: 'String',
+    default: 'if',
+    desc: '弹框的渲染方式',
+    optional: ['if', 'show'],
   },
   {
     name: 'before-close',

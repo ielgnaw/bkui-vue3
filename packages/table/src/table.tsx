@@ -26,6 +26,7 @@
 
 import { computed, defineComponent, getCurrentInstance, nextTick, provide, ref, SetupContext, watch } from 'vue';
 
+import { bkTooltips } from '@bkui-vue/directives';
 import { debounce, isElement } from 'lodash';
 
 import { COLUMN_ATTRIBUTE, PROVIDE_KEY_INIT_COL, SCROLLY_WIDTH, TABLE_ROW_ATTRIBUTE } from './const';
@@ -45,9 +46,15 @@ import { tableProps } from './props';
 
 export default defineComponent({
   name: 'Table',
+  directives: {
+    bkTooltips,
+  },
   props: tableProps,
   emits: EMIT_EVENT_TYPES,
   setup(props, ctx: SetupContext) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('BkTable 组件后续将不再维护，请迁移至新组件 @blueking/table');
+    }
     const columns = useColumns(props);
     const rows = useRows(props);
     const pagination = usePagination(props);
@@ -127,7 +134,7 @@ export default defineComponent({
      * 计算每一列的实际宽度
      */
     const computedColumnRect = () => {
-      const width = refRoot.value?.offsetWidth - (props.scrollbar ? 1 : SCROLLY_WIDTH) ?? 0;
+      const width = refRoot.value?.offsetWidth - (props.scrollbar ? 1 : SCROLLY_WIDTH) || 0;
       columns.resolveColsCalcWidth(width);
       resolveFixedColumnStyle();
     };
@@ -224,7 +231,7 @@ export default defineComponent({
     useObserverResize(refRoot, () => {
       if (!observerResizing.value) {
         observerResizing.value = true;
-        if ((props.height === '100%' || props.virtualEnabled) && isElement(refRoot.value)) {
+        if (props.virtualEnabled && isElement(refRoot.value)) {
           if (isResizeBodyHeight.value) {
             setTimeout(() => {
               isResizeBodyHeight.value = false;
@@ -249,7 +256,7 @@ export default defineComponent({
     });
 
     const setRowsBodyHeight = () => {
-      if (props.virtualEnabled && (props.height === '100%' || props.height === 'auto')) {
+      if (props.virtualEnabled) {
         const rowsHeight = rows.getCurrentPageRowsHeight();
         let bodyHeight = rowsHeight;
         if (/^\d+\.?\d*(px)?$/.test(`${props.maxHeight}`)) {

@@ -35,6 +35,7 @@ import AcceptZip from './demo/accept-zip.vue';
 import Base from './demo/base.vue';
 import Limit from './demo/limit.vue';
 import MaxSize from './demo/max-size.vue';
+import PreviewImage from './demo/preview-image.vue';
 import SinglePicture from './demo/single-picture.vue';
 import SlotsFile from './demo/slots-file.vue';
 import ThemeButton from './demo/theme-button.vue';
@@ -202,6 +203,13 @@ const uploadProps: IPropsTableItem[] = [
     desc: '分片大小',
     optional: [],
   },
+  {
+    name: 'is-show-preview',
+    type: 'Boolean',
+    default: 'true',
+    desc: '是否显示预览按钮',
+    optional: ['true', 'false'],
+  },
 ];
 
 const uploadEvents: IPropsTableItem[] = [
@@ -246,6 +254,13 @@ const uploadEvents: IPropsTableItem[] = [
     default: null,
     desc: '文件上传成功后，点击删除文件触发的事件	',
     optional: ['file（删除的哪个文件对象）', 'fileList（删除后的文件列表）'],
+  },
+  {
+    name: 'preview',
+    type: 'Function',
+    default: null,
+    desc: '文件上传成功后，点击预览文件触发的事件	',
+    optional: ['file（预览的哪个文件对象）', 'fileList（预览的文件列表）'],
   },
 ];
 
@@ -354,6 +369,14 @@ export default defineComponent({
           title='头像上传'
         >
           <SinglePicture />
+        </DemoBox>
+        <DemoBox
+          componentName='upload'
+          demoName='/demo/preview-image'
+          desc='isShowPreview属性控制是否显示展开按钮，默认显示'
+          title='预览图片'
+        >
+          <PreviewImage />
         </DemoBox>
         <DemoBox
           componentName='upload'

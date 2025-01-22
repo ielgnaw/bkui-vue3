@@ -103,6 +103,7 @@ export default defineComponent({
         isShow.value = false;
       },
       update: (payload: Partial<Props>) => {
+        isLoading.value = false;
         Object.assign(state, payload);
         // 配置项变更 infoType 变更为 type
         if (payload.infoType) {

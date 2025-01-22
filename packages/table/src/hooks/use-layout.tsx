@@ -213,9 +213,9 @@ export default (props: TablePropTypes, ctx) => {
     return null;
   });
 
-  const getBodyHeight = height => {
+  const getBodyHeight = (height) => {
     return height - headHeight.value - fixedBottomHeight.value - footHeight.value;
-  };
+  }
 
   const setBodyHeight = (height: number, withHeadFoot = true) => {
     if (withHeadFoot) {

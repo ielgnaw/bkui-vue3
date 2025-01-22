@@ -40,6 +40,10 @@ import CascaderPanel from './cascader-panel';
 import { INode } from './interface';
 import Store from './store';
 
+/**
+ * Cascader 组件
+ * 用于展示级联选择器，支持多选、单选、搜索、远程加载等功能。
+ */
 export default defineComponent({
   name: 'Cascader',
   directives: {
@@ -250,6 +254,9 @@ export default defineComponent({
       isFocus.value = val.isShow;
       nextTick(() => {
         val && inputRef.value?.focus();
+        if (val.isShow) {
+          cascaderPanel.value?.scrollToSelected(); // 滚动到选中的节点
+        }
       });
 
       val.isShow && focusEmitter(); // 面板打开，触发focus事件

@@ -1,5 +1,162 @@
 ## 更新日志
 
+### 2.0.1-beta.96
+
+* **[feat]**:
+    - bugfix(popover): 非manual模式下，支持点击占位区弹窗不自动收齐 ([#2254](https://github.com/TencentBlueKing/bkui-vue3/issues/2254))
+
+
+### 2.0.1-beta.95
+
+* **[feat]**:
+    - feat(menu): add disabled state to menu items and improve styling([#2249](https://github.com/TencentBlueKing/bkui-vue3/issues/2249))
+    - feat(notify): 优化文档 & message 支持Vnode #2246
+
+
+### 2.0.1-beta.94
+
+* **[feat]**:
+    - bugfix(table): Table settings checkbox 文案超出会被遮挡([#2244](https://github.com/TencentBlueKing/bkui-vue3/issues/2244))
+
+
+### 2.0.1-beta.93
+
+* **[feat]**:
+    - bugfix(menu): 折叠状态支持自定义分组标题([#2240](https://github.com/TencentBlueKing/bkui-vue3/issues/2240))
+
+
+### 2.0.1-beta.92
+
+* **[feat]**:
+    - bugfix(popover): 鼠标从 popover 内容中移出时，内容不消失([#2233](https://github.com/TencentBlueKing/bkui-vue3/issues/2233))
+
+
+### 2.0.1-beta.91
+
+* **[feat]**:
+    - bugfix(popover): 需要同时支持click和hover都能弹出面板([#2234](https://github.com/TencentBlueKing/bkui-vue3/issues/2234))
+
+
+### 2.0.1-beta.90
+
+* **[feat]**:
+    - bugfix(popover): 需要同时支持click和hover都能弹出面板([#2234](https://github.com/TencentBlueKing/bkui-vue3/issues/2234))
+
+
+### 2.0.1-beta.89
+
+* **[feat]**:
+    - bugfix(popover): 收起面板后dom元素需要保留([#2230](https://github.com/TencentBlueKing/bkui-vue3/issues/2230))
+
+
+### 2.0.1-beta.88
+
+* **[feat]**:
+    - bugfix(dropdown): 点击下拉选项后，下拉面板未自动收起([#2226](https://github.com/TencentBlueKing/bkui-vue3/issues/2226))
+
+
+### 2.0.1-beta.87
+
+* **[feat]**:
+    - bugfix(pagination): 分页逻辑重复执行([#2223](https://github.com/TencentBlueKing/bkui-vue3/issues/2223))
+
+
+### 2.0.1-beta.86
+
+* **[feat]**:
+    - feat(menu): sub-menu 支持 title slot([#2219](https://github.com/TencentBlueKing/bkui-vue3/issues/2219))
+    - perf(datePicker|timePicker): 新增 blur,focus 事件([#2214](https://github.com/TencentBlueKing/bkui-vue3/issues/2214))
+    - feat(table): table 组件下架提醒([#2220](https://github.com/TencentBlueKing/bkui-vue3/issues/2220))
+
+
+### 2.0.1-beta.85
+
+* **[feat]**:
+    - feature(select): 【全部】选项文案需要支持自定义([#2212](https://github.com/TencentBlueKing/bkui-vue3/issues/2212))
+    - feature: upload组件预览事件提供文件列表数据([#2203](https://github.com/TencentBlueKing/bkui-vue3/issues/2203))
+    - fix: table设置固定右对齐默认有padding会导致header与内容区域无法左对齐([#2217](https://github.com/TencentBlueKing/bkui-vue3/issues/2217))
+
+
+### 2.0.1-beta.84
+
+* **[feat]**:
+    - perf(datePicker|timePicker): 新增 blur,focus 事件
+    - bugfix(timeline|container): 组件重复注册
+    - bugfix(tagInput): 自定义标签支持配置字符中间存在空格
+
+
+### 2.0.1-beta.83
+
+* **[feat]**:
+    - bugfix(collapse): modelValue设置为空时，面板无法收起
+
+
+### 2.0.1-beta.82
+
+* **[feat]**:
+    - feature: upload组件picture模式增加预览效果
+    - fix(search-select): 修复在vue@v3.5.x后展示问题
+
+
+### 2.0.1-beta.80
+
+* **[feat]**:
+    - feat(select): 展开下拉项时支持不自动定位到当前选中项
+    - feat(search-select): 修复 name 设置固定宽度文字会被遮挡问题
+
+
+### 2.0.1-beta.79
+
+* **[feat]**:
+    - bugfix(select): 修复 select下拉框属性filterable里文档默认取值false，但是实际是开启搜索框的
+    - bugfix(select): 修复全部交互回显不正确问题
+
+
+### 2.0.1-beta.78
+
+* **[feat]**:
+    - bugfix(infobox): 多个 infobox 切换时内部状态需要重置
+
+
+### 2.0.1-beta.77
+
+* **[feat]**:
+    - bugfix(tag-input): 去掉单选时不支持复制的限制
+
+
+### 2.0.1-beta.76
+
+* **[feat]**:
+    - feat(cascader): 打开面板自动定位到选中位置
+    - fix: tab组件添加ts规范处理泛型警告
+    - feat(loading): 提供 directives 的暴露接口
+    - feature(tooltips): tooltips指令暴露 modifiers 属性
+    - fix: filter style fix
+
+
+### 2.0.1-beta.75
+
+* **[feat]**:
+    - bugfix(select): 同时设置remote-method和scroll-end时，滚动条异常
+
+
+### 2.0.1-beta.72
+
+* **[feat]**:
+    - fix(table): 修复chrome最新版本渲染问题
+
+
+### 2.0.1-beta.71
+
+* **[feat]**:
+    - feat(search-select): 更新resize-detector依赖
+
+
+### 2.0.1-beta.70
+
+* **[feat]**:
+    - feature: colorPicker支持初始化默认展开popover
+
 
 ### 2.0.1-beta.69
 

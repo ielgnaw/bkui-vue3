@@ -193,13 +193,13 @@ export default defineComponent({
           {this.$slots.default?.() ??
             this.selected.map((item, index) => (
               <Tag
+                key={item.value}
                 ref={el => (this.tagsRefs[index] = el)}
                 style={{
                   display: this.collapseTags && this.overflowTagIndex && index >= this.overflowTagIndex ? 'none' : '',
                 }}
                 theme={this.tagTheme}
                 closable
-                key={item.value}
                 onClose={() => this.handleRemoveTag(item.value)}
               >
                 {this.$slots.tagRender?.(item) ?? (

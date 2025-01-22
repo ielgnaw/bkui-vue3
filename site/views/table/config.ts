@@ -35,7 +35,7 @@ export default [
         desc: '默认行高, 用于默认设置,(Table.minHeight = LINE_HEIGHT * 2, Table.rowHeight = LINE_HEIGHT, Table.headHeight = LINE_HEIGHT, Table.thead.height=LINE_HEIGHT)，可以通过具体属性配置进行覆盖',
         optional: [],
       },
-      { name: 'SCROLLY_WIDTH', type: 'Number', default: '4', desc: '默认滚动条样式宽度', optional: [] },
+      { name: 'SCROLLY_WIDTH', type: 'Number', default: '8', desc: '默认滚动条样式宽度', optional: [] },
       {
         name: 'COL_MIN_WIDTH',
         type: 'Number',
@@ -605,9 +605,9 @@ export default [
       },
       {
         name: 'list',
-        type: 'Array[{ value, text, tipKey }]',
+        type: 'Array[{ value, text, tipKey, showOverflowTooltip }]',
         default: '[]',
-        desc: '数据过滤的选项，数组格式，数组中的元素需要有 text 和 value 属性, tipKey为可选项且仅用于展示内容溢出时的自定义内容。',
+        desc: '数据过滤的选项，数组格式，数组中的元素需要有 text 和 value 属性, tipKey为可选项且仅用于展示内容溢出时的自定义内容，showOverflowTooltip为内容溢出时是否需要展示tooltip。',
         optional: [],
       },
       { name: 'checked', type: 'String[]||Number[]||Boolean[]', default: '[]', desc: '筛选项选中的元素', optional: [] },

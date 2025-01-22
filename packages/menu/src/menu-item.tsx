@@ -36,6 +36,10 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['click'],
   // slots: ['icon'],
@@ -55,6 +59,9 @@ export default defineComponent({
       parentKey: parentInfo?.key,
     });
     const handleClick = (e: MouseEvent) => {
+      if (props.disabled) {
+        return;
+      }
       handleActiveChange(key);
       emit('click', e);
     };
@@ -67,6 +74,7 @@ export default defineComponent({
         class={{
           [`${resolveClassName('menu-item')}`]: true,
           'is-active': isActive.value,
+          'is-disabled': props.disabled,
         }}
         onClick={handleClick}
       >
