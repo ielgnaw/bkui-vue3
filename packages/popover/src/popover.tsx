@@ -35,7 +35,7 @@ import { PopoverProps } from './props';
 import Reference from './reference';
 import Root from './root';
 import usePopoverInit from './use-popover-init';
-import { contentAsHTMLElement } from './utils';
+import { contentAsHTMLElement, SharedState } from './utils';
 export default defineComponent({
   name: 'Popover',
   components: {
@@ -74,6 +74,7 @@ export default defineComponent({
       stopHide,
       localIsShow,
       boundary,
+      uniqKey,
     } = usePopoverInit(props, ctx, {
       refReference,
       refContent,
@@ -106,7 +107,16 @@ export default defineComponent({
     onMounted(onMountedFn);
     onBeforeUnmount(onUnmountedFn);
 
-    const transBoundary = computed(() => localIsShow.value && !props.disableTeleport);
+    const isRenderModeShow = computed(() => props.renderDirective === 'show');
+    const transBoundary = computed(() => isRenderModeShow.value || (localIsShow.value && !props.disableTeleport));
+    const contentIsShow = computed(() => {
+      if (props.renderType === RenderType.AUTO) {
+        return true;
+      }
+
+      return localIsShow.value;
+    });
+
     const show = () => {
       showFn();
     };
@@ -115,13 +125,16 @@ export default defineComponent({
       hideFn();
     };
 
-    const contentIsShow = computed(() => {
-      if (props.renderType === RenderType.AUTO) {
-        return true;
-      }
+    const handleClickReferenceWraper = () => {
+      SharedState[uniqKey] = true;
+    };
 
-      return localIsShow.value;
-    });
+    // 点击 content 收起面板
+    const handleClickContent = () => {
+      if (props.trigger !== 'manual' && !props.always && props.clickContentAutoHide) {
+        localIsShow.value = false;
+      }
+    };
 
     const renderContent = () => {
       if (props.allowHtml) {
@@ -140,7 +153,9 @@ export default defineComponent({
       refArrow,
       content: props.content,
       theme: props.theme,
+      isRenderModeShow,
       transBoundary,
+      handleClickContent,
       handleClickOutside,
       updatePopover,
       resetPopover,
@@ -150,6 +165,7 @@ export default defineComponent({
       contentIsShow,
       renderContent,
       localIsShow,
+      handleClickReferenceWraper,
     };
   },
 
@@ -163,7 +179,9 @@ export default defineComponent({
     };
     return (
       <Root ref='refRoot'>
-        <Reference ref='refDefaultReference'>{renderReferSlot(this.$slots.default?.() ?? <span></span>)}</Reference>
+        <span onClick={this.handleClickReferenceWraper}>
+          <Reference ref='refDefaultReference'>{renderReferSlot(this.$slots.default?.() ?? <span></span>)}</Reference>
+        </span>
         <Teleport
           disabled={!this.transBoundary}
           to={this.boundary}
@@ -180,8 +198,9 @@ export default defineComponent({
             maxHeight={this.maxHeight}
             maxWidth={this.maxWidth}
             visible={this.localIsShow}
+            onClick={this.handleClickContent}
           >
-            {this.contentIsShow ? this.$slots.content?.() ?? this.renderContent() : ''}
+            {this.isRenderModeShow || this.contentIsShow ? this.$slots.content?.() ?? this.renderContent() : ''}
           </Content>
         </Teleport>
       </Root>

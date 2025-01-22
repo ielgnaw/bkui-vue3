@@ -49,6 +49,7 @@ const tagProps = () => ({
   searchKey: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).def('name'),
   useGroup: PropTypes.bool.def(false),
   allowCreate: PropTypes.bool.def(false),
+  clearTextSpace: PropTypes.bool.def(true),
   maxData: PropTypes.number.def(-1),
   maxResult: PropTypes.number.def(10),
   contentMaxHeight: PropTypes.number.def(300),

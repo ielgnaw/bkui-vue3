@@ -39,7 +39,8 @@ export default defineComponent({
     visible: PropTypes.bool.def(false),
     eventDelay: PropTypes.number.def(0),
   },
-  setup(props) {
+  emits: ['click'],
+  setup(props, { emit }) {
     const resolveValToPix = (val: number | string) => {
       if (/^\d+\.?\d*$/.test(`${val}`)) {
         return `${val}px`;
@@ -56,6 +57,11 @@ export default defineComponent({
 
     const refContent = ref(null);
     const refTimer = ref(null);
+
+    const handleClick = (evt: MouseEvent) => {
+      evt.stopPropagation();
+      emit('click', evt);
+    };
 
     const resetPointerEvent = () => {
       if (props.eventDelay === 0) {
@@ -88,6 +94,7 @@ export default defineComponent({
       style,
       refContent,
       contentClassName,
+      handleClick,
       resetPointerEvent,
       setContentPointerEvent,
     };
@@ -110,6 +117,7 @@ export default defineComponent({
         ref='refContent'
         style={style}
         class={this.contentClassName}
+        onClick={this.handleClick}
       >
         {this.$slots.arrow?.() ?? ''}
         {this.$slots.default?.() ?? ''}

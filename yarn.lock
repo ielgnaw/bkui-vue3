@@ -1087,12 +1087,17 @@
   integrity sha512-WPEfvt2/KpQsHgyuHYuAkBugi39qNeUf9qjk3YQGFfgeoUCWx3NQcl6oLuaMhIEpqA6X+YZadSKdkScQlYYrjw==
 
 "@blueking/ediatable@~0.0.1-beta.12":
-  version "0.0.1-beta.12"
-  resolved "https://registry.yarnpkg.com/@blueking/ediatable/-/ediatable-0.0.1-beta.12.tgz#fda937999e75318aef990b1fbb73eb7f6b4c37f1"
-  integrity sha512-KUpH953Wu+J3OZUJcyriQObbM+VrptcTs31rJortSLVT5B3ABsmLPdZ6dfZ3c/ehVhSsjW2o/xjBCTaBM/NXYg==
+  version "0.0.1-beta.18"
+  resolved "https://registry.yarnpkg.com/@blueking/ediatable/-/ediatable-0.0.1-beta.18.tgz#6407b3a324aa0924ddf496d2cea9402b965c98c9"
+  integrity sha512-tbzmc/r0zvoOxcWsYvqcXt/Zd/b3varpfoe4ujoQm9/aWX8OTkdm+XJH0kU85Xv3dD3tKkZPPpo9/mKcgF8OsQ==
   dependencies:
     "@vueuse/core" "10.9.0"
     tippy.js "^6.3.7"
+
+"@blueking/fork-resize-detector@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@blueking/fork-resize-detector/-/fork-resize-detector-0.0.2.tgz#5240085d35e4b74bda9ad812f9175ff7007c89e5"
+  integrity sha512-gHy4ulTJzy1IG/2o+X13hkC/pN9hbD3WTJz2h9ILSMZy7jHdpQt2Utj0Ppn8MSS/go9QKm0fbHFvNUaLt1/tVw==
 
 "@blueking/functional-dependency@~0.0.1-beta.8":
   version "0.0.1-beta.8"
@@ -1113,6 +1118,11 @@
   version "1.1.61"
   resolved "https://mirrors.tencent.com/npm/@blueking/magicbox-header/-/magicbox-header-1.1.61.tgz#ae805f44d362d0b45d23a9c7e88ca038464da932"
   integrity sha512-6GuEwsdGvVMUhNT90SkP79SiwIOWXhQyCQnfbO3mvBcoOVWVtWeve0rKPFoNa9KztzemkOLZQ6U8KN4K9BhAnA==
+
+"@blueking/release-note@~0.0.1-beta.15":
+  version "0.0.1-beta.17"
+  resolved "https://registry.yarnpkg.com/@blueking/release-note/-/release-note-0.0.1-beta.17.tgz#d630b76330bba4c05784d8566812874e58b0a64c"
+  integrity sha512-yOI/y0svMqIKSFJ+7827/WBXGlXwWaGYL/P8lhQ0PLOSlwIoTuDWJHH8Yj2ZnbySalgOF6iq12NJdJifggd8uA==
 
 "@commitlint/cli@~16.2.3":
   version "16.2.4"
@@ -10683,11 +10693,6 @@ requires-port@^1.0.0:
   resolved "https://mirrors.tencent.com/npm/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
 
-resize-detector@^0.3.0:
-  version "0.3.0"
-  resolved "https://mirrors.tencent.com/npm/resize-detector/-/resize-detector-0.3.0.tgz#fe495112e184695500a8f51e0389f15774cb1cfc"
-  integrity sha512-R/tCuvuOHQ8o2boRP6vgx8hXCCy87H1eY9V5imBYeVNyNVpuL9ciReSccLj2gDcax9+2weXy3bc8Vv+NRXeEvQ==
-
 resize-observer-polyfill@~1.5.1:
   version "1.5.1"
   resolved "https://mirrors.tencent.com/npm/resize-observer-polyfill/-/resize-observer-polyfill-1.5.1.tgz#0e9020dd3d21024458d4ebd27e23e40269810464"
@@ -11362,7 +11367,7 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0":
+"string-width-cjs@npm:string-width@^4.2.0", "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://mirrors.tencent.com/npm/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -11379,15 +11384,6 @@ string-width@^1.0.1:
     code-point-at "^1.0.0"
     is-fullwidth-code-point "^1.0.0"
     strip-ansi "^3.0.0"
-
-"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
-  version "4.2.3"
-  resolved "https://mirrors.tencent.com/npm/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
 
 string-width@^2.0.0:
   version "2.1.1"
@@ -11457,7 +11453,7 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://mirrors.tencent.com/npm/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -11477,13 +11473,6 @@ strip-ansi@^4.0.0:
   integrity sha1-qEeQIusaw2iocTibY1JixQXuNo8=
   dependencies:
     ansi-regex "^3.0.0"
-
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
-  version "6.0.1"
-  resolved "https://mirrors.tencent.com/npm/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
 
 strip-ansi@^7.0.1, strip-ansi@^7.1.0:
   version "7.1.0"
@@ -12759,7 +12748,7 @@ wordwrap@^1.0.0:
   resolved "https://mirrors.tencent.com/npm/wordwrap/-/wordwrap-1.0.0.tgz#27584810891456a4171c8d0226441ade90cbcaeb"
   integrity sha1-J1hIEIkUVqQXHI0CJkQa3pDLyus=
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://mirrors.tencent.com/npm/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -12772,15 +12761,6 @@ wrap-ansi@^6.0.1, wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://mirrors.tencent.com/npm/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
-  dependencies:
-    ansi-styles "^4.0.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-
-wrap-ansi@^7.0.0:
-  version "7.0.0"
-  resolved "https://mirrors.tencent.com/npm/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
-  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"

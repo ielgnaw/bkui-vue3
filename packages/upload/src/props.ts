@@ -179,4 +179,9 @@ export default {
     type: Number,
     default: 10,
   },
+  // 是否显示预览按钮
+  isShowPreview: {
+    type: Boolean,
+    default: true,
+  },
 };

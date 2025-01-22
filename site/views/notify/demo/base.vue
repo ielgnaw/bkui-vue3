@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, h } from 'vue';
 
   import { Notify } from 'bkui-vue';
 
@@ -26,7 +26,7 @@
   function handleDefault() {
     Notify({
       title: title.value,
-      message: message.value,
+      message: h('div', { style: 'color: red;' }, message.value),
     });
   }
   function handleHideTitle() {

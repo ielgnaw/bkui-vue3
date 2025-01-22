@@ -27,12 +27,12 @@
 import { computed, defineComponent, h, toRefs, TransitionGroup } from 'vue';
 
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
-import { ArchiveFill, AudioFill, Del, Done, ImageFill, RightTurnLine, TextFill, VideoFill } from '@bkui-vue/icon';
+import { ArchiveFill, AudioFill, Eye, Del, Done, ImageFill, RightTurnLine, TextFill, VideoFill } from '@bkui-vue/icon';
 import Progress from '@bkui-vue/progress';
 import { classes } from '@bkui-vue/shared';
 
 import uploadProps from './props';
-import { CLASS_PREFIX, EThemes, UploadFile } from './upload.type';
+import { CLASS_PREFIX, EThemes, UploadFile, UploadFiles } from './upload.type';
 
 export default defineComponent({
   name: 'UploadList',
@@ -41,13 +41,14 @@ export default defineComponent({
     disabled: uploadProps.disabled,
     files: uploadProps.files,
     multiple: uploadProps.multiple,
+    isShowPreview: uploadProps.isShowPreview,
   },
-  emits: ['remove', 'retry'],
+  emits: ['remove', 'preview', 'retry'],
   setup(props, { slots, emit }) {
     const t = useLocale('upload');
     const { resolveClassName } = usePrefix();
 
-    const { theme, disabled, multiple } = toRefs(props);
+    const { theme, disabled, multiple, isShowPreview } = toRefs(props);
 
     const classBlock = `${resolveClassName(CLASS_PREFIX)}-list`;
 
@@ -67,6 +68,10 @@ export default defineComponent({
       const index = Math.floor(Math.log(value) / Math.log(1024));
       const size = value / 1024 ** index;
       return `${size.toFixed(2)}${uints[index]}`;
+    }
+
+    function handlePreview(file: UploadFile, files: UploadFiles, e: MouseEvent) {
+      emit('preview', file, files, e);
     }
 
     function handleRemove(file: UploadFile, e: MouseEvent) {
@@ -120,7 +125,12 @@ export default defineComponent({
       <>
         {!disabled.value && (
           <div class={`${classBlock}__picture-item-actions`}>
-            {/* <Eye class="action-icon" /> */}
+            {isShowPreview.value && (
+              <Eye
+                class='action-icon'
+                onClick={e => handlePreview(file, props.files, e)}
+              />
+            )}
             <Del
               class='action-icon'
               onClick={e => handleRemove(file, e)}
@@ -248,11 +258,11 @@ export default defineComponent({
     return () => (
       <>
         {isSinglePhoto.value ? (
-          slots?.innerTrigger && slots?.innerTrigger(props.files?.[0])
+          slots?.innerTrigger?.(props.files?.[0])
         ) : (
           <ul class={classNames.value}>
             {isPhotowall.value ? Photowall() : Normal()}
-            {slots?.innerTrigger && slots?.innerTrigger()}
+            {slots?.innerTrigger?.()}
           </ul>
         )}
       </>

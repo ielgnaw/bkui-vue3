@@ -54,6 +54,8 @@ export default defineComponent({
         newVal => {
           if (newVal?.length) {
             isActive.value = newVal.includes(props.name);
+          } else {
+            isActive.value = false;
           }
         },
         {

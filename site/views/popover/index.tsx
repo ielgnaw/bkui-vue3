@@ -35,7 +35,7 @@ import type { IPropsTableItem } from '../../typings';
 import Always from './demo/always.vue';
 import Base from './demo/base.vue';
 import Callback from './demo/callback.vue';
-import ClickTrigger from './demo/click-trigger.vue';
+import ManualTrigger from './demo/manual-trigger.vue';
 import MouseEvent from './demo/mouse-event.vue';
 import Position from './demo/position.vue';
 import Slot from './demo/slot.vue';
@@ -135,7 +135,7 @@ const props: IPropsTableItem[] = [
   {
     name: 'trigger',
     type: 'String',
-    default: 'click hover manual',
+    default: 'hover',
     desc: ' 触发方式',
     optional: ['click', 'hover', 'manual'],
   },
@@ -243,6 +243,20 @@ const props: IPropsTableItem[] = [
     * 如果设置为0，则不启用此设置`,
     optional: [],
   },
+  {
+    name: 'clickContentAutoHide',
+    type: 'Boolean',
+    default: 'false',
+    desc: '非 manual 模式，点击 content 自动隐藏面板',
+    optional: ['true', 'false'],
+  },
+  {
+    name: 'renderDirective',
+    type: 'String',
+    default: 'if',
+    desc: '渲染方式，值为 show 时，气泡内容 dom 元素不会销毁',
+    optional: ['if', 'show'],
+  },
 ];
 
 const events: IPropsTableItem[] = [
@@ -349,11 +363,11 @@ const demos = [
     DemoComponent: Callback,
   },
   {
-    title: 'trigger click',
-    desc: 'trigger click',
+    title: 'manual click',
+    desc: 'manual click',
     componentName: 'popover',
-    demoName: 'demo/click-trigger',
-    DemoComponent: ClickTrigger,
+    demoName: 'demo/manual-trigger',
+    DemoComponent: ManualTrigger,
   },
   {
     title: 'mouse click',

@@ -42,4 +42,4 @@ const BkLoading = withInstallProps(
   },
 );
 export default BkLoading;
-export { BkLoading, setDefaultIndicator, BkLoadingMode, BkLoadingSize };
+export { BkLoading, setDefaultIndicator, BkLoadingMode, BkLoadingSize, vBkloading };

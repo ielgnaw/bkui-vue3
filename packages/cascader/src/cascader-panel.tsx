@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent, reactive, ref, watch } from 'vue';
+import { defineComponent, nextTick, reactive, ref, watch } from 'vue';
 import { array, object } from 'vue-types';
 
 import Checkbox from '@bkui-vue/checkbox';
@@ -34,6 +34,10 @@ import { arrayEqual, PropTypes } from '@bkui-vue/shared';
 
 import { IData, INode } from './interface';
 
+/**
+ * CascaderPanel 组件
+ * 用于展示级联选择器的面板，支持多选、单选、远程加载等功能。
+ */
 export default defineComponent({
   name: 'CascaderPanel',
   props: {
@@ -58,6 +62,11 @@ export default defineComponent({
     const activePath = ref([]);
     const checkValue = ref<(number | string | string[])[]>([]);
 
+    /**
+     * 根据传入的值计算尺寸
+     * @param value - 数字或字符串类型的尺寸值
+     * @returns 带单位的尺寸字符串
+     */
     const getSizeComputed = (value: number | string) => {
       if (typeof value === 'number') {
         return `${value}px`;
@@ -68,6 +77,10 @@ export default defineComponent({
     const panelHeight = getSizeComputed(props.height);
     const panelWidth = getSizeComputed(props.width);
 
+    /**
+     * 更新选中的值
+     * @param value - 选中的值数组
+     */
     const updateCheckValue = (value: Array<number | string | string[]>) => {
       if (value.length === 0) {
         menus.list = menus.list.slice(0, 1);
@@ -77,6 +90,10 @@ export default defineComponent({
       checkValue.value = value;
     };
 
+    /**
+     * 根据节点列表展开菜单
+     * @param value - 节点ID数组
+     */
     const expandByNodeList = (value: Array<number | string | string[]>) => {
       let targetList = [];
       // 如果配置了多选，找出最长的序列，即其最远的路径，以展开所有面板
@@ -141,6 +158,11 @@ export default defineComponent({
       }
     };
 
+    /**
+     * 生成节点事件
+     * @param node - 节点对象
+     * @returns 事件对象
+     */
     const nodeEvent = (node: INode) => {
       const { trigger, checkAnyLevel, multiple } = node.config;
       const events = {
@@ -157,6 +179,11 @@ export default defineComponent({
       return events;
     };
 
+    /**
+     * 搜索面板事件
+     * @param node - 节点对象
+     * @returns 事件对象
+     */
     const searchPanelEvents = (node: INode) => {
       const { multiple } = node.config;
       const events = {
@@ -173,14 +200,43 @@ export default defineComponent({
       return events;
     };
 
+    /**
+     * 滚动到选中的节点
+     */
+    const scrollToSelected = () => {
+      // 遍历每个级别的菜单
+      menus.list.forEach((_menu, level) => {
+        // 查找当前级别中选中的或已勾选的节点
+        const selectedNode = document.querySelector(
+          `.${resolveClassName('cascader-panel')}:nth-child(${level + 1}) .${resolveClassName('cascader-node.is-selected')}, .${resolveClassName('cascader-node.is-checked')}`,
+        );
+        if (selectedNode) {
+          nextTick(() => {
+            selectedNode.scrollIntoView();
+          });
+        }
+      });
+    };
+
     const noDataText = t.value.noData;
     const { emptyText } = t.value;
 
+    /**
+     * 判断节点是否在路径中
+     * @param node - 节点对象
+     * @returns 布尔值，表示节点是否在路径中
+     */
     const isNodeInPath = (node: INode) => {
       const currentLevel = activePath.value[node.level - 1] || {};
       return currentLevel.id === node.id;
     };
 
+    /**
+     * 判断节点是否被选中
+     * @param node - 节点对象
+     * @param checkValue - 选中值数组
+     * @returns 布尔值，表示节点是否被选中
+     */
     const isCheckedNode = (node: INode, checkValue: (number | string | string[])[]) => {
       const { multiple } = node.config;
       if (multiple) {
@@ -195,6 +251,11 @@ export default defineComponent({
       nodeCheckHandler(node);
     };
 
+    /**
+     * 渲染节点图标
+     * @param node - 节点对象
+     * @returns 图标组件
+     */
     const iconRender = node =>
       node.loading ? (
         <Spinner class={resolveClassName('icon-spinner')}></Spinner>
@@ -202,6 +263,7 @@ export default defineComponent({
         <AngleRight class={resolveClassName('icon-angle-right')}></AngleRight>
       );
 
+    // 监听 modelValue 的变化，更新选中值
     watch(
       () => props.modelValue,
       (value: Array<number | string | string[]>) => {
@@ -210,6 +272,7 @@ export default defineComponent({
       { immediate: true },
     );
 
+    // 监听 store 的变化，更新菜单列表
     watch(
       () => props.store,
       value => {
@@ -234,6 +297,7 @@ export default defineComponent({
       noDataText,
       emptyText,
       resolveClassName,
+      scrollToSelected,
     };
   },
   render() {

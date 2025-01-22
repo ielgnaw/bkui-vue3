@@ -5,10 +5,10 @@
     width="450"
     :is-show="isShow"
     theme="light"
-    trigger="click"
+    trigger="manual"
     @after-hidden="handleAfterHidden"
   >
-    <bk-button> 当鼠标点击 </bk-button>
+    <bk-button> 占位区域 </bk-button>
     <template #content>
       <div>
         今天天气不错 今天天气不错 今天天气不错 今天天气不错 今天天气不错 今天天气不错 今天天气不错 今天天气不错

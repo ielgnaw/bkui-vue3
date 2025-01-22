@@ -25,13 +25,16 @@
  */
 import { ref } from 'vue';
 
+import _ from 'lodash';
+
 import { EMIT_EVENTS } from './const';
 import useFloating from './use-floating';
 import usePopperId from './use-popper-id';
-import { getFullscreenUid } from './utils';
+import { getFullscreenUid, SharedState, random } from './utils';
 
 export default (props, ctx, { refReference, refContent, refArrow, refRoot }) => {
   let storeEvents = null;
+  const uniqKey = random();
   const isFullscreen = ref(false);
   const fullscreenReferId = getFullscreenUid();
   const fullScreenTarget = ref();
@@ -75,13 +78,15 @@ export default (props, ctx, { refReference, refContent, refArrow, refRoot }) => 
   const addEventToPopTargetEl = () => {
     const { elReference, elContent } = resolvePopElements();
     storeEvents = resolveTriggerEvents();
-    if (Array.isArray(storeEvents)) {
-      addEventToTargetEl(elReference, storeEvents);
-    } else {
-      const { content, reference } = storeEvents;
-      addEventToTargetEl(elReference, reference);
-      addEventToTargetEl(elContent, content);
-    }
+    storeEvents.forEach(storeEvent => {
+      if (Array.isArray(storeEvent)) {
+        addEventToTargetEl(elReference, storeEvent);
+      } else {
+        const { content, reference } = storeEvent;
+        addEventToTargetEl(elReference, reference);
+        addEventToTargetEl(elContent, content);
+      }
+    });
   };
 
   const addEventToTargetEl = (target: HTMLElement, evets: any[]) => {
@@ -94,11 +99,29 @@ export default (props, ctx, { refReference, refContent, refArrow, refRoot }) => 
 
   const removeEventListener = () => {
     if (storeEvents?.length) {
-      const { elReference } = resolvePopElements();
+      const { elReference, elContent } = resolvePopElements();
       if (elReference) {
-        storeEvents.forEach(([event, listener]) => {
-          if (event && typeof listener === 'function') {
-            elReference.removeEventListener(event, listener);
+        storeEvents.forEach(storeEvent => {
+          if (Array.isArray(storeEvent)) {
+            storeEvent.forEach(([event, listener]) => {
+              if (event && typeof listener === 'function') {
+                elReference.removeEventListener(event, listener);
+              }
+            });
+          } else {
+            const { content, reference } = storeEvent;
+            content.forEach(([event, listener]) => {
+              if (event && typeof listener === 'function') {
+                if (elContent) {
+                  elContent.removeEventListener(event, listener);
+                }
+              }
+            });
+            reference.forEach(([event, listener]) => {
+              if (event && typeof listener === 'function') {
+                elReference.removeEventListener(event, listener);
+              }
+            });
           }
         });
       }
@@ -183,7 +206,11 @@ export default (props, ctx, { refReference, refContent, refArrow, refRoot }) => 
     document.body.removeEventListener('fullscreenchange', handleFullscreenChange);
   };
 
-  const handleClickOutside = (_e: MouseEvent) => {
+  const handleClickOutside = _.debounce((_e: MouseEvent) => {
+    if (SharedState[uniqKey]) {
+      SharedState[uniqKey] = false;
+      return;
+    }
     ctx.emit(EMIT_EVENTS.CLICK_OUTSIDE, { isShow: localIsShow.value, event: _e });
     const needExec = props.disableOutsideClick || props.always || props.disabled || props.trigger === 'manual';
     if (!props.forceClickoutside && needExec) {
@@ -193,7 +220,7 @@ export default (props, ctx, { refReference, refContent, refArrow, refRoot }) => 
     if (localIsShow.value) {
       hideFn();
     }
-  };
+  }, 10);
 
   return {
     onMountedFn,
@@ -212,5 +239,6 @@ export default (props, ctx, { refReference, refContent, refArrow, refRoot }) => 
     isFullscreen,
     boundary,
     localIsShow,
+    uniqKey,
   };
 };

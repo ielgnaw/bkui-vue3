@@ -66,7 +66,17 @@ export default defineComponent({
     ...timePickerProps,
     ...timePanelProps,
   },
-  emits: ['open-change', 'input', 'change', 'update:modelValue', 'clear', 'shortcut-change', 'pick-success'],
+  emits: [
+    'open-change',
+    'input',
+    'change',
+    'update:modelValue',
+    'clear',
+    'shortcut-change',
+    'pick-success',
+    'blur',
+    'focus',
+  ],
   // slots: ['header'],
   slots: Object as SlotsType<{
     header?: () => any;
@@ -425,6 +435,7 @@ export default defineComponent({
       }
       teleportTo.value = getFullscreenRoot();
       state.isFocused = true;
+      emit('focus');
       if (e && e.type === 'focus') {
         return;
       }
@@ -439,6 +450,7 @@ export default defineComponent({
     };
 
     const handleBlur = e => {
+      emit('blur');
       if (state.internalFocus) {
         state.internalFocus = false;
         return;

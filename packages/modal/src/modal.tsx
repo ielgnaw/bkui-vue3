@@ -77,16 +77,6 @@ export default defineComponent({
       };
     });
 
-    const teleportTo = computed(() => {
-      if (props.transfer) {
-        if (typeof props.transfer === 'boolean') {
-          return 'body';
-        }
-        return props.transfer;
-      }
-      return '';
-    });
-
     watch(
       () => props.isShow,
       () => {
@@ -214,8 +204,11 @@ export default defineComponent({
         );
       };
 
-      const renderModalContent = () => {
-        return (
+      return (
+        <Teleport
+          disabled={!props.transfer}
+          to={typeof props.transfer === 'string' && Boolean(props.transfer) ? props.transfer : 'body'}
+        >
           <div
             ref={rootRef}
             {...attrs}
@@ -232,35 +225,8 @@ export default defineComponent({
               </div>
             </Transition>
           </div>
-        );
-      };
-
-      // 判断传入的是不是css选择器或者HTMLElement
-      const isValidTeleport = (selector: HTMLElement | boolean | string) => {
-        try {
-          if (typeof selector === 'boolean') {
-            return selector;
-          }
-          if (typeof selector === 'string') {
-            return document.querySelector(selector) !== null;
-          }
-          return selector instanceof HTMLElement;
-        } catch (err) {
-          return false;
-        }
-      };
-
-      if (teleportTo.value === 'body' || isValidTeleport(props.transfer)) {
-        return (
-          <Teleport
-            disabled={!props.transfer}
-            to={teleportTo.value}
-          >
-            {renderModalContent()}
-          </Teleport>
-        );
-      }
-      return renderModalContent();
+        </Teleport>
+      );
     };
   },
 });

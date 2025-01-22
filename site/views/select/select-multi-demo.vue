@@ -18,7 +18,7 @@
     <bk-select
       selected-style="checkbox"
       class="bk-select"
-      v-model="selectedValue"
+      v-model="selectedAllValue"
       all-option-id="all"
       filterable
       multiple
@@ -35,7 +35,7 @@
     </bk-select>
     <bk-select
       class="bk-select"
-      v-model="selectedValue"
+      v-model="selectedAllValue2"
       multiple-mode="tag"
       filterable
       multiple
@@ -97,6 +97,8 @@
     },
   ]);
   const selectedValue = ref(['dancing', 'bike']);
+  const selectedAllValue = ref(['all'])
+  const selectedAllValue2 = ref(['climbing', 'running', 'unknow', 'fitness', 'bike', 'dancing', 'sleep'])
 
   const listValue = ref([1, 2, 3, 4, 5, 6, 7, 8]);
   const datasourceList = ref([]);

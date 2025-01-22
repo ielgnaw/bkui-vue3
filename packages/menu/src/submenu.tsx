@@ -45,6 +45,7 @@ export default defineComponent({
   slots: Object as SlotsType<{
     default?: () => HTMLElement;
     icon?: () => HTMLElement;
+    title?: () => HTMLElement;
   }>,
   setup(props, { slots, emit }) {
     const { registerMenuInfo, unregisterMenuInfo, openedKeys, handleOpenChange, collapse, activeKey, menuStore } =
@@ -86,7 +87,7 @@ export default defineComponent({
           onClick={handleCollapse}
         >
           <span class='submenu-header-icon'>{slots.icon?.() || <TreeApplicationShape class='menu-icon' />}</span>
-          <span class='submenu-header-content'>{props.title}</span>
+          <span class='submenu-header-content'>{slots.title?.() || props.title}</span>
           <AngleDown
             class={{
               'submenu-header-collapse': true,

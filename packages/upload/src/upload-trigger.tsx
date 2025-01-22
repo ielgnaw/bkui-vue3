@@ -28,7 +28,7 @@ import { computed, defineComponent, PropType, ref, toRefs } from 'vue';
 
 import Button from '@bkui-vue/button';
 import { useLocale, usePrefix } from '@bkui-vue/config-provider';
-import { Del, Plus, Upload } from '@bkui-vue/icon';
+import { Del, Plus, Upload, Eye } from '@bkui-vue/icon';
 import Progress from '@bkui-vue/progress';
 import { classes } from '@bkui-vue/shared';
 
@@ -46,13 +46,14 @@ export default defineComponent({
       type: Object as PropType<UploadFile>,
     },
     selectChange: uploadProps.selectChange,
+    isShowPreview: uploadProps.isShowPreview,
   },
-  emits: ['change', 'remove'],
+  emits: ['change', 'remove', 'preview'],
   setup(props, { slots, emit }) {
     const t = useLocale('upload');
     const { resolveClassName } = usePrefix();
 
-    const { theme, disabled, file, multiple, accept } = toRefs(props);
+    const { theme, disabled, file, multiple, accept, isShowPreview } = toRefs(props);
 
     const classBlock = `${resolveClassName(CLASS_PREFIX)}-trigger`;
 
@@ -115,6 +116,13 @@ export default defineComponent({
 
     function handleRemove(file: UploadFile, e: MouseEvent) {
       emit('remove', file, e);
+
+      e.stopPropagation();
+      e.preventDefault();
+    }
+
+    function handlePreview(file: UploadFile, e: MouseEvent) {
+      emit('preview', file, [file], e);
 
       e.stopPropagation();
       e.preventDefault();
@@ -211,6 +219,12 @@ export default defineComponent({
         {!props.disabled && (
           <div class={`${classBlock}__picture-actions`}>
             {/* { file.status !== 'uploading' && <Upload class="action-icon" /> } */}
+            {isShowPreview.value && (
+              <Eye
+                class='action-icon'
+                onClick={e => handlePreview(file, e)}
+              />
+            )}
             <Del
               class='action-icon'
               onClick={e => handleRemove(file, e)}

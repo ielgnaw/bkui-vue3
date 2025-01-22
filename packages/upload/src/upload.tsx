@@ -49,7 +49,7 @@ import useFileHandler from './use-file-handler';
 export default defineComponent({
   name: 'Upload',
   props: uploadProps,
-  emits: ['exceed', 'progress', 'success', 'error', 'delete', 'done'],
+  emits: ['exceed', 'progress', 'success', 'error', 'delete', 'done', 'preview'],
   setup(props, { slots, emit, expose }) {
     const { resolveClassName } = usePrefix();
 
@@ -73,6 +73,7 @@ export default defineComponent({
       multiple: props.multiple,
       disabled: props.disabled,
       accept: props.accept,
+      isShowPreview: props.isShowPreview,
       selectChange: props.selectChange,
     }));
 
@@ -122,6 +123,10 @@ export default defineComponent({
       }
     }
 
+    function handlePreview(file: UploadFile, files?: UploadFile[]) {
+      emit('preview', file, files);
+    }
+
     function handleRetry(file: UploadFile) {
       send(file.raw);
     }
@@ -163,7 +168,6 @@ export default defineComponent({
         chunkSize,
         customRequest,
       } = props;
-
       const { uid } = file;
       const options: UploadRequestOptions = {
         type,
@@ -240,6 +244,7 @@ export default defineComponent({
     });
 
     expose({
+      handlePreview,
       handleRemove,
       handleRetry,
     });
@@ -257,8 +262,10 @@ export default defineComponent({
         <UploadList
           disabled={props.disabled}
           files={fileList.value}
+          isShowPreview={props.isShowPreview}
           multiple={props.multiple}
           theme={props.theme}
+          onPreview={handlePreview}
           onRemove={handleRemove}
           onRetry={handleRetry}
         >
@@ -270,6 +277,7 @@ export default defineComponent({
                   v-slots={slots}
                   file={file}
                   onChange={handleFiles}
+                  onPreview={handlePreview}
                   onRemove={handleRemove}
                 />
               ),

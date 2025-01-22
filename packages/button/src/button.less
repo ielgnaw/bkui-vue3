@@ -34,77 +34,7 @@
   align-items: center;
   justify-content: center;
 
-  each(@themeSelectors, {
-    @color: '@{value}-color';
-    @hoverColor: 'button-@{value}-hover-color';
-    @activeColor: 'button-@{value}-active-color';
-
-    &.@{bk-prefix}-button-@{value} {
-      background-color: @@color;
-      color: @white-color;
-      border-color: @@color;
-
-      &:hover {
-        background-color: @@hoverColor;
-        border-color: @@hoverColor;
-      }
-
-      &:active {
-        background-color: @@activeColor;
-        border-color: @@activeColor;
-        color: @white-color;
-      }
-
-      &.is-outline {
-        color: @@color;
-        border-color: @@color;
-        background-color: @white-color;
-
-        &:hover {
-          background-color: @@hoverColor;
-          border-color: @@hoverColor;
-          color: @white-color;
-        }
-
-        &:active {
-          background-color: @@activeColor;
-          border-color: @@activeColor;
-          color: @white-color;
-        }
-      }
-
-      &.is-text {
-        color: @@color;
-        background-color: transparent;
-        border: none;
-
-        &:not(.is-disabled):hover {
-          color: @@hoverColor;
-        }
-      }
-
-      &.is-disabled {
-        &:not(.is-text) {
-          background-color: @disable-color;
-          color: @white-color;
-          border-color: @disable-color;
-        }
-
-        color: @disable-color;
-        cursor: not-allowed;
-      }
-    }
-
-    &.@{bk-prefix}-button-hover-@{value} {
-      &:hover {
-        background-color: @@hoverColor;
-        border-color: @@hoverColor;
-        color: @white-color;
-      }
-    }
-  })
-
-    each(@sizeSelectors, {
+  each(@sizeSelectors, {
     @sizeBtnHeight: '@{value}BtnHeight';
     @sizeBtnPadding: '@{value}BtnPadding';
     @sizeBtnFontSize: '@{value}BtnFontSize';
@@ -238,4 +168,77 @@
     }
 
   }
+}
+
+.@{bk-prefix}-button,
+.@{bk-prefix}-button-group .is-selected:not(.is-disabled) {
+  each(@themeSelectors, {
+    @color: '@{value}-color';
+    @hoverColor: 'button-@{value}-hover-color';
+    @activeColor: 'button-@{value}-active-color';
+
+    &.@{bk-prefix}-button-@{value} {
+      background-color: @@color;
+      color: @white-color;
+      border-color: @@color;
+
+      &:hover {
+        background-color: @@hoverColor;
+        border-color: @@hoverColor;
+      }
+
+      &:active {
+        background-color: @@activeColor;
+        border-color: @@activeColor;
+        color: @white-color;
+      }
+
+      &.is-outline {
+        color: @@color;
+        border-color: @@color;
+        background-color: @white-color;
+
+        &:hover {
+          background-color: @@hoverColor;
+          border-color: @@hoverColor;
+          color: @white-color;
+        }
+
+        &:active {
+          background-color: @@activeColor;
+          border-color: @@activeColor;
+          color: @white-color;
+        }
+      }
+
+      &.is-text {
+        color: @@color;
+        background-color: transparent;
+        border: none;
+
+        &:not(.is-disabled):hover {
+          color: @@hoverColor;
+        }
+      }
+
+      &.is-disabled {
+        &:not(.is-text) {
+          background-color: @disable-color;
+          color: @white-color;
+          border-color: @disable-color;
+        }
+
+        color: @disable-color;
+        cursor: not-allowed;
+      }
+    }
+
+    &.@{bk-prefix}-button-hover-@{value} {
+      &:hover {
+        background-color: @@hoverColor;
+        border-color: @@hoverColor;
+        color: @white-color;
+      }
+    }
+  })
 }

@@ -89,10 +89,10 @@ const dialogPropsJson: IPropsTableItem[] = [
   },
   {
     name: 'transfer',
-    type: 'Boolean | String | HTMLElement',
+    type: 'Boolean | String',
     default: 'true',
     desc: '控制弹框是否出现在 body 内',
-    optional: [],
+    optional: ['false', 'true', 'DOM 选择器'],
   },
   {
     name: 'fullscreen',
@@ -151,10 +151,10 @@ const dialogPropsJson: IPropsTableItem[] = [
   },
   {
     name: 'render-directive',
-    type: '() => Promise<boolean> | boolean>',
-    default: 'is',
+    type: 'String',
+    default: 'if',
     desc: '弹框的渲染方式',
-    optional: ['v-if', 'v-show'],
+    optional: ['if', 'show'],
   },
 
   // {

@@ -35,13 +35,17 @@ import { createDefaultSizeList, SETTING_SIZE } from '../const';
 import { EMIT_EVENTS } from '../events';
 import { Column, Settings, SizeItem, TablePropTypes } from '../props';
 import { resolvePropVal } from '../utils';
+import useCheckboxToolTip from './use-checkbox-tooltip';
 import { UseColumns } from './use-columns';
 
 const useSettings = (props: TablePropTypes, ctx: SetupContext, columns: UseColumns, afterSetting) => {
   const t = useLocale('table');
   const { resolveClassName } = usePrefix();
+  const { resolveOverflowTips } = useCheckboxToolTip();
   const defaultSizeList: SizeItem[] = createDefaultSizeList(t);
   const checkAll = ref(false);
+  const filterPopoverRef = ref();
+  const allTextRef = ref([]);
   const resolvedColVal = (item, index) => resolvePropVal(item, ['id', 'field', 'type'], [item, index]);
   const getDefaultSettings = () => {
     return {
@@ -94,7 +98,6 @@ const useSettings = (props: TablePropTypes, ctx: SetupContext, columns: UseColum
   const className = resolveClassName('table-settings');
   const theme = `light ${className}`;
   const renderFields = computed(() => options.fields || props.columns || []);
-
   const cachedValue = {
     checkAll: checkAll.value,
     activeSize: activeSize.value,
@@ -222,9 +225,27 @@ const useSettings = (props: TablePropTypes, ctx: SetupContext, columns: UseColum
     { immediate: true, deep: true },
   );
 
+  const renderDisplayTooltip = async () => {
+    // 异步延迟解决dom实例加载响应
+    await new Promise(resolve => setTimeout(resolve, 0));
+    renderFields.value.forEach((item, index) => {
+      if (!Object.prototype.hasOwnProperty.call(item, 'showOverflowTooltip')) {
+        item.showOverflowTooltip = resolveOverflowTips(
+          `field-item-${resolvePropVal(item, ['id', 'field', 'type'], [item, index])}-ref`,
+          filterPopoverRef,
+          allTextRef,
+        );
+      }
+    });
+  };
+
   const getRenderContent = () => {
+    const slotCom = ctx.slots.settings?.();
+    if (!slotCom) {
+      renderDisplayTooltip();
+    }
     return (
-      ctx.slots.settings?.() ?? (
+      slotCom ?? (
         <>
           <div class='setting-head'>
             <span class='head-title'>{t.value.setting.title}</span>
@@ -261,13 +282,29 @@ const useSettings = (props: TablePropTypes, ctx: SetupContext, columns: UseColum
               v-model={checkedFields.value}
             >
               {renderFields.value.map((item, index: number) => (
-                <div class='field-item'>
+                <div
+                  ref={filterPopoverRef}
+                  class='field-item'
+                >
                   <Checkbox
                     checked={checkedFields.value.includes(resolvedColVal(item, index))}
                     disabled={isItemReadonly(item, index)}
                     label={resolvedColVal(item, index)}
                   >
-                    {resolvePropVal(item, ['name', 'label'], [item, index])}
+                    <span
+                      ref={el =>
+                        (allTextRef.value[
+                          `field-item-${resolvePropVal(item, ['id', 'field', 'type'], [item, index])}-ref`
+                        ] = el)
+                      }
+                      v-bk-tooltips={{
+                        placement: 'top-start',
+                        content: resolvePropVal(item, ['name', 'label'], [item, index]),
+                        disabled: !item.showOverflowTooltip,
+                      }}
+                    >
+                      {resolvePropVal(item, ['name', 'label'], [item, index])}
+                    </span>
                   </Checkbox>
                 </div>
               ))}
