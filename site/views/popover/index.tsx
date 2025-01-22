@@ -35,7 +35,7 @@ import type { IPropsTableItem } from '../../typings';
 import Always from './demo/always.vue';
 import Base from './demo/base.vue';
 import Callback from './demo/callback.vue';
-import ClickTrigger from './demo/click-trigger.vue';
+import ManualTrigger from './demo/manual-trigger.vue';
 import MouseEvent from './demo/mouse-event.vue';
 import Position from './demo/position.vue';
 import Slot from './demo/slot.vue';
@@ -137,7 +137,7 @@ const props: IPropsTableItem[] = [
     type: 'String',
     default: 'hover',
     desc: ' 触发方式',
-    optional: ['click', 'hover', 'click-hover', 'manual'],
+    optional: ['click', 'hover', 'manual'],
   },
   {
     name: 'renderType',
@@ -363,11 +363,11 @@ const demos = [
     DemoComponent: Callback,
   },
   {
-    title: 'trigger click',
-    desc: 'trigger click',
+    title: 'manual click',
+    desc: 'manual click',
     componentName: 'popover',
-    demoName: 'demo/click-trigger',
-    DemoComponent: ClickTrigger,
+    demoName: 'demo/manual-trigger',
+    DemoComponent: ManualTrigger,
   },
   {
     title: 'mouse click',

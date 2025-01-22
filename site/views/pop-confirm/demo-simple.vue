@@ -3,6 +3,7 @@
     <bk-pop-confirm
       width="288"
       content="删除结果数据时，将同时删除该结果数据下的所有样本曲线，请确认！"
+      trigger="click"
       @confirm="ensure"
     >
       <bk-button>删除</bk-button>
