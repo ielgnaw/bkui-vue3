@@ -1,5 +1,11 @@
 ## 更新日志
 
+### 2.0.1-beta.96
+
+* **[feat]**:
+    - bugfix(popover): 非manual模式下，支持点击占位区弹窗不自动收齐 ([#2254](https://github.com/TencentBlueKing/bkui-vue3/issues/2254))
+
+
 ### 2.0.1-beta.95
 
 * **[feat]**:
