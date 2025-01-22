@@ -4,6 +4,7 @@
       width="288"
       content="删除操作无法撤回，请谨慎操作！"
       title="确认删除该脚本？"
+      trigger="click"
       @confirm="ensure"
     >
       <bk-button>删除</bk-button>
@@ -20,7 +21,6 @@
 </template>
 <script setup>
 import { Help } from 'bkui-vue/lib/icon';
-import { defineComponent } from 'vue';
 function ensure() {
   console.log('ensure');
 }
